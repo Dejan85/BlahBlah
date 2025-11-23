@@ -1,0 +1,32 @@
+node_modules/
+.expo/
+dist/
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+.idea/
+supabase/
+
+# Sensitive files
+.env
+test-b6fc2-firebase-adminsdk-*.json
+
+# Build artifacts
+android/app/build/
+android/.gradle/
+android/build/
+ios/build/
+ios/Pods/
+
+# IDE
+.vscode/
+.DS_Store
+
+# @generated expo-cli sync-2b81b286409207a5da26e14c78851eb30d8ccbdb
+expo-env.d.ts
+# @end expo-cli

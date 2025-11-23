@@ -1,0 +1,43 @@
+{
+  "project_info": {
+    "project_number": "307003980819",
+    "project_id": "blahblah-477120",
+    "storage_bucket": "blahblah-477120.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:307003980819:android:blahblah",
+        "android_client_info": {
+          "package_name": "com.nsimsic.blahblah"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "307003980819-ducrv5t4naitj38sukcbf3k4h7r69clh.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "307003980819-g7e1fmdhbiu7lurl6j044oi83gi1hvtg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC5oFy1sTlKU1FGfdIf0N4lJxN57ocbX0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "307003980819-g7e1fmdhbiu7lurl6j044oi83gi1hvtg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

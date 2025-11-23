@@ -1,0 +1,15 @@
+<svg width="118" height="84" viewBox="0 0 118 84" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_40_4963)">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M59 39C68.3875 39 76 30.4958 76 20.0025C76 9.50916 68.3875 1 59 1C49.6125 1 42.0001 9.50916 42.0001 20.0025C41.9736 30.4563 49.5242 38.9655 58.8808 39H59Z" fill="white" stroke="#FF325E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M93.5 82C80.8266 82 70 80.1591 70 72.788C70 65.4169 80.7562 59 93.5 59C106.173 59 117 65.3567 117 72.7241C117 80.0915 106.244 82 93.5 82Z" fill="white" stroke="#FF325E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M93.5 47C101.507 47 108 39.8386 108 31.0021C108 22.1656 101.507 15 93.5 15C85.493 15 79.0001 22.1656 79.0001 31.0021C78.9775 39.8053 85.4177 46.9709 93.3983 47H93.5Z" fill="white" stroke="#FF325E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M24 82C11.5962 82 1 80.1591 1 72.788C1 65.4169 11.5273 59 24 59C36.4038 59 47 65.3567 47 72.7241C47 80.0915 36.4727 82 24 82Z" fill="white" stroke="#FF325E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M24.5 47C32.507 47 39 39.8386 39 31.0021C39 22.1656 32.507 15 24.5 15C16.493 15 10.0001 22.1656 10.0001 31.0021C9.97742 39.8053 16.4177 46.9709 24.3983 47H24.5Z" fill="white" stroke="#FF325E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M29 70.3848C29 72.9784 29.9436 75.1155 31.6184 76.8212C33.2684 78.5017 35.5915 79.729 38.3227 80.6276C43.7763 82.4218 51.1596 83 59 83C66.8855 83 74.2699 82.4003 79.7139 80.5842C82.4404 79.6747 84.7549 78.4362 86.3971 76.7479C88.0635 75.0348 89 72.8946 89 70.3043C89 65.1523 85.312 60.5583 79.8779 57.3103C74.4101 54.0422 66.9788 52 59 52C50.9768 52 43.5442 54.0616 38.0864 57.3507C32.6612 60.6201 29 65.2346 29 70.3848Z" fill="white" stroke="#FF325E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<clipPath id="clip0_40_4963">
+<rect width="118" height="84" fill="white"/>
+</clipPath>
+</defs>
+</svg>
