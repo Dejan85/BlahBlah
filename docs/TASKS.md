@@ -20,7 +20,7 @@
 - [x] **T0.5** ✅ App pokrenut na realnom uređaju (Galaxy S24) — diže se bez crash-a do login ekrana. Usput: `expo install --fix` poravnao 7 paketa na SDK-51 verzije (rešilo native gesture-handler crash); Supabase bila pauzirana → reaktivirana.
 
 ## FAZA 1 — Čist kod / temelj (🔧)
-- [ ] **T1.1** Popraviti svih 18 TS grešaka → `tsc --noEmit` prolazi
+- [ ] **T1.1** Popraviti svih 17 TS grešaka → `tsc --noEmit` prolazi
 - [ ] **T1.2** Ukloniti curenje logova (Supabase ključevi u `utils/supabase.ts`)
 - [ ] **T1.3** Očistiti mrtav/duplikat kod (`handleMessageReaction`, `profile/test/[id].tsx`)
 - [ ] **T1.4** Preimenovati folder `freind-requests` → `friend-requests` (+ rute)

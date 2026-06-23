@@ -9,7 +9,7 @@
 ## 1. Šta je BlahBlah
 
 Social media mobilna aplikacija (Expo / React Native), hibrid **Snapchat + Instagram**.
-Trenutno stanje istorije: jedan jedini commit (`initial BlahBlah project setup`).
+Stanje: **Faza 0 završena** — app se build-uje i diže na uređaju bez crash-a (vidi §8 dnevnik).
 
 ### Tech stack
 - **Expo 51** + **expo-router** (file-based routing, `app/` folder)
@@ -67,7 +67,7 @@ Aplikacija je obimna — ~298 fajlova, ~70 komponenti.
 1. **"Iluzija od 70%."** ~298 fajlova i app *deluje* skoro gotovo, ali to su uglavnom **CRUD ekrani** (najlakši deo). Ono što BlahBlah čini jedinstvenim (Blah Score, streak, recovery, ephemeral chat, chat hours, tap-to-view, who-viewed, premium gating, multi-account) je **skoro 0%** — a to je najteži i najrizičniji deo.
 2. **Po vremenu/trudu je gore od 40/60.** Preostalo sadrži game-mehaniku (skorovanje, tajmeri), ephemeral sistem, plaćanja i pozadinske job-ove (auto-brisanje, streak reset). Realno **~30% urađeno / 70% ostalo** mereno satima.
 3. **Deo "urađenog" je zapravo rework.** Auth je email-first (spec traži telefon-first); chat je persistentan (spec traži ephemeral). Nije "dovrši", nego "prepravi".
-4. **App trenutno ni ne build-uje** (firebase nije instaliran) + nema migracija baze u repou + nema testova. Temelj nije čvrst.
+4. ~~App trenutno ni ne build-uje~~ ✅ **Build/boot rešeni u Fazi 0** (firebase JS SDK uklonjen, verzije poravnate na SDK 51). Ali i dalje: nema migracija baze u repou + nema testova. Temelj još nije čvrst.
 
 ### Gruba projekcija po fazama
 - **Faza 0–1** (da radi + čist kod): ~1 nedelja
@@ -77,19 +77,20 @@ Aplikacija je obimna — ~298 fajlova, ~70 komponenti.
 
 ---
 
-## 3. 🔴 Blokeri — MORA prvo
+## 3. ✅ Blokeri — REŠENI (Faza 0)
 
-> Bez ovoga se aplikacija ne build-uje / ne pokreće.
+> Svi blokeri za build/boot su rešeni. App se diže na uređaju.
 
-- [ ] **Firebase nije instaliran** — stoji u `package.json`, ali `node_modules/firebase` ne postoji. `app/_layout.tsx:12` ga importuje → build puca. Uzrok: postoje **i `yarn.lock` i `package-lock.json`**. → Izaberi jedan package manager i reinstaliraj.
-- [ ] **Case-mismatch u `app.json:18`** — piše `./GoogleService-info.plist`, fajl je `GoogleService-Info.plist` (veliko `I`) → puca iOS build.
-- [ ] **Firebase config je placeholder** — `utils/firebase.ts:15`, `appId: "1:307003980819:android:blahblah"` nije validan appId.
+- [x] ~~Firebase nije instaliran~~ — firebase JS SDK **uklonjen** kao mrtav kod (T0.2); izabran npm, obrisan `yarn.lock` (T0.1).
+- [x] ~~Case-mismatch u `app.json`~~ — popravljeno `GoogleService-Info.plist` (T0.3).
+- [x] ~~Firebase config placeholder~~ — otpalo, `utils/firebase.ts` obrisan (T0.2).
+- [x] **Verzije paketa odlutale od SDK 51** (otkriveno u T0.5) — native build pucao na gesture-handler; rešeno `expo install --fix` (7 paketa) + `androidx.core` pin u `android/build.gradle`.
 
 ---
 
 ## 4. 🟠 Problemi sa kodom
 
-- [ ] **~20 TypeScript grešaka** (`npx tsc --noEmit` ne prolazi):
+- [ ] **17 TypeScript grešaka** (`npx tsc --noEmit` ne prolazi) — *T1.1; broj potvrđen posle SDK-51 poravnanja*:
   - [ ] `app/notifications/index.tsx` — Supabase join vraća niz, kod pristupa kao objektu (8 grešaka)
   - [ ] `app/profile/index.tsx:203` i `app/profile/test/[id].tsx:183` — `currentLocation` implicitno `any`
   - [ ] `components/Acounts.tsx:6` — `Push` nema default export
@@ -108,7 +109,8 @@ Aplikacija je obimna — ~298 fajlova, ~70 komponenti.
 
 - [ ] **Šema baze NIJE u repozitorijumu** ⚠️ — nema SQL migracija, `supabase/` je u `.gitignore`. Cela struktura baze + RLS politike postoje samo u Supabase cloud-u. → Uraditi `supabase db pull` i commit-ovati migracije (backup + verzionisanje).
 - [ ] **Nema testova** iako je Jest konfigurisan
-- [ ] **Push notifikacije nedovršene** — samo `initializeApp`, ostalo TODO (`utils/firebase.ts:4`)
+- [ ] **Push notifikacije nedovršene** — firebase JS SDK uklonjen (T0.2); push (native Firebase) se radi u T4.3, trenutno nije implementiran.
+- [ ] **bottom-sheet ↔ reanimated neslaganje** ⚠️ (novo, iz T0.5) — `@gorhom/bottom-sheet@5` traži reanimated ≥3.16, a SDK 51 poravnanje ga je spustilo na 3.10. Testirati sve bottom-sheet-ove (`BottomModal`/`BS`); ako bagују → downgrade bottom-sheet na v4 ili držati reanimated viši.
 
 > ✅ Sigurnost OK: `.env` i `firebase-adminsdk-*.json` **nisu** commit-ovani (pokriveni `.gitignore`-om).
 
