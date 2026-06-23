@@ -23,7 +23,7 @@
 - [x] **T1.1** ✅ Popravljeno svih 17 TS grešaka → `tsc --noEmit` prolazi čisto. Join greške (notifications/followers/following): supabase to-one relacija tipovana kao niz → normalizacija na objekat / `as unknown` cast. `currentLocation` tipovan `Location.LocationObject | null`. `components/Acounts.tsx` (mrtav Supabase starter, nigde se ne importuje) obrisan.
 - [x] **T1.2** ✅ Uklonjeni `console.log` koji su ispisivali Supabase URL + anon key (prvih 50 char + dužina) u `utils/supabase.ts`. Zamenjeno tihim `console.warn` guard-om koji javlja samo da env nedostaje (bez vrednosti). Provereno: nigde drugde se ključevi ne loguju.
 - [x] **T1.3** ✅ Uklonjen mrtav `handleMessageReaction` iz `MessageContext` (nikad eksportovan; pravi je `handleReaction`). `tsc` čist. ⚠️ `profile/test/[id].tsx` **NIJE** mrtav kod — koristi se (chats/index.tsx, PostUserInfo.tsx) i nije duplikat: to je nedovršen prototip ujedinjenog profila → izdvojeno u **T1.8 + T1.9**.
-- [ ] **T1.4** Preimenovati folder `freind-requests` → `friend-requests` (+ rute)
+- [x] **T1.4** ✅ Preimenovan folder `freind-requests` → `friend-requests` (`git mv`, čuva istoriju) + ažurirane rute (`chats/index.tsx`, `Push.tsx`). `tsc` čist.
 - [ ] **T1.5** `package.json` name `test` → `blahblah`, napisati pravi README
 - [ ] **T1.6** Jest setup + prvi smoke test (potvrda da test infra radi)
 - [ ] **T1.7** ESLint + prettier prolaze čisto

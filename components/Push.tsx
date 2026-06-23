@@ -92,7 +92,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
       });
     }
     if (type === "FOLLOW_REQUEST") {
-      router.push("/freind-requests");
+      router.push("/friend-requests");
     }
     onNotificationPress(notification);
   };

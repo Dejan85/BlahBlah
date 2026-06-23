@@ -281,7 +281,7 @@ Status: pretraga radi (🟡); Follow-vs-Message stanje po vezi ❓.
 - **Accept** (crveno) = prihvati + dodaje kao prijatelja · **Decline** (outline) = odbij.
 - Posle Accept/Decline stavka **nestaje**.
 
-Status: logika postoji (`FriendRequestContext`, `app/freind-requests`); ✅ accept/decline + realtime; 🟡 search po zahtevima, UI usklađivanje.
+Status: logika postoji (`FriendRequestContext`, `app/friend-requests`); ✅ accept/decline + realtime; 🟡 search po zahtevima, UI usklađivanje.
 
 ---
 

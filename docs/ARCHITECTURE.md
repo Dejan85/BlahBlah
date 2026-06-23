@@ -19,7 +19,7 @@ app/                  # Ekrani (expo-router, file-based routing)
   camera/             # Capture → preview → filter → send
   profile/            # Profil, profile-details/[id], followers/following
   notifications/      # Lista notifikacija
-  followers-list/ following-list/ friends-list/ freind-requests/
+  followers-list/ following-list/ friends-list/ friend-requests/
   settings/[id]
   search-detailed/
 

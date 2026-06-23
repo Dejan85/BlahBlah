@@ -383,7 +383,7 @@ const Chats: React.FC = () => {
           <View style={{ position: "relative" }}>
             <IconButton
               icon={<GroupChat />}
-              onPress={() => router.push("/freind-requests")}
+              onPress={() => router.push("/friend-requests")}
               size={34}
             />
             {friendRequestCount > 0 && (
