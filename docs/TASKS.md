@@ -42,7 +42,7 @@
 - [ ] **T3.1** 🧪 `lib/formatCount.ts` ("10k"/"10.1k" + zaokruživanje) + test
 - [ ] **T3.2** 🧪 `lib/blahScore.ts` (formula `(Blahs×4)+(Followers×0.8)+Streak Bonus`) + test (primer: 8. dan = 68)
 - [ ] **T3.3** ☁️ DB: `blah_score` kolone/tabela + migracija
-- [ ] **T3.4** Integracija u UI (prikaz skora, crveni Blahs stat — MyProfile 8.9) — *zavisi od T1.9 (jedan profil ekran), inače se prikaz mora dodati na 3 mesta*
+- [ ] **T3.4** Integracija u UI (prikaz skora, crveni Blahs stat — MyProfile 8.9) — *zavisi od T1.9 (skor ide na svoj profil `index.tsx`); pre konsolidacije bi se dupliralo na 3 mesta*
 
 **Streak + Recovery**
 - [ ] **T3.5** ⚡ 🧪 `lib/streak.ts` (obračun streak-a, reset pravila, dani 8/20/28/48) + test — *ivični slučajevi na granicama dana/timezone*
