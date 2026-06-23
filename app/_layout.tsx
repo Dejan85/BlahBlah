@@ -8,8 +8,6 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Text } from "react-native";
 import { FriendRequestProvider } from "@/context/FriendRequestContext";
-// Initialize Firebase (needed for push notifications on Android)
-import "@/utils/firebase";
 
 import { MessageProvider } from "@/context/MessageContext";
 import { CameraProvider } from "@/context/CameraContext";
