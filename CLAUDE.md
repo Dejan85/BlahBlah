@@ -21,7 +21,8 @@ Social media app (Expo / React Native), hibrid Snapchat + Instagram. Backend: **
 - **Logika u `lib/`**: poslovna logika (pravila/matematika/formatiranje) ide u čiste funkcije u `lib/` (BEZ React/Supabase/UI) + colocated `*.test.ts`. Detalji: ARCHITECTURE.md §2.5.
 - **Custom komponente**: tekst → `CustomText`, dugme → `CustomButton`, input → `CustomTextInput`. Ne goli RN `<Text>`/`<TextInput>`.
 - **Import alias** `@/*`, ne relativne `../../`.
-- **Posle svakog taska**: `npx tsc --noEmit` mora da prođe.
+- **Posle svakog taska**: `npx tsc --noEmit` mora da prođe, pa **commit + push**.
+- **Commit granularnost**: jedan task = jedan atomski commit (mapira na TASKS.md). Spoj više taskova samo kad su nerazdvojivi. Ne ostavljaj završen task nekomitovan.
 - **Package manager**: npm (ne yarn).
 - ⚡ Taskovi sa `⚡` u TASKS.md traže High effort — podseti me da dignem effort pre njih.
 
