@@ -34,7 +34,7 @@ constants/             # Colors, Dimensions
 assets/                # images (.svg + .png), fonts (Inter)
 ```
 
-> ℹ️ `lib/` još ne postoji — uvodi se za nove signature mehanike. Pravilo u §2.5.
+> ℹ️ `lib/` postoji (od T1.6) — zasad samo `smoke.test.ts` (potvrda test infre); prve prave čiste funkcije dolaze u Fazi 3 (T3.1+). Pravilo u §2.5.
 
 ---
 
