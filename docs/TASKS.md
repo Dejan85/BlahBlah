@@ -27,8 +27,8 @@
 - [x] **T1.5** ✅ `package.json` name `test` → `blahblah`. README zamenjen sa default Expo starter-a → pravi (tech stack, env varovi `EXPO_PUBLIC_SUPABASE_*`, komande, struktura, konvencije, link na `docs/`). `tsc` čist.
 - [x] **T1.6** ✅ Jest infra potvrđena: `@/*` alias mapiran u jest config (`moduleNameMapper`), `test` skripta → jednokratni `jest` (+ `test:watch`), smoke test `lib/smoke.test.ts` (TS+Jest+alias) prolazi 2/2. `tsc` čist.
 - [x] **T1.7** ✅ ESLint (`eslint-config-expo`) + Prettier postavljeni, prolaze čisto (0 errors). Popravljena 2 prava errora (rules-of-hooks `useImage`/FilterMenu, `__dirname`/metro.config). Očišćeno ~145 mrtvih importa/varijabli (`eslint-plugin-unused-imports` + ručno) + 5 display-name. `.prettierignore` preskače `docs/`/native/`*.md`. **Ostaje 41 `exhaustive-deps` warning — namerno** (popravka menja ponašanje). `tsc` čist, test 2/2.
-- [ ] **T1.8** 🧠 **Odluka: ciljana struktura profila.** Imamo TRI razišla ekrana: `profile/index.tsx` (731 l, samo svoj), `profile/test/[id].tsx` (1006 l, svoj+tuđi + follow/block/mute/report), `profile/profile-details/[id].tsx` (657 l, samo tuđi). ⚠️ Figma spec ih deli na **dva** ekrana — MyProfile 8.x (svoj) vs Profile 7.x (tuđi) — dok ih `test/[id].tsx` ujedinjuje u jedan. **Prva odluka: 1 ujedinjen ekran vs 2 ekrana po spec-u.** Pa feature-matrica (šta svaki od 3 fajla ima/nema) → izbor "base" fajla(ova). *Blokira T1.9.*
-- [ ] **T1.9** ⚡ **Konsolidacija profila** prema odluci iz T1.8 (1 ili 2 kanonska ekrana). Prebaci svu navigaciju na izabrani(e) ekran(e), obriši preostale, ukloni "test" naming (`// app/test/[id].tsx` ostatak iz prototipa). Reference za rewire: `chats/index.tsx:340`, `PostUserInfo.tsx:99/115`, `GridPost.tsx:390`, `search-detailed/index.tsx:514`, `followers/following/friends-list`. *Cross-cutting, dodiruje Profile 7.x + MyProfile 8.x — odblokira T3.4 (Blah score prikaz 8.9), T3.20 (premium gating 8.6/8.7), T3.21 (Who viewed 8.3).*
+- [x] **T1.8** ✅ **ODLUKA: 2 ekrana po spec-u** (Figma 7.x tuđi vs 8.x svoj). Base fajlovi: **svoj = `profile/index.tsx`** (grid radi, edit, realtime), **tuđi = `profile/profile-details/[id].tsx`** (grid radi, follow/block/message, private-lock, navigacija na dedicated followers/following liste). **Briše se `profile/test/[id].tsx`** (nedovršen unify prototip: grid zakomentarisan l.638/648, duplirani render blokovi). Ključ: app već de facto radi kao 2 ekrana — skoro sve rute idu na `profile-details/[id]`, samo 2 call-site-a gađaju `test/[id]`. Feature-matrica i obrazloženje: vidi §"Odluke" niže. *Odblokira T1.9.*
+- [ ] **T1.9** ⚡ **Konsolidacija profila — 2 ekrana** (odluka T1.8). Obriši `profile/test/[id].tsx`; prebaci njegova 2 call-site-a na `profile-details/[id]`: `chats/index.tsx:340`, `PostUserInfo.tsx:97`. Očisti zakomentarisane `test/[id]` reference (`PostUserInfo.tsx:66`, `GridPost.tsx:389`). Verifikuj da `index.tsx` (svoj) i `profile-details/[id]` (tuđi) pokrivaju spec 7.x/8.x; po potrebi izvuci deljeni avatar/stats/website blok u komponentu. *Cross-cutting — odblokira T3.4 (Blah score prikaz 8.9), T3.20 (premium gating 8.6/8.7), T3.21 (Who viewed 8.3).*
 
 ## FAZA 2 — Backup baze (🔧 ☁️)
 - [ ] **T2.1** `supabase db pull` → migracije u repo (verzionisanje šeme)
@@ -92,6 +92,20 @@
 ---
 
 ## 🧠 Odluke koje blokiraju određene taskove
+- **T1.8 (profil struktura)** — ✅ **REŠENO: 2 ekrana** po Figma spec-u (7.x tuđi / 8.x svoj), ne jedan unify ekran. Base: `profile/index.tsx` (svoj) + `profile/profile-details/[id].tsx` (tuđi); briše se `profile/test/[id].tsx`. Feature-matrica (✅=ima, ❌=nema/pokvareno):
+
+  | Feature | `index.tsx` svoj | `test/[id]` unify | `profile-details/[id]` tuđi |
+  |---|---|---|---|
+  | Grid postova | ✅ | ❌ zakomentarisan | ✅ |
+  | Edit profil | ✅ | ✅ | — |
+  | Follow/Message | — | ✅ | ✅ |
+  | Block/Mute/Report | — | ✅ | ✅ |
+  | Private lock (7.0) | — | — | ✅ |
+  | 3-tačke→Settings (8.0) | ❌ logout modal | ✅ | — |
+  | Realtime subscribe | ✅ | — | — |
+  | Stanje koda | čist, radi | prototip, grid mrtav | čist, radi |
+
+  **Zašto 2 a ne 1:** spec ih eksplicitno deli; razlike su suštinske (svoj: Settings/Eye/Recovery vs tuđi: Follow/Block/private-lock) → unify = komponenta prošarana `isOwnProfile ?` (baš `test/[id]`, haotičan i pokvaren). Najmanji rizik: oba base fajla rade, briše se samo 1 fajl + 2 rewire.
 - **T4.1 (auth)** — čeka odluku telefon-vs-email. *Ne blokira Fazu 0–3.*
 - **Vidljivost followers liste** za privatne naloge (Figma beleška) — utiče na Profile 7.3/7.4.
 
