@@ -39,6 +39,16 @@ allprojects {
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
     }
+
+    // Pin androidx.core to a version compatible with compileSdk 34 / AGP 8.5.0.
+    // Without this, a transitive dependency pulls core(-ktx):1.16.0 which
+    // requires compileSdk 35 / AGP 8.6+ and fails the build (Expo 51 / RN 0.75).
+    configurations.all {
+        resolutionStrategy {
+            force "androidx.core:core:1.13.1"
+            force "androidx.core:core-ktx:1.13.1"
+        }
+    }
 }
 // @generated begin expo-camera-import - expo prebuild (DO NOT MODIFY) sync-f244f4f3d8bf7229102e8f992b525b8602c74770
 def expoCameraMavenPath = new File(["node", "--print", "require.resolve('expo-camera/package.json')"].execute(null, rootDir).text.trim(), "../android/maven")

@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.nsimsic.blahblah",
-      "googleServicesFile": "./GoogleService-info.plist",
+      "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "This app needs access to location when open to find nearby users.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "This app needs access to location when open and in the background to find nearby users.",

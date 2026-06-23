@@ -12,12 +12,12 @@
 
 ---
 
-## FAZA 0 — Da app proradi (🔧, bez odluka) — *cilj: `expo start` se diže*
+## FAZA 0 — Da app proradi (🔧, bez odluka) — *cilj: `expo start` se diže* — ✅ ZAVRŠENA
 - [x] **T0.1** ✅ Izabran **npm** (obrisan `yarn.lock`, zadržan `package-lock.json`, `npm install` prošao)
 - [x] **T0.2** ✅ **Uklonjen `firebase` JS SDK** (mrtav kod): skinut iz `package.json`, obrisan `utils/firebase.ts`, uklonjen import iz `_layout.tsx` + re-export iz `utils/index.ts`. firebase nestao iz node_modules, TS greške 18→17.
-- [ ] **T0.3** Popraviti case-mismatch u `app.json` (`GoogleService-info.plist` → `GoogleService-Info.plist`)
+- [x] **T0.3** ✅ Popravljen case-mismatch u `app.json` (`GoogleService-info.plist` → `GoogleService-Info.plist`); poklapa se sa fajlom na disku
 - [x] **T0.4** ✅ ~~Popraviti firebase `appId`~~ — **otpalo** (uklonjeno u T0.2)
-- [ ] **T0.5** Pokrenuti app na telefonu/emulatoru — potvrda da se diže bez crash-a
+- [x] **T0.5** ✅ App pokrenut na realnom uređaju (Galaxy S24) — diže se bez crash-a do login ekrana. Usput: `expo install --fix` poravnao 7 paketa na SDK-51 verzije (rešilo native gesture-handler crash); Supabase bila pauzirana → reaktivirana.
 
 ## FAZA 1 — Čist kod / temelj (🔧)
 - [ ] **T1.1** Popraviti svih 18 TS grešaka → `tsc --noEmit` prolazi
