@@ -128,7 +128,7 @@ Aplikacija je obimna — ~298 fajlova, ~70 komponenti.
 3. **Faza 2 — Backup baze**
    - `supabase db pull` → commit migracija + RLS politika
 4. **Faza 3 — Polish**
-   - README, ime paketa, ukloni log curenje ključeva
+   - README, ime paketa · ~~ukloni log curenje ključeva~~ ✅ (T1.2)
 5. **Faza 4 — Novi feature-i** → vidi **`FEATURES.md`** (produktni spec sa Figme + status). Najveći gap-ovi (signature mehanike koje NE postoje):
    > ⚙️ **Sve Faza-4 mehanike idu kroz `lib/` sloj (čiste funkcije + `*.test.ts`)** — vidi `ARCHITECTURE.md` §2.5. Tako su testabilne `npm test`-om bez pokretanja app-a.
    1. Blah Score sistem (formula, real-time, formatiranje) — temelj
