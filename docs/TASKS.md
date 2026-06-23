@@ -21,7 +21,7 @@
 
 ## FAZA 1 — Čist kod / temelj (🔧)
 - [x] **T1.1** ✅ Popravljeno svih 17 TS grešaka → `tsc --noEmit` prolazi čisto. Join greške (notifications/followers/following): supabase to-one relacija tipovana kao niz → normalizacija na objekat / `as unknown` cast. `currentLocation` tipovan `Location.LocationObject | null`. `components/Acounts.tsx` (mrtav Supabase starter, nigde se ne importuje) obrisan.
-- [ ] **T1.2** Ukloniti curenje logova (Supabase ključevi u `utils/supabase.ts`)
+- [x] **T1.2** ✅ Uklonjeni `console.log` koji su ispisivali Supabase URL + anon key (prvih 50 char + dužina) u `utils/supabase.ts`. Zamenjeno tihim `console.warn` guard-om koji javlja samo da env nedostaje (bez vrednosti). Provereno: nigde drugde se ključevi ne loguju.
 - [ ] **T1.3** Očistiti mrtav/duplikat kod (`handleMessageReaction`, `profile/test/[id].tsx`)
 - [ ] **T1.4** Preimenovati folder `freind-requests` → `friend-requests` (+ rute)
 - [ ] **T1.5** `package.json` name `test` → `blahblah`, napisati pravi README
