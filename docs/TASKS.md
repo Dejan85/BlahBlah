@@ -4,7 +4,7 @@
 > Pravila: svaka mehanika ide kroz `lib/` + test (`ARCHITECTURE.md` §2.5). Posle svakog taska: `tsc` prolazi.
 > Reference: `FEATURES.md` (mehanike), `SCREENS.md` (ekrani), `PROJECT_STATUS.md` (status).
 
-**Ukupno: ~53 task** · Faza 0: 5 · Faza 1: 9 · Faza 2: 3 · Faza 3: 24 · Faza 4: 12
+**Ukupno: ~54 task** · Faza 0: 5 · Faza 1: 9 · Faza 2: 3 · Faza 3: 24 · Faza 4: 13
 
 **Legenda:** 🔧 tehnički (ja sam) · 🧠 traži tvoju odluku · 🧪 ima `lib/` test · ☁️ backend/DB job · ⚡ **preporučen High effort** (zamršena logika/ivični slučajevi — bumpni effort pre ovog taska)
 
@@ -87,6 +87,7 @@
 - [ ] **T4.10** 🧪 Grid layout algoritam (neparni 143px / parni 123px — MyProfile 8.0) + test
 - [ ] **T4.11** Boje u temu (`constants/Colors`) — cleanup hardkodovanih hex
 - [ ] **T4.12** Razbiti velike fajlove (`chat-room/[id].tsx` 1252 linije, `MessageContext` 650)
+- [ ] **T4.13** ☁️ **E2E sa Maestro** — smoke-test kritičnih flow-ova na emulatoru/uređaju (login → home, pošalji blah, recovery popup). *Namerno u Fazi 4:* flow-ovi su krhki dok se ekrani menjaju (profil se konsoliduje u T1.8/T1.9), pa E2E ima smisla tek na **stabilizovanim** flow-ovima. Maestro (YAML flow-ovi, lak setup, EAS Build CI integracija) izabran umesto Detox-a (teži setup) / Cypress-a (samo web build, ne pravi native). Pure logika ostaje pokrivena `lib/` Jest testovima (Faza 3); RNTL opciono za component ponašanje.
 
 ---
 
@@ -95,4 +96,4 @@
 - **Vidljivost followers liste** za privatne naloge (Figma beleška) — utiče na Profile 7.3/7.4.
 
 ## 📝 Napomena o proceni
-~53 task je **grubа** procena; neki Faza-3 taskovi (npr. ephemeral, premium gating) mogu da se razbiju na više pod-taskova kad uđemo u njih. Faza 3 je 50%+ ukupnog posla.
+~54 task je **grubа** procena; neki Faza-3 taskovi (npr. ephemeral, premium gating) mogu da se razbiju na više pod-taskova kad uđemo u njih. Faza 3 je 50%+ ukupnog posla.
