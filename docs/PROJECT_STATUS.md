@@ -168,3 +168,4 @@ npm run format
 - **2026-06-23** — MD fajlovi premešteni u `docs/` folder. Dodata **procena završenosti (§2.5): ~40% gotovo / ~60% ostalo**.
 - **2026-06-23** — Usvojeno pravilo: **logika odvojena od UI-ja u `lib/` sloju** (čiste funkcije + Jest testovi). Dokumentovano u `ARCHITECTURE.md` §2.5 + checklist. Cilj: autonomna verifikacija mehanika bez pokretanja app-a.
 - **2026-06-23** — Dodat **`TASKS.md`** — task-po-task redosled rada (~51 task kroz 5 faza). Glavni radni tracker odsad.
+- **2026-06-23** — ✅ **T0.1 + T0.2 + T0.4 gotovi.** Izabran npm (obrisan yarn.lock). Uklonjen firebase JS SDK (mrtav kod) — `package.json`, `utils/firebase.ts`, `_layout.tsx` import, `utils/index.ts` re-export. `npm install` prošao, firebase nestao iz node_modules, TS greške 18→17. Sledeće: T0.3 (plist case-mismatch).

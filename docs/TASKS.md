@@ -13,10 +13,10 @@
 ---
 
 ## FAZA 0 — Da app proradi (🔧, bez odluka) — *cilj: `expo start` se diže*
-- [ ] **T0.1** Izabrati JEDAN package manager (yarn ili npm), obrisati drugi lock, čist reinstall
-- [ ] **T0.2** **UKLONITI `firebase` JS SDK** (mrtav kod — nigde se ne koristi): obrisati `firebase` iz `package.json`, `utils/firebase.ts`, i `import "@/utils/firebase"` iz `_layout.tsx` → app se kompajlira. *(Push ide preko Expo-a, ne firebase-a. Android FCM = `google-services.json`, vidi T4.3.)*
+- [x] **T0.1** ✅ Izabran **npm** (obrisan `yarn.lock`, zadržan `package-lock.json`, `npm install` prošao)
+- [x] **T0.2** ✅ **Uklonjen `firebase` JS SDK** (mrtav kod): skinut iz `package.json`, obrisan `utils/firebase.ts`, uklonjen import iz `_layout.tsx` + re-export iz `utils/index.ts`. firebase nestao iz node_modules, TS greške 18→17.
 - [ ] **T0.3** Popraviti case-mismatch u `app.json` (`GoogleService-info.plist` → `GoogleService-Info.plist`)
-- [ ] **T0.4** ~~Popraviti firebase `appId`~~ — **otpada** (uklonjeno u T0.2; lažan config nestaje sa firebase-om)
+- [x] **T0.4** ✅ ~~Popraviti firebase `appId`~~ — **otpalo** (uklonjeno u T0.2)
 - [ ] **T0.5** Pokrenuti app na telefonu/emulatoru — potvrda da se diže bez crash-a
 
 ## FAZA 1 — Čist kod / temelj (🔧)
