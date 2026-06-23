@@ -96,8 +96,8 @@ Aplikacija je obimna — ~298 fajlova, ~70 komponenti.
   - [x] ~~`components/Acounts.tsx`~~ — mrtav Supabase starter (nigde se ne importuje), **obrisan**
   - [x] `app/profile/profile-followers/[id].tsx` i `profile-following/[id].tsx` — `as unknown as` cast
 - [ ] **Mrtav / duplikat kod**:
-  - [ ] `MessageContext` ima i `handleReaction` i neiskorišćen `handleMessageReaction`
-  - [ ] `app/profile/test/[id].tsx` izgleda kao duplikat profila — proveriti i obrisati (T1.3)
+  - [x] ~~`MessageContext` ima i `handleReaction` i neiskorišćen `handleMessageReaction`~~ ✅ **REŠENO (T1.3)** — `handleMessageReaction` (nikad eksportovan) uklonjen; pravi je `handleReaction`.
+  - [ ] ~~`app/profile/test/[id].tsx` izgleda kao duplikat profila — obrisati~~ ⚠️ **PRECIZIRANO (T1.3):** NIJE mrtav (koristi se: `chats/index.tsx:340`, `PostUserInfo.tsx:99`) i NIJE prost duplikat — to je **nedovršen prototip ujedinjenog profila** (komentar `// app/test/[id].tsx` odaje da je prevučen iz scratch `test/` rute). Postoje TRI razišla profil ekrana (`index.tsx` 731 l / `test/[id].tsx` 1006 l / `profile-details/[id].tsx` 657 l). → Konsolidacija izdvojena u **T1.8 (odluka) + T1.9 (spajanje)**.
   - [ ] folder `app/freind-requests/` ima **tipfeler** u imenu (→ `friend-requests`)
 - [ ] **`package.json` ime je još `"test"`** — preimenovati u `blahblah`
 - [ ] **README** je default Expo template — zameniti pravim opisom
@@ -118,7 +118,7 @@ Aplikacija je obimna — ~298 fajlova, ~70 komponenti.
 
 ## 6. 🎯 Redosled rada (roadmap)
 
-> ⚠️ **Jedini izvor redosleda rada je [`TASKS.md`](TASKS.md)** (task-po-task, ~51 task kroz 5 faza). Ovde se NE duplira lista da se ne bi raspadala — vidi TASKS.md za aktuelno stanje i sledeći task.
+> ⚠️ **Jedini izvor redosleda rada je [`TASKS.md`](TASKS.md)** (task-po-task, ~53 task kroz 5 faza). Ovde se NE duplira lista da se ne bi raspadala — vidi TASKS.md za aktuelno stanje i sledeći task.
 
 Faze ukratko (detalji u TASKS.md):
 - **Faza 0** — da app proradi (✅ ZAVRŠENA)
@@ -126,6 +126,16 @@ Faze ukratko (detalji u TASKS.md):
 - **Faza 2** — backup baze (migracije + RLS + TS tipovi)
 - **Faza 3** — signature mehanike (Blah Score → streak → recovery → ephemeral → premium) — najveći blok, sve kroz `lib/` + testovi (`ARCHITECTURE.md` §2.5)
 - **Faza 4** — polish (auth, push, settings, legal, multi-account)
+
+### 🔑 Signature mehanike — najveći gap (kontekst, ne redosled)
+> Ovo su **prepoznatljive mehanike proizvoda koje još NE postoje** i čine najveći deo preostalog posla. Produktni spec sa Figme: **[`FEATURES.md`](FEATURES.md)**. Sve idu kroz **`lib/` sloj** (čiste funkcije + `*.test.ts`, `ARCHITECTURE.md` §2.5) → testabilne `npm test`-om bez pokretanja app-a.
+1. **Blah Score** (formula, real-time, formatiranje) — temelj, od njega zavise streak/recovery/boost
+2. **Streak + Blah Recovery** (24/26h prozori, reset, recovery + plaćanje €1.99)
+3. **Chat Hours** tajmer (24h po konverzaciji)
+4. **Ephemeral chat** (24h default / 30d "Save chat") + auto-brisanje job
+5. **Randomizovane presence poruke** po vremenskim zonama
+6. **Premium / Blah+** pogodnosti (Who viewed profile, Score Boost +10%, Ad-free, stories 24h)
+7. **Multi-account / Switch** + kompletiranje notifikacija (svi tipovi + deep-link)
 
 ---
 
@@ -160,6 +170,7 @@ npm run format
 - **2026-06-23** — Dodat **`TASKS.md`** — task-po-task redosled rada (~51 task kroz 5 faza). Glavni radni tracker odsad.
 - **2026-06-23** — ✅ **T0.1 + T0.2 + T0.4 gotovi.** Izabran npm (obrisan yarn.lock). Uklonjen firebase JS SDK (mrtav kod) — `package.json`, `utils/firebase.ts`, `_layout.tsx` import, `utils/index.ts` re-export. `npm install` prošao, firebase nestao iz node_modules, TS greške 18→17. Commitovano (2e8ce61, 4d6d21c) + push na origin/develop.
 - **2026-06-23** — ✅ **T0.3 gotov.** Popravljen plist case-mismatch u `app.json`. Ostaje T0.5 (pokretanje app-a) za kraj Faze 0.
-- **2026-06-23** — ✅ **T1.1 gotov.** Svih 17 TS grešaka rešeno, `tsc --noEmit` prolazi čisto. (1) Supabase to-one join je tipovan kao niz a vraća objekat: u `notifications/index.tsx` normalizacija (`Array.isArray ? [0] : x`), u followers/following `as unknown as` cast. (2) `currentLocation` tipovan `Location.LocationObject | null` (profile/index + profile/test). (3) `components/Acounts.tsx` — mrtav Supabase starter (`<Push />` ne postoji, nigde se ne importuje) **obrisan**. **Watch-item:** pravi tip-fix za join-ove dolazi u T2.2 (`supabase gen types`) — sad su pragmatični cast-ovi. Fix u `profile/test/[id].tsx` je privremen — fajl se briše u T1.3.
+- **2026-06-23** — ✅ **T1.1 gotov.** Svih 17 TS grešaka rešeno, `tsc --noEmit` prolazi čisto. (1) Supabase to-one join je tipovan kao niz a vraća objekat: u `notifications/index.tsx` normalizacija (`Array.isArray ? [0] : x`), u followers/following `as unknown as` cast. (2) `currentLocation` tipovan `Location.LocationObject | null` (profile/index + profile/test). (3) `components/Acounts.tsx` — mrtav Supabase starter (`<Push />` ne postoji, nigde se ne importuje) **obrisan**. **Watch-item:** pravi tip-fix za join-ove dolazi u T2.2 (`supabase gen types`) — sad su pragmatični cast-ovi. Fix u `profile/test/[id].tsx` je privremen. *(Ispravka iz T1.3: fajl se NE briše — nije mrtav; konsolidacija profila prebačena u T1.8/T1.9.)*
 - **2026-06-23** — ✅ **T0.5 gotov → FAZA 0 ZAVRŠENA.** App build-ovan i pokrenut na realnom uređaju (Galaxy S24), diže se **bez crash-a** do login ekrana (Phone/Google/Facebook/Twitter). Tok: (1) native build prvo pukao na `react-native-gesture-handler:compileDebugKotlin` (`ViewManagerWithGeneratedInterface`) — uzrok: paketi odlutali od SDK 51. (2) `npx expo install --fix` poravnao 7 paketa (RN 0.75→0.74.5, gesture-handler 2.32→2.16, reanimated 3.16→3.10, skia 1.12→1.2.3, screens, pager-view, image-picker) → rebuild prošao (10min). (3) Telefon nije mogao na Metro preko WiFi → `adb reverse tcp:8081`. (4) App visio na splash-u jer je **Supabase projekat bio pauziran** (DNS `unknown host`) → korisnik reaktivirao, login ekran se učitao. **Watch-itemi za Fazu 1:** `@gorhom/bottom-sheet@5` traži reanimated ≥3.16 a sad je 3.10 (bottom-sheet rizik); potvrđeno curenje ključeva u logu (`utils/supabase.ts` → T1.2); TS greške ponovo proveriti posle promene verzija (T1.1).
 - **2026-06-23** — ✅ **T1.2 gotov.** Uklonjeno curenje logova u `utils/supabase.ts` — `console.log` koji su ispisivali Supabase URL + anon key (prvih 50 char + dužina) skinuti. Zamenjeni tihim `console.warn` guard-om koji javlja samo kad env varijable nedostaju, bez ispisivanja vrednosti. Provereno: ključevi se nigde drugde ne loguju. `tsc --noEmit` prolazi.
+- **2026-06-24** — ✅ **T1.3 gotov (uz preciziranje).** Uklonjen mrtav `handleMessageReaction` iz `context/MessageContext.tsx` (definisan ali nikad eksportovan; pravi reaction handler je `handleReaction`, koristi ga `chat-room/[id].tsx`). `tsc --noEmit` prolazi. **Otkriće:** `profile/test/[id].tsx` NIJE mrtav kod kako je task pretpostavljao — aktivno se koristi (`chats/index.tsx:340` za svoj profil, `PostUserInfo.tsx:99` za tuđi) i NIJE prost duplikat. Komentar `// app/test/[id].tsx` na vrhu odaje da je fajl prevučen iz scratch `test/` rute → to je **nedovršen prototip ujedinjenog profil ekrana**. Stvarno stanje: TRI razišla profil ekrana (`index.tsx` 731 l samo-svoj / `test/[id].tsx` 1006 l svoj+tuđi+block/mute/report / `profile-details/[id].tsx` 657 l samo-tuđi; `index` vs `test` diff = 654 ins / 379 del — fork, ne kopija). Konsolidacija je feature-adjacent posao (profil je mesto gde sleću Blah Score/Who viewed/premium gating) → izdvojena u **T1.8** (odluka + feature-matrica, kanonski ekran) i **T1.9** (⚡ spajanje u jedan + rewire navigacije + brisanje preostala dva). T1.9 odblokira T3.4/T3.20/T3.21. **Watch-item:** ne dodavati nove profil feature-e dok T1.9 nije gotov (inače se rade na 3 mesta).

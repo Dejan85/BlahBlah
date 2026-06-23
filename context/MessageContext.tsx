@@ -433,53 +433,6 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
       setLoading(false);
     }
   };
-  const handleMessageReaction = async (
-    messageId: string,
-    reaction: { emoji: string; name: string },
-    userId: string,
-  ) => {
-    try {
-      const { data, error } = await supabase.from("message_reactions").upsert({
-        message_id: messageId,
-        user_id: userId,
-        reaction_type: reaction.name,
-        reaction_emoji: reaction.emoji,
-      });
-
-      if (error) throw error;
-
-      // Update local messages state
-      setMessages((prevMessages) => {
-        return prevMessages.map((msg) => {
-          if (msg.id === messageId) {
-            const existingReactions = msg.reactions || [];
-            const reactionIndex = existingReactions.findIndex(
-              (r) => r.name === reaction.name,
-            );
-
-            if (reactionIndex > -1) {
-              // Update existing reaction
-              existingReactions[reactionIndex].count += 1;
-              existingReactions[reactionIndex].users.push(userId);
-            } else {
-              // Add new reaction
-              existingReactions.push({
-                emoji: reaction.emoji,
-                name: reaction.name,
-                count: 1,
-                users: [userId],
-              });
-            }
-
-            return { ...msg, reactions: existingReactions };
-          }
-          return msg;
-        });
-      });
-    } catch (error) {
-      console.error("Error handling reaction:", error);
-    }
-  };
   // Send a message
   // Add this to your sendMessage function in MessageProvider
   const sendMessage = async (

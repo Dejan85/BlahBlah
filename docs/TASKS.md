@@ -4,7 +4,7 @@
 > Pravila: svaka mehanika ide kroz `lib/` + test (`ARCHITECTURE.md` §2.5). Posle svakog taska: `tsc` prolazi.
 > Reference: `FEATURES.md` (mehanike), `SCREENS.md` (ekrani), `PROJECT_STATUS.md` (status).
 
-**Ukupno: ~51 task** · Faza 0: 5 · Faza 1: 7 · Faza 2: 3 · Faza 3: 24 · Faza 4: 12
+**Ukupno: ~53 task** · Faza 0: 5 · Faza 1: 9 · Faza 2: 3 · Faza 3: 24 · Faza 4: 12
 
 **Legenda:** 🔧 tehnički (ja sam) · 🧠 traži tvoju odluku · 🧪 ima `lib/` test · ☁️ backend/DB job · ⚡ **preporučen High effort** (zamršena logika/ivični slučajevi — bumpni effort pre ovog taska)
 
@@ -22,11 +22,13 @@
 ## FAZA 1 — Čist kod / temelj (🔧)
 - [x] **T1.1** ✅ Popravljeno svih 17 TS grešaka → `tsc --noEmit` prolazi čisto. Join greške (notifications/followers/following): supabase to-one relacija tipovana kao niz → normalizacija na objekat / `as unknown` cast. `currentLocation` tipovan `Location.LocationObject | null`. `components/Acounts.tsx` (mrtav Supabase starter, nigde se ne importuje) obrisan.
 - [x] **T1.2** ✅ Uklonjeni `console.log` koji su ispisivali Supabase URL + anon key (prvih 50 char + dužina) u `utils/supabase.ts`. Zamenjeno tihim `console.warn` guard-om koji javlja samo da env nedostaje (bez vrednosti). Provereno: nigde drugde se ključevi ne loguju.
-- [ ] **T1.3** Očistiti mrtav/duplikat kod (`handleMessageReaction`, `profile/test/[id].tsx`)
+- [x] **T1.3** ✅ Uklonjen mrtav `handleMessageReaction` iz `MessageContext` (nikad eksportovan; pravi je `handleReaction`). `tsc` čist. ⚠️ `profile/test/[id].tsx` **NIJE** mrtav kod — koristi se (chats/index.tsx, PostUserInfo.tsx) i nije duplikat: to je nedovršen prototip ujedinjenog profila → izdvojeno u **T1.8 + T1.9**.
 - [ ] **T1.4** Preimenovati folder `freind-requests` → `friend-requests` (+ rute)
 - [ ] **T1.5** `package.json` name `test` → `blahblah`, napisati pravi README
 - [ ] **T1.6** Jest setup + prvi smoke test (potvrda da test infra radi)
 - [ ] **T1.7** ESLint + prettier prolaze čisto
+- [ ] **T1.8** 🧠 **Odluka: kanonski profil ekran.** Imamo TRI razišla ekrana za isti posao: `profile/index.tsx` (731 l, samo svoj), `profile/test/[id].tsx` (1006 l, svoj+tuđi + follow/block/mute/report), `profile/profile-details/[id].tsx` (657 l, samo tuđi). Napravi feature-matricu (šta svaki ima/nema) i izaberi "base" za spajanje. *Blokira T1.9.*
+- [ ] **T1.9** ⚡ **Konsolidacija profila u jedan ekran** (svoj + tuđi preko opcionog `id`). Prebaci svu navigaciju na izabrani kanonski ekran, obriši preostala dva, ukloni "test" naming (`// app/test/[id].tsx` ostatak iz prototipa). Reference za rewire: `chats/index.tsx:340`, `PostUserInfo.tsx:99/115`, `GridPost.tsx:390`, `search-detailed/index.tsx:514`, `followers/following/friends-list`. *Cross-cutting, dodiruje feature ekrane MyProfile 8.x — odblokira T3.4 (Blah score prikaz), T3.20 (premium gating 8.6/8.7), T3.21 (Who viewed 8.3).*
 
 ## FAZA 2 — Backup baze (🔧 ☁️)
 - [ ] **T2.1** `supabase db pull` → migracije u repo (verzionisanje šeme)
@@ -40,7 +42,7 @@
 - [ ] **T3.1** 🧪 `lib/formatCount.ts` ("10k"/"10.1k" + zaokruživanje) + test
 - [ ] **T3.2** 🧪 `lib/blahScore.ts` (formula `(Blahs×4)+(Followers×0.8)+Streak Bonus`) + test (primer: 8. dan = 68)
 - [ ] **T3.3** ☁️ DB: `blah_score` kolone/tabela + migracija
-- [ ] **T3.4** Integracija u UI (prikaz skora, crveni Blahs stat — MyProfile 8.9)
+- [ ] **T3.4** Integracija u UI (prikaz skora, crveni Blahs stat — MyProfile 8.9) — *zavisi od T1.9 (jedan profil ekran), inače se prikaz mora dodati na 3 mesta*
 
 **Streak + Recovery**
 - [ ] **T3.5** ⚡ 🧪 `lib/streak.ts` (obračun streak-a, reset pravila, dani 8/20/28/48) + test — *ivični slučajevi na granicama dana/timezone*
@@ -66,8 +68,8 @@
 - [ ] **T3.19** ☁️ Close-By discovery UI + Supabase geo upit (labela "Close By")
 
 **Premium / Blah+**
-- [ ] **T3.20** ⚡ Premium gating sistem (provera Blah+ statusa) + paywall integracija (4.6/8.6/8.7) — *cross-cutting, dodiruje ceo app*
-- [ ] **T3.21** ☁️ Who viewed profile (tracking poseta + lista 8 dana) — MyProfile 8.3
+- [ ] **T3.20** ⚡ Premium gating sistem (provera Blah+ statusa) + paywall integracija (4.6/8.6/8.7) — *cross-cutting, dodiruje ceo app; profil deo zavisi od T1.9*
+- [ ] **T3.21** ☁️ Who viewed profile (tracking poseta + lista 8 dana) — MyProfile 8.3 — *zavisi od T1.9*
 - [ ] **T3.22** Score Boost +10% za premium korisnike
 - [ ] **T3.23** Stories 24h expiry + "Lock 3 posts forever" gating
 - [ ] **T3.24** Ad-free (reklamni sistem placeholder + gating)
@@ -93,4 +95,4 @@
 - **Vidljivost followers liste** za privatne naloge (Figma beleška) — utiče na Profile 7.3/7.4.
 
 ## 📝 Napomena o proceni
-~51 task je **grubа** procena; neki Faza-3 taskovi (npr. ephemeral, premium gating) mogu da se razbiju na više pod-taskova kad uđemo u njih. Faza 3 je 50%+ ukupnog posla.
+~53 task je **grubа** procena; neki Faza-3 taskovi (npr. ephemeral, premium gating) mogu da se razbiju na više pod-taskova kad uđemo u njih. Faza 3 je 50%+ ukupnog posla.
