@@ -1,6 +1,6 @@
 # 📋 BlahBlah — Status projekta
 
-> Poslednje ažuriranje: **2026-06-23**
+> Poslednje ažuriranje: **2026-06-24**
 > Grana: `develop` · Glavna grana: `master`
 > Ovaj fajl je "single source of truth" — odakle znamo gde stojimo i šta sledi.
 
@@ -9,7 +9,7 @@
 ## 1. Šta je BlahBlah
 
 Social media mobilna aplikacija (Expo / React Native), hibrid **Snapchat + Instagram**.
-Stanje: **Faza 0 završena** — app se build-uje i diže na uređaju bez crash-a (vidi §8 dnevnik).
+Stanje: **Faza 0 završena**, **Faza 1 u toku** (T1.1–T1.6 gotovi; ostaju T1.7 lint, T1.8/T1.9 konsolidacija profila). App se build-uje i diže na uređaju bez crash-a (vidi §8 dnevnik).
 
 ### Tech stack
 - **Expo 51** + **expo-router** (file-based routing, `app/` folder)
@@ -67,7 +67,7 @@ Aplikacija je obimna — ~298 fajlova, ~70 komponenti.
 1. **"Iluzija od 70%."** ~298 fajlova i app *deluje* skoro gotovo, ali to su uglavnom **CRUD ekrani** (najlakši deo). Ono što BlahBlah čini jedinstvenim (Blah Score, streak, recovery, ephemeral chat, chat hours, tap-to-view, who-viewed, premium gating, multi-account) je **skoro 0%** — a to je najteži i najrizičniji deo.
 2. **Po vremenu/trudu je gore od 40/60.** Preostalo sadrži game-mehaniku (skorovanje, tajmeri), ephemeral sistem, plaćanja i pozadinske job-ove (auto-brisanje, streak reset). Realno **~30% urađeno / 70% ostalo** mereno satima.
 3. **Deo "urađenog" je zapravo rework.** Auth je email-first (spec traži telefon-first); chat je persistentan (spec traži ephemeral). Nije "dovrši", nego "prepravi".
-4. ~~App trenutno ni ne build-uje~~ ✅ **Build/boot rešeni u Fazi 0** (firebase JS SDK uklonjen, verzije poravnate na SDK 51). Ali i dalje: nema migracija baze u repou + nema testova. Temelj još nije čvrst.
+4. ~~App trenutno ni ne build-uje~~ ✅ **Build/boot rešeni u Fazi 0** (firebase JS SDK uklonjen, verzije poravnate na SDK 51). Ali i dalje: nema migracija baze u repou; test infra postoji (T1.6) ali su prave mehanike još netestiranе (tek smoke test). Temelj još nije čvrst.
 
 ### Gruba projekcija po fazama
 - **Faza 0–1** (da radi + čist kod): ~1 nedelja
