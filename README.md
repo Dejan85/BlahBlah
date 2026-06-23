@@ -1,50 +1,80 @@
-# Welcome to your Expo app 👋
+# BlahBlah
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Social media app — hibrid **Snapchat + Instagram** — građen u **Expo / React Native** sa **Supabase** backendom.
 
-## Get started
+Signature mehanike: **Blah Score**, **streak + recovery**, **chat hours**, **ephemeral chat**, **presence / close-by** discovery i **Blah+** premium.
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## Tech stack
 
-2. Start the app
+- **Expo SDK 51** + **expo-router** (file-based routing, typed routes)
+- **React Native 0.74** / React 18
+- **Supabase** (`@supabase/supabase-js`) — auth, baza, storage, realtime
+- **TanStack Query** za server state
+- **react-hook-form** + **yup** za forme
+- **react-native-purchases** (RevenueCat) za Blah+ / recovery plaćanja
+- **Jest** (`jest-expo`) za testove čiste logike u `lib/`
 
-   ```bash
-    npx expo start
-   ```
+## Preduslovi
 
-In the output, you'll find options to open the app in a
+- Node.js (LTS) + **npm** (ne yarn — vidi `CLAUDE.md`)
+- Expo Go ili dev build na uređaju/emulatoru
+- `.env` sa Supabase kredencijalima:
+  ```
+  EXPO_PUBLIC_SUPABASE_URL=...
+  EXPO_PUBLIC_SUPABASE_ANON_KEY=...
+  ```
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Pokretanje
 
 ```bash
-npm run reset-project
+npm install        # instalacija zavisnosti
+npm start          # expo start (dev menu — bira se platforma)
+npm run android    # native Android build
+npm run ios        # native iOS build
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Razvojne komande
 
-## Learn more
+```bash
+npx tsc --noEmit   # type check (mora da prolazi posle svakog taska)
+npm test           # Jest testovi (lib/)
+npm run lint       # expo lint
+npm run format     # prettier --write .
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+## Struktura projekta
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```
+app/          Ekrani (expo-router, file-based routing)
+components/   Reusable UI + feature komponente (CustomText/Button/TextInput…)
+context/      React Context provideri (global state)
+hooks/        Custom hooks (useLocation, usePresence, useTypingStatus…)
+lib/          ⭐ Čista poslovna logika — pure funkcije + colocated *.test.ts
+utils/        Supabase i notification klijenti
+types/        TypeScript tipovi (barrel preko index.ts)
+constants/    Colors, Dimensions
+assets/       Slike (.svg/.png), fontovi (Inter)
+docs/         📖 Single source of truth — vidi ispod
+```
 
-## Join the community
+## Konvencije (kratko)
 
-Join our community of developers creating universal apps.
+- **Poslovna logika ide u `lib/`** kao čiste funkcije (bez React/Supabase/UI) + test. Detalji: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) §2.5.
+- **Custom komponente**, ne goli RN: tekst → `CustomText`, dugme → `CustomButton`, input → `CustomTextInput`.
+- **Import alias `@/*`**, ne relativne `../../`.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Dokumentacija
+
+`docs/` je single source of truth — pročitaj relevantan fajl pre rada:
+
+| Fajl | Sadržaj |
+|---|---|
+| [docs/TASKS.md](docs/TASKS.md) | Task-po-task tracker, redosled rada |
+| [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | Status, blokeri, roadmap, dnevnik |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Folderi, konvencije, `lib/` pravilo |
+| [docs/FEATURES.md](docs/FEATURES.md) | Spec mehanika (Blah Score, streak, ephemeral…) |
+| [docs/SCREENS.md](docs/SCREENS.md) | Screen-by-screen spec sa Figme |
+
+Workflow i pravila rada (definicija završenog taska): [CLAUDE.md](CLAUDE.md).

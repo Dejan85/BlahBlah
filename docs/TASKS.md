@@ -24,7 +24,7 @@
 - [x] **T1.2** ✅ Uklonjeni `console.log` koji su ispisivali Supabase URL + anon key (prvih 50 char + dužina) u `utils/supabase.ts`. Zamenjeno tihim `console.warn` guard-om koji javlja samo da env nedostaje (bez vrednosti). Provereno: nigde drugde se ključevi ne loguju.
 - [x] **T1.3** ✅ Uklonjen mrtav `handleMessageReaction` iz `MessageContext` (nikad eksportovan; pravi je `handleReaction`). `tsc` čist. ⚠️ `profile/test/[id].tsx` **NIJE** mrtav kod — koristi se (chats/index.tsx, PostUserInfo.tsx) i nije duplikat: to je nedovršen prototip ujedinjenog profila → izdvojeno u **T1.8 + T1.9**.
 - [x] **T1.4** ✅ Preimenovan folder `freind-requests` → `friend-requests` (`git mv`, čuva istoriju) + ažurirane rute (`chats/index.tsx`, `Push.tsx`). `tsc` čist.
-- [ ] **T1.5** `package.json` name `test` → `blahblah`, napisati pravi README
+- [x] **T1.5** ✅ `package.json` name `test` → `blahblah`. README zamenjen sa default Expo starter-a → pravi (tech stack, env varovi `EXPO_PUBLIC_SUPABASE_*`, komande, struktura, konvencije, link na `docs/`). `tsc` čist.
 - [ ] **T1.6** Jest setup + prvi smoke test (potvrda da test infra radi)
 - [ ] **T1.7** ESLint + prettier prolaze čisto
 - [ ] **T1.8** 🧠 **Odluka: ciljana struktura profila.** Imamo TRI razišla ekrana: `profile/index.tsx` (731 l, samo svoj), `profile/test/[id].tsx` (1006 l, svoj+tuđi + follow/block/mute/report), `profile/profile-details/[id].tsx` (657 l, samo tuđi). ⚠️ Figma spec ih deli na **dva** ekrana — MyProfile 8.x (svoj) vs Profile 7.x (tuđi) — dok ih `test/[id].tsx` ujedinjuje u jedan. **Prva odluka: 1 ujedinjen ekran vs 2 ekrana po spec-u.** Pa feature-matrica (šta svaki od 3 fajla ima/nema) → izbor "base" fajla(ova). *Blokira T1.9.*
