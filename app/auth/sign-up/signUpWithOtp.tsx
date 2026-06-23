@@ -1,23 +1,23 @@
 // SignUpWithPhone.tsx
-import React, { useState } from "react";
-import { View, Text, Alert, StyleSheet, Pressable } from "react-native";
-import { supabase } from "@/utils/supabase";
-import { useRouter } from "expo-router";
-import CustomTextInput from "@/components/CustomTextInput";
+import React, { useState } from 'react';
+import { View, Text, Alert, StyleSheet, Pressable } from 'react-native';
+import { supabase } from '@/utils/supabase';
+import { useRouter } from 'expo-router';
+import CustomTextInput from '@/components/CustomTextInput';
 
 const SignUpWithPhone = () => {
-  const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
+  const [phone, setPhone] = useState('');
+  const [otp, setOtp] = useState('');
   const [isOtpSent, setIsOtpSent] = useState(false);
   const router = useRouter();
   const requestOtp = async () => {
     const { error } = await supabase.auth.signInWithOtp({ phone });
 
     if (error) {
-      Alert.alert("Error", error.message);
+      Alert.alert('Error', error.message);
     } else {
       setIsOtpSent(true);
-      Alert.alert("OTP sent!", "Check your phone for the verification code.");
+      Alert.alert('OTP sent!', 'Check your phone for the verification code.');
     }
   };
 
@@ -25,15 +25,15 @@ const SignUpWithPhone = () => {
     const { error } = await supabase.auth.verifyOtp({
       phone,
       token: otp,
-      type: "sms",
+      type: 'sms',
     });
 
     if (error) {
-      Alert.alert("Error", error.message);
+      Alert.alert('Error', error.message);
     } else {
-      Alert.alert("Success", "You have signed up successfully!");
+      Alert.alert('Success', 'You have signed up successfully!');
       // Navigate to your home screen or another page after successful signup
-      router.replace("/auth/sign-up/permissionsStep");
+      router.replace('/auth/sign-up/permissionsStep');
     }
   };
 
@@ -48,7 +48,7 @@ const SignUpWithPhone = () => {
         value={phone}
         onChangeText={setPhone}
         autoCapitalize="none"
-        selectionColor={"#000"}
+        selectionColor={'#000'}
         textStyle={styles.textInputStyle}
         returnKeyType="done"
         placeholderTextColor="#ccc"
@@ -70,7 +70,7 @@ const SignUpWithPhone = () => {
             value={otp}
             onChangeText={setOtp}
             keyboardType="number-pad"
-            selectionColor={"#000"}
+            selectionColor={'#000'}
             textStyle={styles.textInputStyle}
           />
           <Pressable
@@ -88,33 +88,33 @@ const SignUpWithPhone = () => {
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: "center",
+    justifyContent: 'center',
 
-    backgroundColor: "#FF325E",
+    backgroundColor: '#FF325E',
   },
   textInputStyle: {
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
     fontSize: 14,
-    color: "#000",
+    color: '#000',
   },
   headerText: {
     fontSize: 24,
-    fontWeight: "bold",
-    color: "#fff",
-    textAlign: "center",
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
     marginBottom: 20,
   },
   inputContainer: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 50,
     marginVertical: 15,
     paddingHorizontal: 14,
   },
   title: {
     fontSize: 14,
-    textAlign: "center",
-    fontFamily: "InterMedium",
-    color: "#fff",
+    textAlign: 'center',
+    fontFamily: 'InterMedium',
+    color: '#fff',
   },
 
   input: {
@@ -123,19 +123,19 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 20,
-    alignContent: "center",
-    alignSelf: "center",
+    alignContent: 'center',
+    alignSelf: 'center',
     borderWidth: 2,
-    borderColor: "#fff",
+    borderColor: '#fff',
     borderRadius: 50,
     paddingHorizontal: 30,
     paddingVertical: 14,
   },
   btnText: {
-    fontFamily: "InterSemiBold",
+    fontFamily: 'InterSemiBold',
     fontSize: 18,
-    color: "#fff",
-    textAlign: "center",
+    color: '#fff',
+    textAlign: 'center',
   },
 });
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -6,20 +6,20 @@ import {
   Pressable,
   Text,
   Alert,
-} from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { useRouter } from "expo-router";
-import { supabase } from "@/utils/supabase";
-import { Entypo } from "@expo/vector-icons";
+} from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { useRouter } from 'expo-router';
+import { supabase } from '@/utils/supabase';
+import { Entypo } from '@expo/vector-icons';
 
 const DatePickerScreen = () => {
   const [date, setDate] = useState(new Date());
-  const [showPicker, setShowPicker] = useState(Platform.OS === "ios");
+  const [showPicker, setShowPicker] = useState(Platform.OS === 'ios');
   const router = useRouter();
 
   const onChange = (event: any, selectedDate?: Date) => {
     const currentDate = selectedDate || date;
-    if (Platform.OS === "android") {
+    if (Platform.OS === 'android') {
       setShowPicker(false);
     }
     setDate(currentDate);
@@ -30,31 +30,31 @@ const DatePickerScreen = () => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!user) throw new Error("No user found");
+      if (!user) throw new Error('No user found');
 
       const { error } = await supabase
-        .from("profiles")
+        .from('profiles')
         .update({
-          birthday: date.toISOString().split("T")[0],
+          birthday: date.toISOString().split('T')[0],
           updated_at: new Date().toISOString(),
         })
-        .eq("id", user.id);
+        .eq('id', user.id);
 
       if (error) throw error;
 
-      router.push("/auth/sign-up/username");
+      router.push('/auth/sign-up/username');
     } catch (error) {
-      console.error("Error saving date:", error);
-      Alert.alert("Error", "Failed to save birthday");
+      console.error('Error saving date:', error);
+      Alert.alert('Error', 'Failed to save birthday');
     }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
-        Birthday date?{"\n"}
-        Your friends need a reason to party help them out!{" "}
-        <Entypo name="cake" size={16} color={"#fff"} style={styles.icon} />
+        Birthday date?{'\n'}
+        Your friends need a reason to party help them out!{' '}
+        <Entypo name="cake" size={16} color={'#fff'} style={styles.icon} />
       </Text>
 
       <Pressable style={styles.dateButton} onPress={() => setShowPicker(true)}>
@@ -67,7 +67,7 @@ const DatePickerScreen = () => {
             testID="dateTimePicker"
             value={date}
             mode="date"
-            display={Platform.OS === "ios" ? "spinner" : "default"}
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
             onChange={onChange}
             maximumDate={new Date()}
             minimumDate={new Date(1900, 0, 1)}
@@ -87,15 +87,15 @@ const DatePickerScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FF325E",
+    backgroundColor: '#FF325E',
     padding: 20,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   title: {
     fontSize: 20,
-    textAlign: "center",
-    fontFamily: "InterMedium",
-    color: "#fff",
+    textAlign: 'center',
+    fontFamily: 'InterMedium',
+    color: '#fff',
     marginBottom: 20,
     paddingHorizontal: 87,
   },
@@ -103,49 +103,49 @@ const styles = StyleSheet.create({
     paddingLeft: 3,
   },
   pickerContainer: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 10,
     marginVertical: 20,
-    ...(Platform.OS === "ios" && {
+    ...(Platform.OS === 'ios' && {
       paddingVertical: 20,
     }),
   },
   datePicker: {
     height: 210,
-    ...(Platform.OS === "ios" && {
-      width: "100%",
+    ...(Platform.OS === 'ios' && {
+      width: '100%',
       borderRadius: 0,
     }),
   },
   dateButton: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     padding: 15,
     borderRadius: 50,
     marginVertical: 20,
-    alignItems: "center",
+    alignItems: 'center',
   },
   dateButtonText: {
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
     fontSize: 16,
-    color: "#000",
+    color: '#000',
   },
   buttonContainer: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 60, // Distance from the bottom
     left: 0, // Start at the left edge
     right: 0, // End at the right edge
-    alignItems: "center", // Center child content horizontally
+    alignItems: 'center', // Center child content horizontally
   },
   btnText: {
-    fontFamily: "InterSemiBold",
+    fontFamily: 'InterSemiBold',
     fontSize: 18,
-    color: "#fff",
-    textAlign: "center",
+    color: '#fff',
+    textAlign: 'center',
   },
   line: {
-    width: "100%",
+    width: '100%',
     height: 2,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     marginBottom: 34,
   },
 });

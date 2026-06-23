@@ -1,6 +1,6 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
-import CustomTextInput from "./CustomTextInput";
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import CustomTextInput from './CustomTextInput';
 
 interface SearchComponentProps {
   searchQuery: string;
@@ -27,25 +27,25 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
 
 const styles = StyleSheet.create({
   searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
 
-    width: "75%",
-    justifyContent: "center",
-    alignContent: "center",
-    alignSelf: "center",
+    width: '75%',
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignSelf: 'center',
   },
   searchInput: {
     flex: 1,
     paddingVertical: 7,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 35,
     paddingHorizontal: 15,
 
     borderWidth: 2,
-    borderColor: "#B3B3B3",
+    borderColor: '#B3B3B3',
     fontSize: 14,
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
   },
   cameraButton: {
     padding: 10,

@@ -1,8 +1,8 @@
-import React, { useRef, useImperativeHandle, forwardRef } from "react";
-import { StyleSheet, View } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import BottomSheet, { BottomSheetFlashList } from "@gorhom/bottom-sheet";
-import { ListRenderItem } from "@shopify/flash-list";
+import React, { useRef, useImperativeHandle, forwardRef } from 'react';
+import { StyleSheet } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import BottomSheet, { BottomSheetFlashList } from '@gorhom/bottom-sheet';
+import { ListRenderItem } from '@shopify/flash-list';
 
 interface UserListBottomSheetProps<T> {
   visible?: boolean;
@@ -24,15 +24,14 @@ const UserListBottomSheet = forwardRef<
 >(
   (
     {
-      visible,
       onClose,
       data,
       renderItem,
       keyExtractor,
-      snapPoints = ["25%", "50%"],
+      snapPoints = ['25%', '50%'],
       estimatedItemSize = 43.3,
     },
-    ref,
+    ref
   ) => {
     // hooks
     const sheetRef = useRef<BottomSheet>(null);
@@ -64,8 +63,10 @@ const UserListBottomSheet = forwardRef<
         </BottomSheet>
       </GestureHandlerRootView>
     );
-  },
+  }
 );
+
+UserListBottomSheet.displayName = 'UserListBottomSheet';
 
 const styles = StyleSheet.create({
   container: {
@@ -76,7 +77,7 @@ const styles = StyleSheet.create({
   itemContainer: {
     padding: 6,
     margin: 6,
-    backgroundColor: "#eee",
+    backgroundColor: '#eee',
   },
 });
 

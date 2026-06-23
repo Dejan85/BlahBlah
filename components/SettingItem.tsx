@@ -1,5 +1,5 @@
-import React from "react";
-import { StyleProp, TextStyle, ViewStyle } from "react-native";
+import React from 'react';
+import { StyleProp, TextStyle, ViewStyle } from 'react-native';
 import {
   View,
   Text,
@@ -7,9 +7,9 @@ import {
   Switch,
   Dimensions,
   Platform,
-} from "react-native";
+} from 'react-native';
 
-import { StatusBar } from "react-native";
+import { StatusBar } from 'react-native';
 
 const SettingItem = ({
   icon,
@@ -55,7 +55,7 @@ const SettingItem = ({
       <Switch
         value={value}
         onValueChange={onValueChange}
-        trackColor={{ false: "#767577", true: "#FF325E" }}
+        trackColor={{ false: '#767577', true: '#FF325E' }}
       />
     )}
   </View>
@@ -64,11 +64,11 @@ const SettingItem = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0,
+    backgroundColor: '#fff',
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight || 0 : 0,
   },
   closeButton: {
-    position: "absolute",
+    position: 'absolute',
     left: 36,
     top: 36,
   },
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     marginTop: 45,
   },
   profileSection: {
-    alignItems: "center",
+    alignItems: 'center',
     marginTop: 45,
     marginBottom: 40,
   },
@@ -90,40 +90,40 @@ const styles = StyleSheet.create({
   },
   username: {
     fontSize: 18,
-    fontFamily: "InterBold",
-    color: "#000",
+    fontFamily: 'InterBold',
+    color: '#000',
   },
   settingsSection: {},
   settingItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingLeft: 46,
     paddingRight: 37,
     paddingVertical: 10,
   },
   settingLeft: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   settingTextContainer: {
     marginLeft: 12,
   },
   settingLabel: {
     fontSize: 15,
-    fontFamily: "InterMedium",
-    color: "#000",
+    fontFamily: 'InterMedium',
+    color: '#000',
   },
   settingSubtitle: {
     fontSize: 8,
-    fontFamily: "InterRegular",
-    color: "#B3B3B3",
+    fontFamily: 'InterRegular',
+    color: '#B3B3B3',
   },
   mediaSection: {},
   sectionTitle: {
     fontSize: 15,
-    fontFamily: "InterMedium",
-    color: "#000",
+    fontFamily: 'InterMedium',
+    color: '#000',
     paddingLeft: 10,
     paddingBottom: 5,
   },
@@ -133,15 +133,15 @@ const styles = StyleSheet.create({
     margin: 2,
   },
   imageItem: {
-    width: (Dimensions.get("window").width - 34) / 3,
+    width: (Dimensions.get('window').width - 34) / 3,
     aspectRatio: 1,
     marginBottom: 2,
     marginRight: 2,
     borderRadius: 20,
   },
   chatImage: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     borderRadius: 10,
   },
 });

@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef, useEffect } from "react";
+import React, { useState, useContext, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,18 +7,18 @@ import {
   Dimensions,
   TouchableOpacity,
   Animated,
-} from "react-native";
+} from 'react-native';
 import {
   Canvas,
   Image as SkiaImage,
   useImage,
   ColorMatrix,
-} from "@shopify/react-native-skia";
-import { CameraContext } from "@/context/CameraContext";
-import { AntDesign } from "@expo/vector-icons";
-import { FilterOption, filterOptions } from "@/types";
+} from '@shopify/react-native-skia';
+import { CameraContext } from '@/context/CameraContext';
+import { AntDesign } from '@expo/vector-icons';
+import { FilterOption, filterOptions } from '@/types';
 
-const { width: screenWidth } = Dimensions.get("window");
+const { width: screenWidth } = Dimensions.get('window');
 const ITEM_SIZE = screenWidth * 0.72;
 const SPACING = 15;
 const EMPTY_ITEM_SIZE = (screenWidth - ITEM_SIZE) / 2;
@@ -34,12 +34,14 @@ const FilterItem = React.memo(
     scrollX: Animated.Value;
     imageUri: string;
   }) => {
+    // Hook mora pre svakog ranog return-a (rules-of-hooks)
+    const image = useImage(imageUri);
+
     if ((item as any).empty) {
       return <View style={{ width: EMPTY_ITEM_SIZE }} />;
     }
 
     const filter = item as FilterOption;
-    const image = useImage(imageUri);
 
     if (!image) return null;
 
@@ -60,8 +62,10 @@ const FilterItem = React.memo(
         </Animated.View>
       </Animated.View>
     );
-  },
+  }
 );
+
+FilterItem.displayName = 'FilterItem';
 
 export const FilterCarousel: React.FC<{
   isVisible: boolean;
@@ -70,7 +74,7 @@ export const FilterCarousel: React.FC<{
 }> = ({ isVisible, onClose, onApply }) => {
   const { capturedPhoto, selectedFilter, setSelectedFilter } =
     useContext(CameraContext);
-  const [tempFilter, setTempFilter] = useState(selectedFilter);
+  const [, setTempFilter] = useState(selectedFilter);
   const scrollX = useRef(new Animated.Value(0)).current;
   const flatListRef = useRef<FlatList>(null);
 
@@ -81,9 +85,9 @@ export const FilterCarousel: React.FC<{
   if (!isVisible || !capturedPhoto?.uri) return null;
 
   const data = [
-    { key: "empty-left", empty: true },
+    { key: 'empty-left', empty: true },
     ...filterOptions,
-    { key: "empty-right", empty: true },
+    { key: 'empty-right', empty: true },
   ];
 
   const handleSnapToItem = (scrollOffset: number) => {
@@ -140,7 +144,7 @@ export const FilterCarousel: React.FC<{
         )}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: true },
+          { useNativeDriver: true }
         )}
         snapToInterval={ITEM_SIZE}
         decelerationRate={0}
@@ -158,18 +162,18 @@ export const FilterCarousel: React.FC<{
 
 const styles = StyleSheet.create({
   container: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     top: 0,
     paddingTop: 40,
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     zIndex: 10,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingTop: 15,
     paddingBottom: 10,
@@ -178,28 +182,28 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   applyButton: {
-    backgroundColor: "#FF325E",
+    backgroundColor: '#FF325E',
   },
   flatListContent: {
-    alignItems: "center",
+    alignItems: 'center',
     paddingVertical: 10,
   },
   itemContainer: {
     width: ITEM_SIZE,
-    alignItems: "center",
+    alignItems: 'center',
     padding: SPACING,
   },
   imageContainer: {
     marginBottom: 8,
     borderRadius: 16,
-    overflow: "hidden",
+    overflow: 'hidden',
     elevation: 5,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -207,7 +211,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     borderWidth: 2,
-    borderColor: "#fff",
+    borderColor: '#fff',
   },
   canvas: {
     width: ITEM_SIZE - SPACING * 2,
@@ -215,11 +219,11 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   filterName: {
-    color: "#FFFFFF",
+    color: '#FFFFFF',
     fontSize: 18,
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
     marginVertical: 10,
-    textAlign: "center",
+    textAlign: 'center',
   },
 });
 

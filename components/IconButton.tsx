@@ -1,12 +1,12 @@
 // components/IconButton.tsx
-import React from "react";
+import React from 'react';
 import {
   TouchableOpacity,
   StyleSheet,
   ViewStyle,
   StyleProp,
   TouchableOpacityProps,
-} from "react-native";
+} from 'react-native';
 
 interface IconButtonProps extends TouchableOpacityProps {
   icon: React.ReactNode;
@@ -35,7 +35,7 @@ export const IconButton: React.FC<IconButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

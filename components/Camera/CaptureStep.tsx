@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -7,15 +7,15 @@ import {
   StyleSheet,
   Animated,
   Easing,
-} from "react-native";
-import { CameraView, CameraType, FlashMode } from "expo-camera";
-import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
-import { GalleryWhite, Record } from "@/assets/images";
+} from 'react-native';
+import { CameraView, CameraType, FlashMode } from 'expo-camera';
+import { MaterialIcons, FontAwesome } from '@expo/vector-icons';
+import { GalleryWhite } from '@/assets/images';
 
 interface CaptureStepProps {
   cameraRef: React.RefObject<CameraView>;
   facing: CameraType;
-  cameraMode: "video" | "picture";
+  cameraMode: 'video' | 'picture';
   flashMode: FlashMode;
   isRecordingActive: boolean;
   recordingTime: number;
@@ -63,7 +63,7 @@ export const CaptureStep: React.FC<CaptureStepProps> = ({
             useNativeDriver: false,
             easing: Easing.inOut(Easing.ease),
           }),
-        ]),
+        ])
       ).start();
     } else {
       // Stop animation and reset
@@ -97,11 +97,11 @@ export const CaptureStep: React.FC<CaptureStepProps> = ({
       <View style={styles.modeSwitchContainer}>
         <Text style={styles.modeSwitchLabel}>Video</Text>
         <Switch
-          trackColor={{ false: "#767577", true: "#FF325E" }}
-          thumbColor={"#fff"}
+          trackColor={{ false: '#767577', true: '#FF325E' }}
+          thumbColor={'#fff'}
           ios_backgroundColor="#767577"
           onValueChange={toggleCameraMode}
-          value={cameraMode === "video"}
+          value={cameraMode === 'video'}
           style={styles.modeSwitch}
         />
         <Text style={styles.modeSwitchLabel}>Photo</Text>
@@ -110,7 +110,7 @@ export const CaptureStep: React.FC<CaptureStepProps> = ({
       {/* Toggle flash */}
       <TouchableOpacity style={styles.flashButton} onPress={toggleFlashMode}>
         <MaterialIcons
-          name={flashMode === "on" ? "flash-on" : "flash-off"}
+          name={flashMode === 'on' ? 'flash-on' : 'flash-off'}
           size={30}
           color="white"
         />
@@ -119,7 +119,7 @@ export const CaptureStep: React.FC<CaptureStepProps> = ({
       {/* Bottom buttons */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.btnContainer} onPress={pickImage}>
-          <GalleryWhite fill={"#fff"} />
+          <GalleryWhite fill={'#fff'} />
           <Text style={styles.btnText}>Gallery</Text>
         </TouchableOpacity>
 
@@ -127,11 +127,11 @@ export const CaptureStep: React.FC<CaptureStepProps> = ({
         <Animated.View style={[styles.captureButton, animatedCaptureStyle]}>
           <TouchableOpacity
             style={styles.innerCaptureButton}
-            onPress={cameraMode === "picture" ? takePicture : undefined}
-            onLongPress={cameraMode === "video" ? startRecording : undefined}
-            onPressOut={cameraMode === "video" ? stopRecording : undefined}
+            onPress={cameraMode === 'picture' ? takePicture : undefined}
+            onLongPress={cameraMode === 'video' ? startRecording : undefined}
+            onPressOut={cameraMode === 'video' ? stopRecording : undefined}
           >
-            {cameraMode === "video" && isRecordingActive ? (
+            {cameraMode === 'video' && isRecordingActive ? (
               <FontAwesome name="stop" size={40} color="red" />
             ) : (
               <View></View>
@@ -156,68 +156,68 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   flashButton: {
-    position: "absolute",
+    position: 'absolute',
     top: 69,
     right: 25,
     width: 40,
     height: 40,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   modeSwitchContainer: {
-    position: "absolute",
+    position: 'absolute',
     left: 20,
-    top: "50%",
+    top: '50%',
     transform: [{ translateY: -70 }],
     zIndex: 10,
-    alignItems: "center",
+    alignItems: 'center',
     height: 140,
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
   },
   modeSwitch: {
-    transform: [{ rotate: "-90deg" }],
+    transform: [{ rotate: '-90deg' }],
   },
   modeSwitchLabel: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-    fontFamily: "InterSemiBold",
-    textAlign: "center",
+    fontFamily: 'InterSemiBold',
+    textAlign: 'center',
   },
   recordingView: {
-    flexDirection: "row",
-    position: "absolute",
+    flexDirection: 'row',
+    position: 'absolute',
     top: 69,
     left: 30,
-    alignItems: "center",
+    alignItems: 'center',
   },
   recordingIndicator: {
     width: 10,
     height: 10,
-    backgroundColor: "red",
+    backgroundColor: 'red',
     borderRadius: 5,
     marginRight: 5,
   },
   recordingText: {
-    color: "#fff",
-    fontFamily: "InterSemiBold",
+    color: '#fff',
+    fontFamily: 'InterSemiBold',
     fontSize: 12,
   },
   buttonContainer: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 10,
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "space-evenly",
-    alignItems: "center",
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
     paddingBottom: 20,
   },
   btnContainer: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   btnText: {
-    color: "#fff",
-    fontFamily: "InterSemiBold",
+    color: '#fff',
+    fontFamily: 'InterSemiBold',
     fontSize: 12,
     marginTop: 6,
   },
@@ -225,12 +225,12 @@ const styles = StyleSheet.create({
    *  A white circle with a red border
    */
   captureButton: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     width: 50,
     height: 50,
     borderWidth: 5,
-    borderColor: "#FF325E",
+    borderColor: '#FF325E',
     borderRadius: 50,
     top: -20,
 
@@ -241,14 +241,14 @@ const styles = StyleSheet.create({
    * (optional if you need a smaller pressable inside the circle)
    */
   innerCaptureButton: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     width: 40,
     height: 40,
 
     borderRadius: 42,
 
-    backgroundColor: "white",
+    backgroundColor: 'white',
     padding: 10,
   },
 });

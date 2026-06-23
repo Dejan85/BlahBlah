@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -8,14 +8,14 @@ import {
   Platform,
   Alert,
   ActivityIndicator,
-} from "react-native";
-import * as ImagePicker from "expo-image-picker";
-import * as DocumentPicker from "expo-document-picker";
-import { Ionicons } from "@expo/vector-icons";
-import { supabase } from "@/utils/supabase";
-import * as FileSystem from "expo-file-system";
+} from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import * as DocumentPicker from 'expo-document-picker';
+import { Ionicons } from '@expo/vector-icons';
+import { supabase } from '@/utils/supabase';
+import * as FileSystem from 'expo-file-system';
 
-type MessageType = "text" | "audio" | "image" | "file";
+type MessageType = 'text' | 'audio' | 'image' | 'file';
 
 interface MediaSelectorProps {
   visible: boolean;
@@ -32,13 +32,13 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
 
   const uploadToSupabase = async (
     fileUri: string,
-    folder: "images" | "documents",
+    folder: 'images' | 'documents'
   ) => {
     try {
       // Read the file
       const fileInfo = await FileSystem.getInfoAsync(fileUri);
       if (!fileInfo.exists) {
-        throw new Error("File does not exist");
+        throw new Error('File does not exist');
       }
 
       // Read file content
@@ -47,26 +47,26 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
       });
 
       if (!fileContent) {
-        throw new Error("No content provided");
+        throw new Error('No content provided');
       }
 
       // Generate unique filename
       const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
-      const fileExt = fileUri.split(".").pop();
+      const fileExt = fileUri.split('.').pop();
       const filePath = `${folder}/${filename}.${fileExt}`;
 
       // Convert base64 to blob
       const base64Data = fileContent;
       const contentType =
-        folder === "images" ? "image/jpeg" : "application/octet-stream";
+        folder === 'images' ? 'image/jpeg' : 'application/octet-stream';
 
       // Upload to Supabase Storage
-      const { data, error } = await supabase.storage
-        .from("chat-files")
+      const { error } = await supabase.storage
+        .from('chat-files')
         .upload(filePath, decode(base64Data), {
           contentType,
           upsert: true,
-          cacheControl: "3600",
+          cacheControl: '3600',
         });
 
       if (error) throw error;
@@ -74,11 +74,11 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
       // Get public URL
       const {
         data: { publicUrl },
-      } = supabase.storage.from("chat-files").getPublicUrl(filePath);
+      } = supabase.storage.from('chat-files').getPublicUrl(filePath);
 
       return publicUrl;
     } catch (error) {
-      console.error("Error uploading to Supabase:", error);
+      console.error('Error uploading to Supabase:', error);
       throw error;
     }
   };
@@ -99,8 +99,8 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
 
       if (permissionResult.granted === false) {
         Alert.alert(
-          "Permission required",
-          "Please allow access to your photo library",
+          'Permission required',
+          'Please allow access to your photo library'
         );
         return;
       }
@@ -118,27 +118,27 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
         try {
           const uploadedUrl = await uploadToSupabase(
             result.assets[0].uri,
-            "images",
+            'images'
           );
-          await onMediaSelect(uploadedUrl, "image");
+          await onMediaSelect(uploadedUrl, 'image');
           onClose();
         } catch (error) {
-          console.error("Error uploading image:", error);
-          Alert.alert("Error", "Failed to upload image. Please try again.");
+          console.error('Error uploading image:', error);
+          Alert.alert('Error', 'Failed to upload image. Please try again.');
         } finally {
           setIsUploading(false);
         }
       }
     } catch (error) {
-      console.error("Error picking image:", error);
-      Alert.alert("Error", "Failed to pick image. Please try again.");
+      console.error('Error picking image:', error);
+      Alert.alert('Error', 'Failed to pick image. Please try again.');
     }
   };
 
   const handleDocumentPicker = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: "*/*",
+        type: '*/*',
         copyToCacheDirectory: true,
       });
 
@@ -147,20 +147,20 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
         try {
           const uploadedUrl = await uploadToSupabase(
             result.assets[0].uri,
-            "documents",
+            'documents'
           );
-          await onMediaSelect(uploadedUrl, "file");
+          await onMediaSelect(uploadedUrl, 'file');
           onClose();
         } catch (error) {
-          console.error("Error uploading document:", error);
-          Alert.alert("Error", "Failed to upload document. Please try again.");
+          console.error('Error uploading document:', error);
+          Alert.alert('Error', 'Failed to upload document. Please try again.');
         } finally {
           setIsUploading(false);
         }
       }
     } catch (err) {
-      console.error("Error picking document:", err);
-      Alert.alert("Error", "Failed to pick document. Please try again.");
+      console.error('Error picking document:', err);
+      Alert.alert('Error', 'Failed to pick document. Please try again.');
     }
   };
 
@@ -217,50 +217,50 @@ const MediaSelector: React.FC<MediaSelectorProps> = ({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "flex-end",
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
   },
   container: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    paddingBottom: Platform.OS === "ios" ? 34 : 20,
+    paddingBottom: Platform.OS === 'ios' ? 34 : 20,
   },
   content: {
     padding: 20,
   },
   option: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#E5E5E5",
+    borderBottomColor: '#E5E5E5',
   },
   optionText: {
     marginLeft: 12,
     fontSize: 16,
-    fontFamily: "InterRegular",
-    color: "#000",
+    fontFamily: 'InterRegular',
+    color: '#000',
   },
   cancelButton: {
-    justifyContent: "center",
+    justifyContent: 'center',
     borderBottomWidth: 0,
     marginTop: 8,
   },
   cancelText: {
-    color: "#FF325E",
+    color: '#FF325E',
     fontSize: 16,
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
   },
   loadingContainer: {
     padding: 40,
-    alignItems: "center",
+    alignItems: 'center',
   },
   loadingText: {
     marginTop: 12,
     fontSize: 16,
-    fontFamily: "InterMedium",
-    color: "#000",
+    fontFamily: 'InterMedium',
+    color: '#000',
   },
 });
 

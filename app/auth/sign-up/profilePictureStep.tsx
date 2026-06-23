@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,12 +7,12 @@ import {
   Pressable,
   Alert,
   Image,
-} from "react-native";
-import * as ImagePicker from "expo-image-picker";
-import { useRouter } from "expo-router";
-import { Group } from "@/assets/images";
-import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/utils/supabase";
+} from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { useRouter } from 'expo-router';
+import { Group } from '@/assets/images';
+import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/utils/supabase';
 
 export default function ProfilePictureScreen() {
   const router = useRouter();
@@ -24,16 +24,16 @@ export default function ProfilePictureScreen() {
   const uploadImage = async (imageUri: string) => {
     try {
       const arrayBuffer = await fetch(imageUri).then((res) =>
-        res.arrayBuffer(),
+        res.arrayBuffer()
       );
-      const fileExt = imageUri.split(".").pop()?.toLowerCase() ?? "jpeg";
+      const fileExt = imageUri.split('.').pop()?.toLowerCase() ?? 'jpeg';
       const path = `${Date.now()}.${fileExt}`;
 
       const { data, error: uploadError } = await supabase.storage
-        .from("avatars")
+        .from('avatars')
         .upload(path, arrayBuffer, {
-          contentType: "image/jpeg",
-          cacheControl: "2592000", // 30 days cache
+          contentType: 'image/jpeg',
+          cacheControl: '2592000', // 30 days cache
           upsert: true,
         });
 
@@ -42,32 +42,32 @@ export default function ProfilePictureScreen() {
       await updateAvatar(data.path);
       setIsUploaded(true);
 
-      Alert.alert("Success", "Profile picture uploaded successfully!");
+      Alert.alert('Success', 'Profile picture uploaded successfully!');
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert("Error", error.message);
+        Alert.alert('Error', error.message);
       }
       throw error;
     }
   };
 
-  const handleImagePicker = async (type: "camera" | "library") => {
+  const handleImagePicker = async (type: 'camera' | 'library') => {
     try {
       setUploading(true);
 
       // Request permission based on type
-      if (type === "camera") {
+      if (type === 'camera') {
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
-        if (status !== "granted") {
+        if (status !== 'granted') {
           Alert.alert(
-            "Permission needed",
-            "Camera permission is required to take photos.",
+            'Permission needed',
+            'Camera permission is required to take photos.'
           );
           return;
         }
       }
 
-      const result = await (type === "camera"
+      const result = await (type === 'camera'
         ? ImagePicker.launchCameraAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
@@ -88,7 +88,7 @@ export default function ProfilePictureScreen() {
       }
 
       const image = result.assets[0];
-      if (!image.uri) throw new Error("No image URI!");
+      if (!image.uri) throw new Error('No image URI!');
 
       // Set the selected image immediately for preview
       setSelectedImage(image.uri);
@@ -96,7 +96,7 @@ export default function ProfilePictureScreen() {
       await uploadImage(image.uri);
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert("Error", error.message);
+        Alert.alert('Error', error.message);
       }
     } finally {
       setUploading(false);
@@ -104,7 +104,7 @@ export default function ProfilePictureScreen() {
   };
 
   const handleNext = () => {
-    router.replace("/");
+    router.replace('/');
   };
 
   return (
@@ -135,21 +135,21 @@ export default function ProfilePictureScreen() {
         <View style={styles.buttonGroup}>
           <Pressable
             style={[styles.buttonContainer, styles.buttonHalf]}
-            onPress={() => handleImagePicker("camera")}
+            onPress={() => handleImagePicker('camera')}
             disabled={uploading}
           >
             <Text style={styles.btnText}>
-              {uploading ? "Uploading..." : "Camera"}
+              {uploading ? 'Uploading...' : 'Camera'}
             </Text>
           </Pressable>
 
           <Pressable
             style={[styles.buttonContainer, styles.buttonHalf]}
-            onPress={() => handleImagePicker("library")}
+            onPress={() => handleImagePicker('library')}
             disabled={uploading}
           >
             <Text style={styles.btnText}>
-              {uploading ? "Uploading..." : "Gallery"}
+              {uploading ? 'Uploading...' : 'Gallery'}
             </Text>
           </Pressable>
         </View>
@@ -165,11 +165,11 @@ export default function ProfilePictureScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FF325E",
+    backgroundColor: '#FF325E',
   },
   imageContainer: {
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginTop: 70,
     marginBottom: 50,
   },
@@ -177,57 +177,57 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     borderRadius: 75,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   buttonGroup: {
-    flexDirection: "column",
+    flexDirection: 'column',
     paddingVertical: 10,
   },
   buttonHalf: {},
   skipText: {
     fontSize: 18,
-    textAlign: "center",
-    fontFamily: "InterMedium",
-    color: "#fff",
+    textAlign: 'center',
+    fontFamily: 'InterMedium',
+    color: '#fff',
     marginTop: 20,
     marginBottom: 10,
   },
   headerText: {
-    textAlign: "center",
-    fontFamily: "InterBold",
-    color: "#FFFFFF",
+    textAlign: 'center',
+    fontFamily: 'InterBold',
+    color: '#FFFFFF',
     fontSize: 28,
     marginTop: 60,
   },
   buttonContainer: {
     marginTop: 20,
-    alignContent: "center",
-    alignSelf: "center",
+    alignContent: 'center',
+    alignSelf: 'center',
     borderRadius: 50,
     paddingVertical: 14,
-    backgroundColor: "#fff",
-    width: "90%",
+    backgroundColor: '#fff',
+    width: '90%',
   },
   btnText: {
-    fontFamily: "InterSemiBold",
+    fontFamily: 'InterSemiBold',
     fontSize: 18,
-    color: "#000",
-    textAlign: "center",
+    color: '#000',
+    textAlign: 'center',
   },
   subtitleText: {
-    fontFamily: "InterBold",
-    color: "#FFFFFF",
+    fontFamily: 'InterBold',
+    color: '#FFFFFF',
     fontSize: 18,
     marginTop: 20,
-    textAlign: "center",
+    textAlign: 'center',
     paddingHorizontal: 60,
   },
   subtitleText2: {
-    fontFamily: "InterMedium",
-    color: "#FFFFFF",
+    fontFamily: 'InterMedium',
+    color: '#FFFFFF',
     fontSize: 14,
     marginTop: 20,
-    textAlign: "center",
+    textAlign: 'center',
     paddingHorizontal: 60,
   },
 });

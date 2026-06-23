@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -8,9 +8,9 @@ import {
   ScrollView,
   Dimensions,
   Platform,
-} from "react-native";
-import { Image } from "expo-image";
-import { FlashList } from "@shopify/flash-list";
+} from 'react-native';
+import { Image } from 'expo-image';
+import { FlashList } from '@shopify/flash-list';
 import {
   Block,
   Hours24,
@@ -18,12 +18,12 @@ import {
   NoBlahs,
   PinAction,
   ProfileBackButton,
-} from "@/assets/images";
-import { StatusBar } from "react-native";
-import SettingItem from "./SettingItem";
-import ImageViewer from "./Chat/ImageViewer";
+} from '@/assets/images';
+import { StatusBar } from 'react-native';
+import SettingItem from './SettingItem';
+import ImageViewer from './Chat/ImageViewer';
 
-const WINDOW_WIDTH = Dimensions.get("window").width;
+const WINDOW_WIDTH = Dimensions.get('window').width;
 const IMAGE_MARGIN = 0;
 const NUM_COLUMNS = 3;
 const IMAGE_SIZE =
@@ -86,7 +86,7 @@ const ProfileOptionsModal: React.FC<ProfileOptionsModalProps> = ({
       <View style={styles.container}>
         <ScrollView style={styles.content}>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <ProfileBackButton fill={"#000"} />
+            <ProfileBackButton fill={'#000'} />
           </TouchableOpacity>
 
           <View style={styles.profileSection}>
@@ -158,11 +158,11 @@ const ProfileOptionsModal: React.FC<ProfileOptionsModalProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0,
+    backgroundColor: '#fff',
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight || 0 : 0,
   },
   closeButton: {
-    position: "absolute",
+    position: 'absolute',
     left: 36,
     top: 36,
   },
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     marginTop: 45,
   },
   profileSection: {
-    alignItems: "center",
+    alignItems: 'center',
     marginTop: 45,
     marginBottom: 40,
   },
@@ -184,8 +184,8 @@ const styles = StyleSheet.create({
   },
   username: {
     fontSize: 18,
-    fontFamily: "InterBold",
-    color: "#000",
+    fontFamily: 'InterBold',
+    color: '#000',
   },
   settingsSection: {
     marginBottom: 20,
@@ -195,8 +195,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 15,
-    fontFamily: "InterMedium",
-    color: "#000",
+    fontFamily: 'InterMedium',
+    color: '#000',
     paddingLeft: 10,
     paddingBottom: 10,
   },
@@ -209,12 +209,12 @@ const styles = StyleSheet.create({
     height: IMAGE_SIZE,
     margin: IMAGE_MARGIN,
     borderRadius: 10,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   chatImage: {
-    width: "100%",
-    height: "100%",
-    backgroundColor: "#f0f0f0",
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#f0f0f0',
   },
 });
 

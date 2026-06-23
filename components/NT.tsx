@@ -1,22 +1,22 @@
 // components/NotificationSetup.tsx
-import React, { useEffect, useRef } from "react";
-import * as Notifications from "expo-notifications";
-import * as Device from "expo-device";
-import Constants from "expo-constants";
-import { Platform, Alert } from "react-native";
-import { supabase } from "@/utils/supabase";
-import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "expo-router";
+import { useEffect, useRef } from 'react';
+import * as Notifications from 'expo-notifications';
+import * as Device from 'expo-device';
+import Constants from 'expo-constants';
+import { Platform, Alert } from 'react-native';
+import { supabase } from '@/utils/supabase';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'expo-router';
 
 async function registerForPushNotificationsAsync() {
   let token;
 
-  if (Platform.OS === "android") {
-    await Notifications.setNotificationChannelAsync("default", {
-      name: "default",
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
-      lightColor: "#FF231F7C",
+      lightColor: '#FF231F7C',
     });
   }
 
@@ -25,16 +25,16 @@ async function registerForPushNotificationsAsync() {
       await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
 
-    if (existingStatus !== "granted") {
+    if (existingStatus !== 'granted') {
       const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
     }
 
-    if (finalStatus !== "granted") {
+    if (finalStatus !== 'granted') {
       Alert.alert(
-        "Permission Required",
-        "Push notifications are required to receive important updates.",
-        [{ text: "OK" }],
+        'Permission Required',
+        'Push notifications are required to receive important updates.',
+        [{ text: 'OK' }]
       );
       return;
     }
@@ -42,7 +42,7 @@ async function registerForPushNotificationsAsync() {
     try {
       const projectId = Constants?.expoConfig?.extra?.eas?.projectId;
       if (!projectId) {
-        throw new Error("Project ID not found");
+        throw new Error('Project ID not found');
       }
 
       token = (
@@ -51,15 +51,15 @@ async function registerForPushNotificationsAsync() {
         })
       ).data;
 
-      console.log("Push token:", token);
+      console.log('Push token:', token);
     } catch (e) {
-      console.error("Error getting push token:", e);
+      console.error('Error getting push token:', e);
     }
   } else {
     Alert.alert(
-      "Physical Device Required",
-      "Push notifications require a physical device.",
-      [{ text: "OK" }],
+      'Physical Device Required',
+      'Push notifications require a physical device.',
+      [{ text: 'OK' }]
     );
   }
 
@@ -78,12 +78,12 @@ export function NotificationSetup() {
         const token = await registerForPushNotificationsAsync();
         if (token) {
           const { error: updateError } = await supabase
-            .from("profiles")
+            .from('profiles')
             .update({ expo_push_token: token })
-            .eq("id", user.id);
+            .eq('id', user.id);
 
           if (updateError) {
-            console.error("Error storing push token:", updateError);
+            console.error('Error storing push token:', updateError);
           }
         }
       }
@@ -94,17 +94,17 @@ export function NotificationSetup() {
     // Set up notification listeners
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
-        console.log("Received notification:", notification);
+        console.log('Received notification:', notification);
       });
 
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log("Notification response:", response);
+        console.log('Notification response:', response);
         const data = response.notification.request.content.data;
 
-        if (data?.type === "MESSAGE") {
+        if (data?.type === 'MESSAGE') {
           router.push({
-            pathname: "/chats/chat-room/[id]",
+            pathname: '/chats/chat-room/[id]',
             params: { id: data.conversationId },
           });
         }
@@ -113,7 +113,7 @@ export function NotificationSetup() {
     return () => {
       if (notificationListener.current) {
         Notifications.removeNotificationSubscription(
-          notificationListener.current,
+          notificationListener.current
         );
       }
       if (responseListener.current) {

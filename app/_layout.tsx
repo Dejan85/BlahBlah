@@ -1,18 +1,18 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Slot } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
-import * as Font from "expo-font";
-import { AuthProvider } from "@/context/AuthContext";
-import { View, StyleSheet } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Text } from "react-native";
-import { FriendRequestProvider } from "@/context/FriendRequestContext";
+import React, { useCallback, useEffect, useState } from 'react';
+import { Slot } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import * as Font from 'expo-font';
+import { AuthProvider } from '@/context/AuthContext';
+import { View, StyleSheet } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Text } from 'react-native';
+import { FriendRequestProvider } from '@/context/FriendRequestContext';
 
-import { MessageProvider } from "@/context/MessageContext";
-import { CameraProvider } from "@/context/CameraContext";
-import { PostProvider } from "@/context/PostContext";
-import { NotificationSetup } from "@/components/NT";
+import { MessageProvider } from '@/context/MessageContext';
+import { CameraProvider } from '@/context/CameraContext';
+import { PostProvider } from '@/context/PostContext';
+import { NotificationSetup } from '@/components/NT';
 
 // Configure notification handler
 
@@ -29,15 +29,15 @@ export default function RootLayout() {
       try {
         await Promise.all([
           AsyncStorage.multiRemove([
-            "signUpStep",
-            "signUpEmail",
-            "signUpPassword",
+            'signUpStep',
+            'signUpEmail',
+            'signUpPassword',
           ]),
           Font.loadAsync({
-            InterBold: require("@/assets/fonts/Inter-Bold.ttf"),
-            InterMedium: require("@/assets/fonts/Inter-Medium.ttf"),
-            InterSemiBold: require("@/assets/fonts/Inter-SemiBold.ttf"),
-            InterRegular: require("@/assets/fonts/Inter-Regular.ttf"),
+            InterBold: require('@/assets/fonts/Inter-Bold.ttf'),
+            InterMedium: require('@/assets/fonts/Inter-Medium.ttf'),
+            InterSemiBold: require('@/assets/fonts/Inter-SemiBold.ttf'),
+            InterRegular: require('@/assets/fonts/Inter-Regular.ttf'),
           }),
         ]);
 
@@ -47,7 +47,7 @@ export default function RootLayout() {
         setError(
           e instanceof Error
             ? e
-            : new Error("An error occurred while loading the app"),
+            : new Error('An error occurred while loading the app')
         );
       } finally {
         setAppIsReady(true);
@@ -65,9 +65,9 @@ export default function RootLayout() {
 
   if (error) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text style={{ color: "red" }}>Error loading app</Text>
-        <Text style={{ color: "red" }}>{error.message}</Text>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ color: 'red' }}>Error loading app</Text>
+        <Text style={{ color: 'red' }}>{error.message}</Text>
       </View>
     );
   }

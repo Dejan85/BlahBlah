@@ -1,8 +1,8 @@
 // components/TypingIndicator.tsx
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { supabase } from "@/utils/supabase";
-import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { supabase } from '@/utils/supabase';
+import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
 interface TypingIndicatorProps {
   userId: string;
@@ -26,11 +26,11 @@ export const TypingIndicator = ({
 
     channel
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "*",
-          schema: "public",
-          table: "online_users",
+          event: '*',
+          schema: 'public',
+          table: 'online_users',
           filter: `id=eq.${userId}`,
         },
         (payload: RealtimePostgresChangesPayload<OnlineUserTyping>) => {
@@ -38,7 +38,7 @@ export const TypingIndicator = ({
           if (newData) {
             setIsTyping(newData.typing_in === currentUserId);
           }
-        },
+        }
       )
       .subscribe();
 
@@ -61,8 +61,8 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   text: {
-    color: "#666",
+    color: '#666',
     fontSize: 12,
-    fontStyle: "italic",
+    fontStyle: 'italic',
   },
 });

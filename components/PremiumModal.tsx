@@ -1,11 +1,5 @@
-import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-} from "react-native";
+import React from 'react';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import {
   Eye,
   DefaultBunny,
@@ -14,20 +8,20 @@ import {
   Exclusive,
   RedBunny,
   BlahRecoveryBlack,
-} from "@/assets/images";
-import BottomModal from "@/components/BottomModal";
-import SettingItem from "@/components/SettingItem";
-import CustomButton from "@/components/CustomButton";
-import SubscriptionPlans from "./SubsciptionPlans";
+} from '@/assets/images';
+import BottomModal from '@/components/BottomModal';
+import SettingItem from '@/components/SettingItem';
+import CustomButton from '@/components/CustomButton';
+import SubscriptionPlans from './SubsciptionPlans';
 
-const { height: windowHeight } = Dimensions.get("window");
+const { height: windowHeight } = Dimensions.get('window');
 
 interface PremiumModalProps {
   isVisible: boolean;
   onClose: () => void;
-  onPlanSelection: (plan: "monthly" | "yearly") => void;
+  onPlanSelection: (plan: 'monthly' | 'yearly') => void;
   onContinue: () => void;
-  onPlanSelectionForBlah?: (plan: "onetimeuse") => void;
+  onPlanSelectionForBlah?: (plan: 'onetimeuse') => void;
   isBlahs?: boolean;
   isPremium?: boolean;
 }
@@ -35,15 +29,13 @@ interface PremiumModalProps {
 const PremiumModal: React.FC<PremiumModalProps> = ({
   isVisible,
   onClose,
-  onPlanSelection,
   onContinue,
-  onPlanSelectionForBlah,
   isBlahs = false,
   isPremium = true,
 }) => {
-  const handlePlanSelection = (plan: "monthly" | "yearly" | "onetime") => {
+  const handlePlanSelection = (plan: 'monthly' | 'yearly' | 'onetime') => {
     // Handle the plan selection here
-    console.log("Selected plan:", plan);
+    console.log('Selected plan:', plan);
   };
 
   return (
@@ -140,15 +132,15 @@ const styles = StyleSheet.create({
     borderWidth: 0,
   },
   headerModal: {
-    alignItems: "center",
+    alignItems: 'center',
     marginTop: 37,
     marginBottom: 37,
   },
   title: {
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
     fontSize: 25,
-    color: "#FF325E",
-    textAlign: "center",
+    color: '#FF325E',
+    textAlign: 'center',
     marginTop: 8,
   },
   settingsContainer: {
@@ -162,30 +154,30 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   planButton: {
-    backgroundColor: "#F5F5F5",
+    backgroundColor: '#F5F5F5',
     borderRadius: 40,
     paddingVertical: 12,
     marginBottom: 12,
   },
   planButtonText: {
-    fontFamily: "InterSemiBold",
+    fontFamily: 'InterSemiBold',
     fontSize: 18,
-    textAlign: "center",
-    color: "#000",
+    textAlign: 'center',
+    color: '#000',
   },
   continueButton: {
     marginHorizontal: 30,
   },
   continueButtonText: {
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
     fontSize: 26,
-    color: "#fff",
+    color: '#fff',
   },
   subscribe: {
     fontSize: 12,
-    fontFamily: "InterRegular",
-    color: "#B3B3B3",
-    textAlign: "center",
+    fontFamily: 'InterRegular',
+    color: '#B3B3B3',
+    textAlign: 'center',
     paddingTop: 10,
     marginHorizontal: 30,
   },

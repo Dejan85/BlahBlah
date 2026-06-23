@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useRef } from 'react';
 import {
   View,
   Modal,
@@ -6,26 +6,26 @@ import {
   Dimensions,
   TouchableOpacity,
   Animated,
-} from "react-native";
+} from 'react-native';
 import {
   PinchGestureHandler,
   PanGestureHandler,
   State,
   GestureHandlerRootView,
-} from "react-native-gesture-handler";
-import { AntDesign } from "@expo/vector-icons";
+} from 'react-native-gesture-handler';
+import { AntDesign } from '@expo/vector-icons';
 import {
   Canvas,
   Image as SkiaImage,
   useImage,
   ColorMatrix,
-} from "@shopify/react-native-skia";
+} from '@shopify/react-native-skia';
 import {
   PinchGestureHandlerStateChangeEvent,
   PanGestureHandlerStateChangeEvent,
-} from "react-native-gesture-handler";
+} from 'react-native-gesture-handler';
 
-const { width: WINDOW_WIDTH, height: WINDOW_HEIGHT } = Dimensions.get("window");
+const { width: WINDOW_WIDTH, height: WINDOW_HEIGHT } = Dimensions.get('window');
 
 interface ResizablePhotoProps {
   isVisible: boolean;
@@ -49,7 +49,7 @@ export const ResizablePhoto: React.FC<ResizablePhotoProps> = ({
 
   const onPinchGestureEvent = Animated.event(
     [{ nativeEvent: { scale: scale } }],
-    { useNativeDriver: true },
+    { useNativeDriver: true }
   );
 
   const onPanGestureEvent = Animated.event(
@@ -61,7 +61,7 @@ export const ResizablePhoto: React.FC<ResizablePhotoProps> = ({
         },
       },
     ],
-    { useNativeDriver: true },
+    { useNativeDriver: true }
   );
 
   const onPinchHandlerStateChange = useCallback(
@@ -74,7 +74,7 @@ export const ResizablePhoto: React.FC<ResizablePhotoProps> = ({
         }).start();
       }
     },
-    [],
+    []
   );
 
   const onPanHandlerStateChange = useCallback(
@@ -92,7 +92,7 @@ export const ResizablePhoto: React.FC<ResizablePhotoProps> = ({
         }).start();
       }
     },
-    [],
+    []
   );
 
   if (!image) return null;
@@ -154,30 +154,30 @@ export const ResizablePhoto: React.FC<ResizablePhotoProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.9)",
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
   },
   content: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   closeButton: {
-    position: "absolute",
+    position: 'absolute',
     top: 40,
     right: 20,
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
     zIndex: 10,
   },
   imageContainer: {
     width: WINDOW_WIDTH,
     height: WINDOW_HEIGHT * 0.8,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   canvas: {
     width: WINDOW_WIDTH,

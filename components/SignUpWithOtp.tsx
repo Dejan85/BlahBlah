@@ -1,18 +1,18 @@
-import React, { useState, useRef } from "react";
-import { View, Text, Alert, StyleSheet, Pressable } from "react-native";
-import { supabase } from "@/utils/supabase";
-import { useRouter } from "expo-router";
-import CustomTextInput from "@/components/CustomTextInput";
+import React, { useState, useRef } from 'react';
+import { View, Text, Alert, StyleSheet, Pressable } from 'react-native';
+import { supabase } from '@/utils/supabase';
+import { useRouter } from 'expo-router';
+import CustomTextInput from '@/components/CustomTextInput';
 import PhoneInput, {
   IPhoneInputRef,
-} from "react-native-international-phone-number";
+} from 'react-native-international-phone-number';
 
 interface SignInWithOtpProps {
   onClose?: () => void;
 }
 
 const SignInWithOtp: React.FC<SignInWithOtpProps> = ({ onClose }) => {
-  const [otp, setOtp] = useState("");
+  const [otp, setOtp] = useState('');
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [isValidNumber, setIsValidNumber] = useState(true);
   const phoneInputRef = useRef<IPhoneInputRef>(null);
@@ -30,11 +30,11 @@ const SignInWithOtp: React.FC<SignInWithOtpProps> = ({ onClose }) => {
     });
 
     if (error) {
-      Alert.alert("Error", error.message);
+      Alert.alert('Error', error.message);
     } else {
       setIsOtpSent(true);
       setIsValidNumber(true);
-      Alert.alert("OTP sent!", "Check your phone for the verification code.");
+      Alert.alert('OTP sent!', 'Check your phone for the verification code.');
     }
   };
 
@@ -48,18 +48,18 @@ const SignInWithOtp: React.FC<SignInWithOtpProps> = ({ onClose }) => {
     const { error } = await supabase.auth.verifyOtp({
       phone: phoneNumber,
       token: otp,
-      type: "sms",
+      type: 'sms',
     });
 
     if (error) {
-      Alert.alert("Error", error.message);
+      Alert.alert('Error', error.message);
     } else {
-      Alert.alert("Success", "You have signed in successfully!");
-      router.replace("/home");
+      Alert.alert('Success', 'You have signed in successfully!');
+      router.replace('/home');
     }
   };
 
-  console.log(isValidNumber, "valid");
+  console.log(isValidNumber, 'valid');
 
   return (
     <View style={styles.container}>
@@ -70,50 +70,50 @@ const SignInWithOtp: React.FC<SignInWithOtpProps> = ({ onClose }) => {
           placeholder="Enter phone number"
           phoneInputStyles={{
             container: {
-              backgroundColor: "#fff",
+              backgroundColor: '#fff',
               borderWidth: 0,
-              borderStyle: "solid",
-              borderColor: "#F3F3F3",
+              borderStyle: 'solid',
+              borderColor: '#F3F3F3',
               borderRadius: 20,
             },
             flagContainer: {
               borderTopLeftRadius: 20,
               borderBottomLeftRadius: 20,
-              backgroundColor: "#fff",
-              justifyContent: "center",
+              backgroundColor: '#fff',
+              justifyContent: 'center',
             },
             input: {
-              color: "#111",
+              color: '#111',
               paddingLeft: 0,
             },
             caret: {
-              color: "#111",
+              color: '#111',
               fontSize: 15,
             },
             divider: {
-              backgroundColor: "#B3B3B3",
+              backgroundColor: '#B3B3B3',
             },
           }}
           onChange={() => setIsValidNumber(true)}
           modalStyles={{
             modal: {
-              backgroundColor: "#fff",
+              backgroundColor: '#fff',
             },
             backdrop: {},
             divider: {
-              backgroundColor: "transparent",
+              backgroundColor: 'transparent',
             },
             countriesList: {},
             searchInput: {
               borderRadius: 20,
-              color: "#111",
-              backgroundColor: "#B3B3B3",
+              color: '#111',
+              backgroundColor: '#B3B3B3',
               paddingHorizontal: 15,
             },
             countryButton: {
               borderWidth: 0,
 
-              backgroundColor: "#B3B3B3",
+              backgroundColor: '#B3B3B3',
               marginVertical: 4,
               paddingVertical: 0,
             },
@@ -123,17 +123,17 @@ const SignInWithOtp: React.FC<SignInWithOtpProps> = ({ onClose }) => {
               fontSize: 26,
             },
             callingCode: {
-              color: "#111",
-              fontFamily: "InterSemibold",
+              color: '#111',
+              fontFamily: 'InterSemibold',
               fontSize: 14,
             },
             countryName: {
-              color: "#111",
-              fontFamily: "InterMedium",
+              color: '#111',
+              fontFamily: 'InterMedium',
               fontSize: 16,
             },
             sectionTitle: {
-              color: "#111",
+              color: '#111',
             },
           }}
         />
@@ -161,7 +161,7 @@ const SignInWithOtp: React.FC<SignInWithOtpProps> = ({ onClose }) => {
             value={otp}
             onChangeText={setOtp}
             keyboardType="number-pad"
-            selectionColor={"#000"}
+            selectionColor={'#000'}
             textStyle={styles.textInputStyle}
             placeholderTextColor="#ccc"
             maxLength={6}
@@ -186,75 +186,75 @@ const SignInWithOtp: React.FC<SignInWithOtpProps> = ({ onClose }) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
-    backgroundColor: "#FF325E",
+    width: '100%',
+    backgroundColor: '#FF325E',
   },
   phoneInputContainer: {
-    width: "100%",
+    width: '100%',
     marginVertical: 10,
   },
   phoneInput: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 50,
     paddingHorizontal: 14,
-    width: "100%",
+    width: '100%',
   },
   errorText: {
-    color: "#111",
+    color: '#111',
     fontSize: 14,
     marginTop: 4,
     marginLeft: 14,
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
   },
   textInputStyle: {
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
     fontSize: 14,
-    color: "#000",
+    color: '#000',
   },
   inputContainer: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 50,
     paddingHorizontal: 14,
     marginVertical: 10,
-    width: "100%",
+    width: '100%',
   },
   input: {
     paddingVertical: 14,
-    width: "100%",
+    width: '100%',
   },
   buttonContainer: {
-    alignSelf: "center",
+    alignSelf: 'center',
     paddingHorizontal: 30,
     paddingVertical: 14,
     marginTop: 10,
   },
   btnText: {
-    fontFamily: "InterSemiBold",
+    fontFamily: 'InterSemiBold',
     fontSize: 18,
-    color: "#fff",
-    textAlign: "center",
+    color: '#fff',
+    textAlign: 'center',
   },
   btnTextDisabled: {
-    fontFamily: "InterSemiBold",
+    fontFamily: 'InterSemiBold',
     fontSize: 18,
-    color: "#ccc",
-    textAlign: "center",
+    color: '#ccc',
+    textAlign: 'center',
   },
   cancelButton: {
     marginTop: 20,
-    alignSelf: "center",
+    alignSelf: 'center',
     marginBottom: 20,
   },
   cancelText: {
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
     fontSize: 14,
-    color: "#fff",
-    textAlign: "center",
+    color: '#fff',
+    textAlign: 'center',
   },
   line: {
-    width: "100%",
+    width: '100%',
     height: 2,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     marginBottom: 34,
   },
 });

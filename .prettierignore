@@ -1,0 +1,20 @@
+# Dependencies / build output
+node_modules/
+.expo/
+dist/
+web-build/
+coverage/
+
+# Native projects (managed by Expo prebuild)
+ios/
+android/
+
+# Generated / vendor config
+google-services.json
+GoogleService-Info.plist
+package-lock.json
+*.lock
+
+# Hand-curated markdown (alignment-sensitive tables — single source of truth)
+docs/
+*.md

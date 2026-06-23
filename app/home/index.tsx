@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -6,28 +6,22 @@ import {
   Text,
   StatusBar,
   Platform,
-  Pressable,
-} from "react-native";
+} from 'react-native';
 import {
   GestureDetector,
   Gesture,
   GestureHandlerRootView,
-} from "react-native-gesture-handler";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  runOnJS,
-} from "react-native-reanimated";
-import { useRouter } from "expo-router";
-import { Notification, ProfileWhite } from "@/assets/images";
-import CustomButton from "@/components/CustomButton";
-import CustomText from "@/components/CustomText";
-import PostFeed from "@/components/PostsFeed";
-import { IconButton } from "@/components/IconButton";
-import { useFriendRequests } from "@/context/FriendRequestContext";
+} from 'react-native-gesture-handler';
+import { useSharedValue, withSpring, runOnJS } from 'react-native-reanimated';
+import { useRouter } from 'expo-router';
+import { Notification } from '@/assets/images';
+import CustomButton from '@/components/CustomButton';
+import CustomText from '@/components/CustomText';
+import PostFeed from '@/components/PostsFeed';
+import { IconButton } from '@/components/IconButton';
+import { useFriendRequests } from '@/context/FriendRequestContext';
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get('window');
 const SWIPE_THRESHOLD = 50;
 const VELOCITY_THRESHOLD = 500;
 const NAVIGATION_ZONE_WIDTH = width * 0.15; // 15% of screen width for navigation zones
@@ -42,13 +36,13 @@ const Home = () => {
   const friendRequestCount = friendRequests.length; // <--- length
 
   const handleRefresh = async () => {
-    console.log("Refreshing posts");
+    console.log('Refreshing posts');
   };
 
   // Left zone gesture
   const leftZoneGesture = Gesture.Pan()
     .onStart(() => {
-      runOnJS(setActiveZone)("left");
+      runOnJS(setActiveZone)('left');
     })
     .onUpdate((event) => {
       // Only allow right swipes in left zone
@@ -57,14 +51,14 @@ const Home = () => {
       }
     })
     .onEnd((event) => {
-      "worklet";
+      'worklet';
       if (
         event.velocityX > VELOCITY_THRESHOLD ||
         event.translationX > SWIPE_THRESHOLD
       ) {
         runOnJS(router.push)({
-          pathname: "/chats",
-          params: { from: "home" },
+          pathname: '/chats',
+          params: { from: 'home' },
         });
       }
       translateX.value = withSpring(0);
@@ -74,7 +68,7 @@ const Home = () => {
   // Right zone gesture
   const rightZoneGesture = Gesture.Pan()
     .onStart(() => {
-      runOnJS(setActiveZone)("right");
+      runOnJS(setActiveZone)('right');
     })
     .onUpdate((event) => {
       // Only allow left swipes in right zone
@@ -83,15 +77,15 @@ const Home = () => {
       }
     })
     .onEnd((event) => {
-      "worklet";
+      'worklet';
       if (
         event.velocityX < -VELOCITY_THRESHOLD ||
         event.translationX < -SWIPE_THRESHOLD
       ) {
         runOnJS(router.push)({
-          pathname: "/camera", // Or the exact route name to your Camera
+          pathname: '/camera', // Or the exact route name to your Camera
           params: {
-            from: "home",
+            from: 'home',
             // ...any other data you might want, like conversationId, etc.
           },
         });
@@ -114,7 +108,7 @@ const Home = () => {
                 styles.navigationZone,
                 styles.leftZone,
                 SHOW_SWIPE_ZONES && styles.visibleZone,
-                activeZone === "left" && styles.activeZone,
+                activeZone === 'left' && styles.activeZone,
               ]}
             ></View>
           </GestureDetector>
@@ -126,7 +120,7 @@ const Home = () => {
                 styles.navigationZone,
                 styles.rightZone,
                 SHOW_SWIPE_ZONES && styles.visibleZone,
-                activeZone === "right" && styles.activeZone,
+                activeZone === 'right' && styles.activeZone,
               ]}
             ></View>
           </GestureDetector>
@@ -137,7 +131,7 @@ const Home = () => {
             <View style={styles.postIndicator}></View>
             <IconButton
               icon={<Notification />}
-              onPress={() => router.push("/notifications")}
+              onPress={() => router.push('/notifications')}
               size={22}
             />
             {friendRequestCount > 0 && (
@@ -156,7 +150,7 @@ const Home = () => {
             variant="primary"
             size="sm"
             style={styles.blahButton}
-            onPress={() => router.push("/blahs")}
+            onPress={() => router.push('/blahs')}
           >
             <CustomText variant="body" weight="semibold" color="#fff">
               Blahs
@@ -180,7 +174,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   navigationZone: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     bottom: 0,
     width: NAVIGATION_ZONE_WIDTH,
@@ -193,67 +187,67 @@ const styles = StyleSheet.create({
     right: 0,
   },
   visibleZone: {
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   activeZone: {
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
   },
 
   headerContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    position: "absolute",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    position: 'absolute',
     top: 70,
     left: 15,
     right: 20,
     zIndex: 11,
   },
   notificationButton: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   usernameText: {
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
     fontSize: 16,
-    color: "#fff",
+    color: '#fff',
     paddingLeft: 5,
   },
   blahButton: {
-    position: "absolute",
-    bottom: Platform.OS === "ios" ? 150 : 140,
+    position: 'absolute',
+    bottom: Platform.OS === 'ios' ? 150 : 140,
     right: 24,
-    backgroundColor: "#FF325E",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#FF325E',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 40,
     width: 82,
     height: 48,
     zIndex: 11,
   },
   postIndicator: {
-    alignSelf: "center",
+    alignSelf: 'center',
   },
   postIndicatorText: {
-    color: "#fff",
-    fontFamily: "InterBold",
+    color: '#fff',
+    fontFamily: 'InterBold',
     fontSize: 16,
   },
   badgeContainer: {
-    position: "absolute",
+    position: 'absolute',
     top: -10,
     right: -12,
-    backgroundColor: "red",
+    backgroundColor: 'red',
     borderRadius: 10,
     width: 20,
     height: 20,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   badgeText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 9.5,
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
   },
 });
 

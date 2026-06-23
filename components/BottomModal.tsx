@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -8,7 +8,7 @@ import {
   Dimensions,
   StyleProp,
   ViewStyle,
-} from "react-native";
+} from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -16,12 +16,12 @@ import Animated, {
   withSpring,
   runOnJS,
   useAnimatedGestureHandler,
-} from "react-native-reanimated";
+} from 'react-native-reanimated';
 import {
   PanGestureHandler,
   GestureHandlerRootView,
-} from "react-native-gesture-handler";
-import { Close, Submit } from "@/assets/images";
+} from 'react-native-gesture-handler';
+import { Close, Submit } from '@/assets/images';
 
 interface BottomModalProps {
   visible: boolean;
@@ -35,7 +35,7 @@ interface BottomModalProps {
   onSubmit?: () => void; // Added onSubmit as props
 }
 
-const { height: windowHeight } = Dimensions.get("window");
+const { height: windowHeight } = Dimensions.get('window');
 const defaultModalHeight = windowHeight * 0.5; // Default if height not provided
 
 const BottomModal: React.FC<BottomModalProps> = ({
@@ -80,7 +80,7 @@ const BottomModal: React.FC<BottomModalProps> = ({
     onEnd: (event) => {
       if (event.translationY > modalHeight * 0.2) {
         translateY.value = withTiming(modalHeight, {}, () =>
-          runOnJS(onClose)(),
+          runOnJS(onClose)()
         );
       } else {
         translateY.value = withSpring(0, { damping: 20 });
@@ -118,7 +118,7 @@ const BottomModal: React.FC<BottomModalProps> = ({
                   onPress={onSubmit}
                   disabled={!scrollEnabled.value}
                 >
-                  <Submit fill={"#fff"} />
+                  <Submit fill={'#fff'} />
                 </Pressable>
               </View>
             )}
@@ -134,56 +134,56 @@ const BottomModal: React.FC<BottomModalProps> = ({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   line: {
     height: 3,
-    backgroundColor: "#B3B3B3",
+    backgroundColor: '#B3B3B3',
     marginTop: 14,
     marginBottom: 19,
     marginHorizontal: 20,
     borderRadius: 40,
     width: 50,
-    alignContent: "center",
-    alignSelf: "center",
+    alignContent: 'center',
+    alignSelf: 'center',
   },
   modalContainer: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
-    width: "100%",
+    width: '100%',
   },
   submitButton: {
-    position: "absolute",
+    position: 'absolute',
     top: 50,
     right: 30,
-    backgroundColor: "#000",
+    backgroundColor: '#000',
     opacity: 0.5,
     borderRadius: 40,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     width: 40,
     height: 40,
   },
   modalContent: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
     borderWidth: 3,
-    borderColor: "#B3B3B3",
+    borderColor: '#B3B3B3',
   },
   closeButton: {
-    position: "absolute",
+    position: 'absolute',
     top: 54,
     left: 30,
     borderRadius: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#000",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000',
     opacity: 0.5,
     width: 40,
     height: 40,

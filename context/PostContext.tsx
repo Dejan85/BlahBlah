@@ -1,3 +1,9 @@
+// context/PostContext.tsx
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { Platform } from 'react-native';
+import * as FileSystem from 'expo-file-system';
+import { supabase } from '@/utils/supabase';
+
 export interface Profile {
   id: string;
   updated_at: string;
@@ -18,7 +24,7 @@ export interface Post {
   id: string;
   user_id: string;
   profile_id: string;
-  media_type: "image" | "video";
+  media_type: 'image' | 'video';
   main_media_url: string;
   additional_media: string[];
   comment?: string;
@@ -35,28 +41,22 @@ export interface Post {
   profile?: Profile;
 }
 
-// context/PostContext.tsx
-import React, { createContext, useContext, useState, ReactNode } from "react";
-import { Platform } from "react-native";
-import * as FileSystem from "expo-file-system";
-import { supabase } from "@/utils/supabase";
-
 interface PostContextType {
   isUploading: boolean;
   uploadProgress: number;
   createPost: (
-    postData: CreatePostData,
+    postData: CreatePostData
   ) => Promise<{ success: boolean; error?: string; post?: Post }>;
-  uploadMedia: (uri: string, type: "image" | "video") => Promise<string>;
+  uploadMedia: (uri: string, type: 'image' | 'video') => Promise<string>;
   getUserPosts: (userId: string) => Promise<Post[]>;
   getProfilePosts: (profileId: string) => Promise<Post[]>;
   deletePost: (postId: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 export interface CreatePostData {
-  mediaType: "image" | "video";
+  mediaType: 'image' | 'video';
   mainMediaUri: string;
-  additionalMedia?: { uri: string; type: "image" | "video" }[];
+  additionalMedia?: { uri: string; type: 'image' | 'video' }[];
   comment?: string;
   music?: string;
   mentions?: string[];
@@ -72,7 +72,7 @@ export const PostContext = createContext<PostContextType>({
   isUploading: false,
   uploadProgress: 0,
   createPost: async () => ({ success: false }),
-  uploadMedia: async () => "",
+  uploadMedia: async () => '',
   getUserPosts: async () => [],
   getProfilePosts: async () => [],
   deletePost: async () => ({ success: false }),
@@ -86,30 +86,30 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
 
   const uploadMedia = async (
     uri: string,
-    type: "image" | "video",
+    type: 'image' | 'video'
   ): Promise<string> => {
     try {
       // Generate a unique filename
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
       const fileExt =
-        uri.split(".").pop() || (type === "image" ? "jpg" : "mp4");
+        uri.split('.').pop() || (type === 'image' ? 'jpg' : 'mp4');
       const filePath = `${type}s/${fileName}.${fileExt}`;
 
       // Get file info
       const fileInfo = await FileSystem.getInfoAsync(uri);
       if (!fileInfo.exists) {
-        throw new Error("File does not exist");
+        throw new Error('File does not exist');
       }
 
       // Read the file
-      if (Platform.OS === "web") {
+      if (Platform.OS === 'web') {
         const response = await fetch(uri);
         const blob = await response.blob();
         const { error: uploadError } = await supabase.storage
-          .from("posts")
+          .from('posts')
           .upload(filePath, blob, {
-            contentType: type === "image" ? "image/jpeg" : "video/mp4",
-            cacheControl: "86400",
+            contentType: type === 'image' ? 'image/jpeg' : 'video/mp4',
+            cacheControl: '86400',
             upsert: true,
           });
 
@@ -117,17 +117,17 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
       } else {
         // For mobile platforms, use FormData
         const formData = new FormData();
-        formData.append("file", {
+        formData.append('file', {
           uri: uri,
           name: `${fileName}.${fileExt}`,
-          type: type === "image" ? "image/jpeg" : "video/mp4",
+          type: type === 'image' ? 'image/jpeg' : 'video/mp4',
         } as any);
 
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from("posts")
+        const { error: uploadError } = await supabase.storage
+          .from('posts')
           .upload(filePath, formData, {
-            contentType: type === "image" ? "image/jpeg" : "video/mp4",
-            cacheControl: "86400",
+            contentType: type === 'image' ? 'image/jpeg' : 'video/mp4',
+            cacheControl: '86400',
             upsert: true,
           });
 
@@ -136,12 +136,12 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
 
       // Get the public URL
       const { data: urlData } = supabase.storage
-        .from("posts")
+        .from('posts')
         .getPublicUrl(filePath);
 
       return urlData.publicUrl;
     } catch (error) {
-      console.error("Error uploading media:", error);
+      console.error('Error uploading media:', error);
       throw error;
     }
   };
@@ -154,13 +154,13 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not authenticated");
+      if (!user) throw new Error('User not authenticated');
 
       // Upload main media
-      console.log("Uploading main media:", postData.mainMediaUri);
+      console.log('Uploading main media:', postData.mainMediaUri);
       const mainMediaUrl = await uploadMedia(
         postData.mainMediaUri,
-        postData.mediaType,
+        postData.mediaType
       );
       setUploadProgress(50);
 
@@ -168,7 +168,7 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
       let additionalMediaUrls: string[] = [];
       if (postData.additionalMedia && postData.additionalMedia.length > 0) {
         const uploadPromises = postData.additionalMedia.map((media) =>
-          uploadMedia(media.uri, media.type),
+          uploadMedia(media.uri, media.type)
         );
         additionalMediaUrls = await Promise.all(uploadPromises);
       }
@@ -176,7 +176,7 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
 
       // Create post record
       const { data, error } = await supabase
-        .from("posts")
+        .from('posts')
         .insert({
           user_id: user.id,
           media_type: postData.mediaType,
@@ -192,7 +192,7 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
           is_locked: postData.isLocked || false,
           filter_applied: postData.filterApplied,
         })
-        .select("*, profile:profiles(*)")
+        .select('*, profile:profiles(*)')
         .single();
 
       setUploadProgress(100);
@@ -201,11 +201,11 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
 
       return { success: true, post: data };
     } catch (error) {
-      console.error("Error creating post:", error);
+      console.error('Error creating post:', error);
       return {
         success: false,
         error:
-          error instanceof Error ? error.message : "Unknown error occurred",
+          error instanceof Error ? error.message : 'Unknown error occurred',
       };
     } finally {
       setIsUploading(false);
@@ -215,10 +215,10 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
 
   const getUserPosts = async (userId: string): Promise<Post[]> => {
     const { data, error } = await supabase
-      .from("posts")
-      .select("*, profile:profiles(*)")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false });
+      .from('posts')
+      .select('*, profile:profiles(*)')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
 
     if (error) throw error;
     return data || [];
@@ -226,10 +226,10 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
 
   const getProfilePosts = async (profileId: string): Promise<Post[]> => {
     const { data, error } = await supabase
-      .from("posts")
-      .select("*, profile:profiles(*)")
-      .eq("profile_id", profileId)
-      .order("created_at", { ascending: false });
+      .from('posts')
+      .select('*, profile:profiles(*)')
+      .eq('profile_id', profileId)
+      .order('created_at', { ascending: false });
 
     if (error) throw error;
     return data || [];
@@ -237,7 +237,7 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
 
   const deletePost = async (postId: string) => {
     try {
-      const { error } = await supabase.from("posts").delete().eq("id", postId);
+      const { error } = await supabase.from('posts').delete().eq('id', postId);
 
       if (error) throw error;
       return { success: true };
@@ -245,7 +245,7 @@ export const PostProvider = ({ children }: { children: ReactNode }) => {
       return {
         success: false,
         error:
-          error instanceof Error ? error.message : "Unknown error occurred",
+          error instanceof Error ? error.message : 'Unknown error occurred',
       };
     }
   };

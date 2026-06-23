@@ -1,10 +1,10 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { FlashList } from "@shopify/flash-list";
-import { Image as ExpoImage } from "expo-image";
-import { User } from "@/types";
-import SwipeableChatItem from "./SwipeableChatItem";
-import ChatListItem from "./Chat/ChatListItem";
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
+import { Image as ExpoImage } from 'expo-image';
+import { User } from '@/types';
+import SwipeableChatItem from './SwipeableChatItem';
+import ChatListItem from './Chat/ChatListItem';
 
 interface UserListProps {
   data: User[];
@@ -32,7 +32,7 @@ interface UserListProps {
 }
 
 const formatDistance = (distance: number | undefined) => {
-  if (distance === undefined) return "";
+  if (distance === undefined) return '';
   if (distance < 1) {
     return `${(distance * 1000).toFixed(0)}m away`;
   }
@@ -50,7 +50,6 @@ const UserListComponent: React.FC<UserListProps> = ({
   isSearchAction,
   onAddAction,
   onMessageAction,
-  onSentAction,
   enableSwipe,
   isChatMessage,
   currentUserId,
@@ -76,7 +75,7 @@ const UserListComponent: React.FC<UserListProps> = ({
     if (isSearchAction) {
       return (
         <View style={styles.acceptButtons}>
-          {item.requestStatus === "none" && onAddAction && (
+          {item.requestStatus === 'none' && onAddAction && (
             <TouchableOpacity
               onPress={() => onAddAction(item)}
               style={styles.actionButton}
@@ -85,11 +84,11 @@ const UserListComponent: React.FC<UserListProps> = ({
             </TouchableOpacity>
           )}
 
-          {item.requestStatus === "pending" && (
+          {item.requestStatus === 'pending' && (
             <Text style={styles.pending}>Sent</Text>
           )}
 
-          {item.requestStatus === "received" && (
+          {item.requestStatus === 'received' && (
             <View style={styles.acceptButtons}>
               <Text
                 style={styles.accept}
@@ -106,7 +105,7 @@ const UserListComponent: React.FC<UserListProps> = ({
             </View>
           )}
 
-          {item.requestStatus === "friend" && onMessageAction && (
+          {item.requestStatus === 'friend' && onMessageAction && (
             <TouchableOpacity
               onPress={() => onMessageAction(item)}
               style={styles.actionButton}
@@ -124,7 +123,7 @@ const UserListComponent: React.FC<UserListProps> = ({
   const renderSubtitle = (item: User) => {
     // If distance exists and is within a reasonable range (e.g., < 10km), show distance
     if (
-      "distance" in item &&
+      'distance' in item &&
       item.distance !== undefined &&
       item.distance < 10
     ) {
@@ -204,17 +203,17 @@ const UserListComponent: React.FC<UserListProps> = ({
 
 const styles = StyleSheet.create({
   userContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginHorizontal: 16,
     marginVertical: 25,
-    position: "relative",
-    justifyContent: "space-between",
-    backgroundColor: "#fff",
+    position: 'relative',
+    justifyContent: 'space-between',
+    backgroundColor: '#fff',
   },
   leftSection: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   userImage: {
     width: 50,
@@ -227,41 +226,41 @@ const styles = StyleSheet.create({
   },
   username: {
     fontSize: 14,
-    fontFamily: "InterSemiBold",
-    color: "#000000",
+    fontFamily: 'InterSemiBold',
+    color: '#000000',
     paddingBottom: 5,
   },
   subtitle: {
     fontSize: 13,
-    color: "#000",
-    fontFamily: "InterMedium",
+    color: '#000',
+    fontFamily: 'InterMedium',
   },
   distance: {
     fontSize: 12,
-    color: "#666",
-    fontFamily: "InterRegular",
+    color: '#666',
+    fontFamily: 'InterRegular',
     marginTop: 2,
   },
   acceptButtons: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginRight: 5,
-    alignItems: "center",
+    alignItems: 'center',
   },
   accept: {
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
     fontSize: 14,
-    color: "#FF325E",
+    color: '#FF325E',
     paddingRight: 10,
   },
   decline: {
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
     fontSize: 14,
-    color: "#000",
+    color: '#000',
   },
   pending: {
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
     fontSize: 14,
-    color: "#B3B3B3",
+    color: '#B3B3B3',
     paddingRight: 10,
   },
   actionButton: {

@@ -1,5 +1,5 @@
 // components/ui/CustomButton.tsx
-import React from "react";
+import React from 'react';
 import {
   TouchableOpacity,
   StyleSheet,
@@ -8,12 +8,12 @@ import {
   TextStyle,
   TouchableOpacityProps,
   ActivityIndicator,
-} from "react-native";
-import CustomText from "./CustomText";
+} from 'react-native';
+import CustomText from './CustomText';
 
 interface ButtonProps extends TouchableOpacityProps {
-  variant?: "primary" | "secondary" | "outline" | "ghost";
-  size?: "sm" | "md" | "lg";
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   isLoading?: boolean;
@@ -24,8 +24,8 @@ interface ButtonProps extends TouchableOpacityProps {
 }
 
 const CustomButton: React.FC<ButtonProps> = ({
-  variant = "primary",
-  size = "md",
+  variant = 'primary',
+  size = 'md',
   leftIcon,
   rightIcon,
   isLoading = false,
@@ -59,12 +59,12 @@ const CustomButton: React.FC<ButtonProps> = ({
     >
       {isLoading ? (
         <ActivityIndicator
-          color={variant === "outline" ? "#FF325E" : "#ffffff"}
+          color={variant === 'outline' ? '#FF325E' : '#ffffff'}
         />
       ) : (
         <>
           {leftIcon}
-          {typeof children === "string" ? (
+          {typeof children === 'string' ? (
             <CustomText style={textStyles}>{children}</CustomText>
           ) : (
             children
@@ -78,25 +78,25 @@ const CustomButton: React.FC<ButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 40,
     gap: 8,
   },
   button_primary: {
-    backgroundColor: "#FF325E",
+    backgroundColor: '#FF325E',
   },
   button_secondary: {
-    backgroundColor: "#333333",
+    backgroundColor: '#333333',
   },
   button_outline: {
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: "#FF325E",
+    borderColor: '#FF325E',
   },
   button_ghost: {
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
   },
   button_sm: {
     paddingVertical: 8,
@@ -114,19 +114,19 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   text: {
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
   },
   text_primary: {
-    color: "#ffffff",
+    color: '#ffffff',
   },
   text_secondary: {
-    color: "#ffffff",
+    color: '#ffffff',
   },
   text_outline: {
-    color: "#FF325E",
+    color: '#FF325E',
   },
   text_ghost: {
-    color: "#FF325E",
+    color: '#FF325E',
   },
   text_sm: {
     fontSize: 14,

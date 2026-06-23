@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
   TouchableOpacity,
   Text,
   Pressable,
-} from "react-native";
-import { Audio } from "expo-av";
-import { Ionicons } from "@expo/vector-icons";
+} from 'react-native';
+import { Audio } from 'expo-av';
+import { Ionicons } from '@expo/vector-icons';
 
 interface AudioMessageProps {
   audioUrl: string;
@@ -46,13 +46,13 @@ const AudioMessage: React.FC<AudioMessageProps> = ({ audioUrl, isSender }) => {
         { uri: audioUrl },
         { shouldPlay: false },
         onPlaybackStatusUpdate,
-        true,
+        true
       );
 
       setSound(audioSound);
       setIsLoading(false);
     } catch (error) {
-      console.error("Error loading audio:", error);
+      console.error('Error loading audio:', error);
       setIsLoading(false);
     }
   };
@@ -83,7 +83,7 @@ const AudioMessage: React.FC<AudioMessageProps> = ({ audioUrl, isSender }) => {
         setIsPlaying(true);
       }
     } catch (error) {
-      console.error("Error toggling playback:", error);
+      console.error('Error toggling playback:', error);
     }
   };
 
@@ -99,16 +99,16 @@ const AudioMessage: React.FC<AudioMessageProps> = ({ audioUrl, isSender }) => {
         setIsPlaying(true);
       }
     } catch (error) {
-      console.error("Error seeking:", error);
+      console.error('Error seeking:', error);
     }
   };
 
   const formatTime = (milliseconds: number | null) => {
-    if (!milliseconds) return "0:00";
+    if (!milliseconds) return '0:00';
     const totalSeconds = Math.floor(milliseconds / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   const renderWaveform = () => {
@@ -138,11 +138,11 @@ const AudioMessage: React.FC<AudioMessageProps> = ({ audioUrl, isSender }) => {
                 height,
                 backgroundColor: isPlayed
                   ? isSender
-                    ? "rgba(255, 255, 255, 0.9)"
-                    : "rgba(0, 0, 0, 0.7)"
+                    ? 'rgba(255, 255, 255, 0.9)'
+                    : 'rgba(0, 0, 0, 0.7)'
                   : isSender
-                    ? "rgba(255, 255, 255, 0.4)"
-                    : "rgba(0, 0, 0, 0.2)",
+                    ? 'rgba(255, 255, 255, 0.4)'
+                    : 'rgba(0, 0, 0, 0.2)',
               },
             ]}
           />
@@ -186,9 +186,9 @@ const AudioMessage: React.FC<AudioMessageProps> = ({ audioUrl, isSender }) => {
         ]}
       >
         <Ionicons
-          name={isPlaying ? "pause" : "play"}
+          name={isPlaying ? 'pause' : 'play'}
           size={22}
-          color={isSender ? "#fff" : "#000"}
+          color={isSender ? '#fff' : '#000'}
         />
       </TouchableOpacity>
 
@@ -212,30 +212,30 @@ const AudioMessage: React.FC<AudioMessageProps> = ({ audioUrl, isSender }) => {
 
 const styles = StyleSheet.create({
   audioContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 12,
     borderRadius: 20,
-    maxWidth: "100%",
+    maxWidth: '100%',
     minWidth: 240,
     marginVertical: 4,
   },
   senderAudio: {
-    backgroundColor: "#FF325E",
-    marginLeft: "auto",
+    backgroundColor: '#FF325E',
+    marginLeft: 'auto',
   },
   receiverAudio: {
-    backgroundColor: "#E5E5E5",
-    marginRight: "auto",
+    backgroundColor: '#E5E5E5',
+    marginRight: 'auto',
     marginLeft: 40,
   },
   timeContainer: {
     marginHorizontal: 10,
-    flexDirection: "row",
+    flexDirection: 'row',
   },
   timeText: {
     fontSize: 12,
-    textAlign: "center",
+    textAlign: 'center',
   },
   playButton: {
     marginHorizontal: 4,
@@ -243,19 +243,19 @@ const styles = StyleSheet.create({
   waveformContainer: {
     flex: 1,
     height: 36, // Increased height
-    justifyContent: "center",
+    justifyContent: 'center',
     paddingHorizontal: 4,
   },
   waveformContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    height: "100%",
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: '100%',
     marginHorizontal: 5,
   },
   barContainer: {
     flex: 1,
-    height: "100%",
-    justifyContent: "center",
+    height: '100%',
+    justifyContent: 'center',
     paddingHorizontal: 0.5, // Reduced padding for tighter bars
   },
   bar: {
@@ -263,19 +263,19 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   senderText: {
-    color: "#FFFFFF",
+    color: '#FFFFFF',
   },
   receiverText: {
-    color: "#202020",
+    color: '#202020',
   },
   loadingText: {
     padding: 8,
   },
   senderPlayButton: {
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
   },
   receiverPlayButton: {
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
   },
 });
 

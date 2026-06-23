@@ -1,5 +1,5 @@
 // components/GridPosts.tsx
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Dimensions,
@@ -7,40 +7,39 @@ import {
   TouchableOpacity,
   StyleSheet,
   Modal,
-  SafeAreaView,
   StatusBar,
   Alert,
   Pressable,
   Platform,
-} from "react-native";
-import SettingItem from "./SettingItem";
-import { Image } from "expo-image";
-import { GestureDetector, Gesture } from "react-native-gesture-handler";
+} from 'react-native';
+import SettingItem from './SettingItem';
+import { Image } from 'expo-image';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
   withSpring,
   runOnJS,
   useAnimatedStyle,
-} from "react-native-reanimated";
-import { useRouter } from "expo-router";
-import { supabase } from "@/utils/supabase";
-import Post from "@/components/Post";
-import { FeedItem } from "@/types";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import CustomButton from "./CustomButton";
-import Text from "./CustomText";
-import BottomModal from "./BottomModal";
+} from 'react-native-reanimated';
+import { useRouter } from 'expo-router';
+import { supabase } from '@/utils/supabase';
+import Post from '@/components/Post';
+import { FeedItem } from '@/types';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import CustomButton from './CustomButton';
+import Text from './CustomText';
+import BottomModal from './BottomModal';
 import {
   DeleteAction,
   NoComments,
   NoLikes,
   NoShares,
   RedBunny,
-} from "@/assets/images";
-import { ResizeMode, Video } from "expo-av";
-import { RealtimeChannel } from "@supabase/supabase-js";
+} from '@/assets/images';
+import { ResizeMode, Video } from 'expo-av';
+import { RealtimeChannel } from '@supabase/supabase-js';
 
-const { width, height } = Dimensions.get("window");
+const { width, height } = Dimensions.get('window');
 const COLUMN_COUNT = 3;
 const ITEM_SIZE = width / COLUMN_COUNT;
 const SWIPE_THRESHOLD = 50;
@@ -54,7 +53,7 @@ interface GridPostsProps {
 export interface GridPost {
   id: string;
   uri: string;
-  type: "video" | "image";
+  type: 'video' | 'image';
   images?: string[];
   user?: {
     id: string;
@@ -99,13 +98,12 @@ const GridPosts: React.FC<GridPostsProps> = ({
 }) => {
   const [posts, setPosts] = useState<GridPost[]>([]);
   const [selectedPostIndex, setSelectedPostIndex] = useState<number | null>(
-    null,
+    null
   );
   const [loading, setLoading] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const router = useRouter();
   const translateX = useSharedValue(0);
-  const translateY = useSharedValue(0);
   const [isInSwipeZone, setIsInSwipeZone] = useState(false);
   const [currentPostId, setCurrentPostId] = useState<string | null>(null);
   const realtimeChannel = useRef<RealtimeChannel | null>(null);
@@ -126,9 +124,9 @@ const GridPosts: React.FC<GridPostsProps> = ({
     const fetchPostSettings = async () => {
       if (currentPostId) {
         const { data, error } = await supabase
-          .from("posts")
-          .select("hide_likes, hide_shares, hide_comments")
-          .eq("id", currentPostId)
+          .from('posts')
+          .select('hide_likes, hide_shares, hide_comments')
+          .eq('id', currentPostId)
           .single();
 
         if (!error && data) {
@@ -150,13 +148,13 @@ const GridPosts: React.FC<GridPostsProps> = ({
     if (!userId) return;
 
     realtimeChannel.current = supabase
-      .channel("posts-channel")
+      .channel('posts-channel')
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "UPDATE",
-          schema: "public",
-          table: "posts",
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'posts',
           filter: `profile_id=eq.${userId}`,
         },
         (payload) => {
@@ -169,10 +167,10 @@ const GridPosts: React.FC<GridPostsProps> = ({
                     hide_shares: payload.new.hide_shares,
                     hide_comments: payload.new.hide_comments,
                   }
-                : post,
-            ),
+                : post
+            )
           );
-        },
+        }
       )
       .subscribe();
 
@@ -189,15 +187,15 @@ const GridPosts: React.FC<GridPostsProps> = ({
     setHideLikes(value);
     setPosts((currentPosts) =>
       currentPosts.map((post) =>
-        post.id === currentPostId ? { ...post, hide_likes: value } : post,
-      ),
+        post.id === currentPostId ? { ...post, hide_likes: value } : post
+      )
     );
 
     try {
       const { error } = await supabase
-        .from("posts")
+        .from('posts')
         .update({ hide_likes: value })
-        .eq("id", currentPostId);
+        .eq('id', currentPostId);
 
       if (error) throw error;
     } catch (error) {
@@ -217,15 +215,15 @@ const GridPosts: React.FC<GridPostsProps> = ({
               ...post,
               hide_shares: value,
             }
-          : post,
-      ),
+          : post
+      )
     );
 
     try {
       const { error } = await supabase
-        .from("posts")
+        .from('posts')
         .update({ hide_shares: value })
-        .eq("id", currentPostId);
+        .eq('id', currentPostId);
 
       if (error) throw error;
     } catch (error) {
@@ -238,11 +236,11 @@ const GridPosts: React.FC<GridPostsProps> = ({
                 ...post,
                 hide_shares: !value,
               }
-            : post,
-        ),
+            : post
+        )
       );
-      console.error("Error updating hide shares:", error);
-      Alert.alert("Error", "Failed to update shares visibility");
+      console.error('Error updating hide shares:', error);
+      Alert.alert('Error', 'Failed to update shares visibility');
     }
   };
 
@@ -258,15 +256,15 @@ const GridPosts: React.FC<GridPostsProps> = ({
               ...post,
               hide_comments: value,
             }
-          : post,
-      ),
+          : post
+      )
     );
 
     try {
       const { error } = await supabase
-        .from("posts")
+        .from('posts')
         .update({ hide_comments: value })
-        .eq("id", currentPostId);
+        .eq('id', currentPostId);
 
       if (error) throw error;
     } catch (error) {
@@ -279,11 +277,11 @@ const GridPosts: React.FC<GridPostsProps> = ({
                 ...post,
                 hide_comments: !value,
               }
-            : post,
-        ),
+            : post
+        )
       );
-      console.error("Error updating hide comments:", error);
-      Alert.alert("Error", "Failed to update comments visibility");
+      console.error('Error updating hide comments:', error);
+      Alert.alert('Error', 'Failed to update comments visibility');
     }
   };
 
@@ -293,41 +291,41 @@ const GridPosts: React.FC<GridPostsProps> = ({
     if (!selectedPostIndex) return;
 
     Alert.alert(
-      "Delete Post",
-      "Are you sure?",
+      'Delete Post',
+      'Are you sure?',
       [
         {
-          text: "No",
-          style: "cancel",
+          text: 'No',
+          style: 'cancel',
         },
         {
-          text: "Yes",
+          text: 'Yes',
           onPress: async () => {
             try {
               const currentPost = posts[selectedPostIndex];
               const { error } = await supabase
-                .from("posts")
+                .from('posts')
                 .delete()
-                .eq("id", currentPost.id);
+                .eq('id', currentPost.id);
 
               if (error) throw error;
 
               // Remove post from state
               setPosts((currentPosts) =>
-                currentPosts.filter((post) => post.id !== currentPost.id),
+                currentPosts.filter((post) => post.id !== currentPost.id)
               );
 
               if (posts.length === 1) {
                 setIsModalVisible(false);
               }
             } catch (error) {
-              Alert.alert("Error", "Failed to delete post. Please try again.");
+              Alert.alert('Error', 'Failed to delete post. Please try again.');
             }
           },
-          style: "destructive",
+          style: 'destructive',
         },
       ],
-      { cancelable: true },
+      { cancelable: true }
     );
   };
 
@@ -337,7 +335,7 @@ const GridPosts: React.FC<GridPostsProps> = ({
     try {
       setLoading(true);
       const { data: postsData, error } = await supabase
-        .from("posts")
+        .from('posts')
         .select(
           `
           *,
@@ -346,19 +344,19 @@ const GridPosts: React.FC<GridPostsProps> = ({
             username,
             avatar_url
           )
-        `,
+        `
         )
-        .eq("profile_id", userId)
-        .order("created_at", { ascending: false });
+        .eq('profile_id', userId)
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
 
       const transformedPosts: GridPost[] = (postsData || []).map((post) => ({
         id: post.id,
         uri: post.main_media_url,
-        type: post.media_type as "video" | "image",
+        type: post.media_type as 'video' | 'image',
         images:
-          post.media_type === "image"
+          post.media_type === 'image'
             ? [post.main_media_url, ...(post.additional_media || [])]
             : undefined,
         user: post.profile
@@ -378,18 +376,10 @@ const GridPosts: React.FC<GridPostsProps> = ({
 
       setPosts(transformedPosts);
     } catch (error) {
-      console.error("Error fetching posts:", error);
+      console.error('Error fetching posts:', error);
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleProfilePress = (userId?: string) => {
-    if (!userId) return;
-    router.push({
-      pathname: "/profile",
-      params: { id: userId },
-    });
   };
 
   // const handleProfilePress = (userId?: string) => {
@@ -408,19 +398,19 @@ const GridPosts: React.FC<GridPostsProps> = ({
 
   const leftZoneGesture = Gesture.Pan()
     .onBegin((event) => {
-      "worklet";
+      'worklet';
       if (event.x <= SWIPE_ZONE_WIDTH) {
         runOnJS(setIsInSwipeZone)(true);
       }
     })
     .onUpdate((event) => {
-      "worklet";
+      'worklet';
       if (isInSwipeZone && event.translationX > 0) {
         translateX.value = event.translationX;
       }
     })
     .onEnd((event) => {
-      "worklet";
+      'worklet';
       if (event.translationX > SWIPE_THRESHOLD && isInSwipeZone) {
         runOnJS(closeModal)();
       }
@@ -464,7 +454,7 @@ const GridPosts: React.FC<GridPostsProps> = ({
       }}
       style={styles.gridItem}
     >
-      {item.type === "video" ? (
+      {item.type === 'video' ? (
         <VideoThumbnail uri={item.uri} />
       ) : (
         <Image
@@ -519,7 +509,7 @@ const GridPosts: React.FC<GridPostsProps> = ({
               decelerationRate="fast"
               onMomentumScrollEnd={(event) => {
                 const index = Math.round(
-                  event.nativeEvent.contentOffset.y / height,
+                  event.nativeEvent.contentOffset.y / height
                 );
                 setSelectedPostIndex(index);
               }}
@@ -538,7 +528,7 @@ const GridPosts: React.FC<GridPostsProps> = ({
               >
                 <MaterialCommunityIcons
                   name="dots-vertical"
-                  color={"#fff"}
+                  color={'#fff'}
                   size={24}
                 />
               </Pressable>
@@ -548,7 +538,7 @@ const GridPosts: React.FC<GridPostsProps> = ({
               variant="primary"
               size="sm"
               style={styles.blahButton}
-              onPress={() => router.push("/blahs")}
+              onPress={() => router.push('/blahs')}
             >
               <Text variant="body" weight="semibold" color="#fff">
                 Blahs
@@ -593,7 +583,7 @@ const GridPosts: React.FC<GridPostsProps> = ({
           </View>
 
           <Pressable style={styles.deleteAction} onPress={handleDelete}>
-            <DeleteAction fill={"#FF325E"} />
+            <DeleteAction fill={'#FF325E'} />
             <Text style={styles.deleteText}>Delete</Text>
           </Pressable>
         </BottomModal>
@@ -622,30 +612,30 @@ const GridPosts: React.FC<GridPostsProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   thumbnailContainer: {
-    width: "99%",
-    height: "100%",
+    width: '99%',
+    height: '100%',
     borderRadius: 12,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   thumbnailVideo: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
   videoOverlay: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.2)",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   playIcon: {
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -656,7 +646,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: '#000',
   },
   gridContainer: {
     padding: 1,
@@ -666,29 +656,29 @@ const styles = StyleSheet.create({
     marginTop: 45,
   },
   timestampContainer: {
-    position: "absolute",
+    position: 'absolute',
     top: 8,
     right: 8,
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
   },
   timestamp: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 10,
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
   },
   gridItem: {
     width: ITEM_SIZE - 2,
     height: ITEM_SIZE - 2,
     margin: 1,
     borderRadius: 12,
-    overflow: "hidden", // This ensures the image respects the border radius
+    overflow: 'hidden', // This ensures the image respects the border radius
   },
   gridImage: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     borderRadius: 12,
   },
   modalStyle: {
@@ -696,42 +686,42 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     borderRadius: 20,
-    position: "absolute",
+    position: 'absolute',
     right: 30,
     top: 70,
     zIndex: 11,
   },
   blahButton: {
-    position: "absolute",
-    bottom: Platform.OS === "ios" ? 150 : 140,
+    position: 'absolute',
+    bottom: Platform.OS === 'ios' ? 150 : 140,
     right: 24,
-    backgroundColor: "#FF325E",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#FF325E',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 40,
     width: 82,
     height: 48,
     zIndex: 11,
   },
   deleteAction: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginLeft: 50,
     marginTop: 50,
   },
   deleteText: {
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
     fontSize: 15,
     marginTop: -3,
     marginLeft: 18,
-    color: "#FF325E",
+    color: '#FF325E',
   },
 
   fullScreenContainer: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: '#000',
   },
   leftSwipeZone: {
-    position: "absolute",
+    position: 'absolute',
     left: 0,
     top: 0,
     bottom: 0,

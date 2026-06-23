@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useCallback,
-  useRef,
-  useMemo,
-  useEffect,
-} from "react";
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,37 +8,29 @@ import {
   ScrollView,
   Animated,
   Dimensions,
-} from "react-native";
+} from 'react-native';
 import {
-  AntDesign,
   Feather,
   FontAwesome,
   Ionicons,
   MaterialCommunityIcons,
-} from "@expo/vector-icons";
-import * as Clipboard from "expo-clipboard";
-import BottomModal from "./BottomModal";
-import { Copy, MoreDots, Send } from "@/assets/images";
-import BottomSheet from "./BS";
-import SearchComponent from "./SearchComponent";
+} from '@expo/vector-icons';
+import BottomSheet from './BS';
+import SearchComponent from './SearchComponent';
 
 interface ShareModalProps {
   visible: boolean;
   onClose: () => void;
   postLink?: string;
 }
-const { height: SCREEN_HEIGHT } = Dimensions.get("window");
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 interface Friend {
   id: string;
   name: string;
   image: string;
 }
 const SEARCH_HEIGHT = 60;
-const ShareModal: React.FC<ShareModalProps> = ({
-  visible,
-  onClose,
-  postLink = "https://example.com/post/123",
-}) => {
+const ShareModal: React.FC<ShareModalProps> = ({ visible, onClose }) => {
   const [friends] = useState<Friend[]>([
     // Your existing friends array...
     // Add more friends for testing scrolling
@@ -56,20 +42,19 @@ const ShareModal: React.FC<ShareModalProps> = ({
   ]);
   const searchAnimation = useRef(new Animated.Value(0)).current;
   const searchOpacity = useRef(new Animated.Value(1)).current;
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const customSnapPoints = {
     PARTIAL: SCREEN_HEIGHT * 0.5, // 50% of screen height
     FULL: SCREEN_HEIGHT * 0.2, // 20% of screen height
   };
   const [selectedFriends, setSelectedFriends] = useState<Set<string>>(
-    new Set(),
+    new Set()
   );
-  const [isLinkCopied, setIsLinkCopied] = useState(false);
-  const [currentSnap, setCurrentSnap] = useState<"closed" | "partial" | "full">(
-    "partial",
+  const [currentSnap, setCurrentSnap] = useState<'closed' | 'partial' | 'full'>(
+    'partial'
   );
 
-  const handleSnapChange = (snap: "closed" | "partial" | "full") => {
+  const handleSnapChange = (snap: 'closed' | 'partial' | 'full') => {
     setCurrentSnap(snap);
   };
 
@@ -80,7 +65,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
 
     const query = searchQuery.toLowerCase();
     return friends.filter((friend) =>
-      friend.name.toLowerCase().includes(query),
+      friend.name.toLowerCase().includes(query)
     );
   }, [friends, searchQuery]);
 
@@ -88,9 +73,9 @@ const ShareModal: React.FC<ShareModalProps> = ({
     const rows = [];
     const rowSize = 4;
     const friendsToDisplay =
-      currentSnap === "partial" ? friends : filteredFriends;
+      currentSnap === 'partial' ? friends : filteredFriends;
     const displayRows =
-      currentSnap === "partial"
+      currentSnap === 'partial'
         ? 2
         : Math.ceil(friendsToDisplay.length / rowSize);
 
@@ -98,21 +83,21 @@ const ShareModal: React.FC<ShareModalProps> = ({
       const rowFriends = friendsToDisplay.slice(i * rowSize, (i + 1) * rowSize);
 
       // Only show the first two rows in partial view
-      if (currentSnap === "partial" && i >= 2) break;
+      if (currentSnap === 'partial' && i >= 2) break;
 
       rows.push(
         <View key={i} style={styles.row}>
           {rowFriends.map(renderFriend)}
-        </View>,
+        </View>
       );
     }
 
     // Show "No results" message when search yields no results
-    if (currentSnap === "full" && filteredFriends.length === 0) {
+    if (currentSnap === 'full' && filteredFriends.length === 0) {
       rows.push(
         <View key="no-results" style={styles.noResultsContainer}>
           <Text style={styles.noResultsText}>No friends found</Text>
-        </View>,
+        </View>
       );
     }
 
@@ -121,7 +106,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
 
   // Animation for search bar
   useEffect(() => {
-    if (currentSnap === "full") {
+    if (currentSnap === 'full') {
       Animated.parallel([
         Animated.spring(searchAnimation, {
           toValue: 0,
@@ -148,15 +133,6 @@ const ShareModal: React.FC<ShareModalProps> = ({
     }
   }, [currentSnap]);
 
-  const handleCopyLink = useCallback(async () => {
-    try {
-      await Clipboard.setStringAsync(postLink);
-      setIsLinkCopied(true);
-    } catch (error) {
-      console.error("Failed to copy link:", error);
-    }
-  }, [postLink]);
-
   const toggleFriendSelection = (friendId: string) => {
     const newSelection = new Set(selectedFriends);
     if (newSelection.has(friendId)) {
@@ -165,13 +141,6 @@ const ShareModal: React.FC<ShareModalProps> = ({
       newSelection.add(friendId);
     }
     setSelectedFriends(newSelection);
-  };
-
-  const handleSend = () => {
-    console.log("Sending to friends:", Array.from(selectedFriends));
-    setSelectedFriends(new Set());
-    onClose();
-    setIsLinkCopied(false);
   };
 
   const renderFriend = (friend: Friend) => (
@@ -194,7 +163,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
       <TouchableOpacity onPress={() => {}} style={styles.iconButton}>
         <Ionicons
           name="logo-whatsapp"
-          color={"#fff"}
+          color={'#fff'}
           size={26}
           style={styles.iconLogo}
         />
@@ -202,7 +171,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
       <TouchableOpacity onPress={() => {}} style={styles.iconButton}>
         <Ionicons
           name="logo-instagram"
-          color={"#fff"}
+          color={'#fff'}
           size={26}
           style={styles.iconLogo}
         />
@@ -210,7 +179,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
       <TouchableOpacity onPress={() => {}} style={styles.iconButton}>
         <Feather
           name="message-circle"
-          color={"#fff"}
+          color={'#fff'}
           size={26}
           style={styles.iconLogo}
         />
@@ -218,7 +187,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
       <TouchableOpacity onPress={() => {}} style={styles.iconButton}>
         <MaterialCommunityIcons
           name="facebook-messenger"
-          color={"#fff"}
+          color={'#fff'}
           size={26}
           style={styles.iconLogo}
         />
@@ -226,7 +195,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
       <TouchableOpacity onPress={() => {}} style={styles.iconButton}>
         <MaterialCommunityIcons
           name="snapchat"
-          color={"#fff"}
+          color={'#fff'}
           size={26}
           style={styles.iconLogo}
         />
@@ -234,7 +203,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
       <TouchableOpacity onPress={() => {}} style={styles.iconButton}>
         <FontAwesome
           name="copy"
-          color={"#fff"}
+          color={'#fff'}
           size={26}
           style={styles.iconLogo}
         />
@@ -256,11 +225,11 @@ const ShareModal: React.FC<ShareModalProps> = ({
     >
       <View style={styles.modalContent}>
         <ScrollView
-          scrollEnabled={currentSnap === "full"}
+          scrollEnabled={currentSnap === 'full'}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
-          {currentSnap === "full" && (
+          {currentSnap === 'full' && (
             <Animated.View
               style={[
                 styles.searchWrapper,
@@ -278,7 +247,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
           )}
           <View
             style={
-              currentSnap === "partial"
+              currentSnap === 'partial'
                 ? styles.friendsGridPartial
                 : styles.friendsGrid
             }
@@ -300,20 +269,20 @@ const styles = StyleSheet.create({
   modalContainer: {
     borderRadius: 0,
     borderWidth: 0,
-    backgroundColor: "green",
+    backgroundColor: 'green',
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
   },
   iconButton: {
     borderRadius: 30,
-    backgroundColor: "#FF325E",
-    justifyContent: "center",
-    alignContent: "center",
-    alignItems: "center",
+    backgroundColor: '#FF325E',
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
     marginHorizontal: 5,
   },
   searchWrapper: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
@@ -324,27 +293,27 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   line: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     width: 28,
     marginTop: 7,
   },
   noResultsContainer: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 30,
   },
   bottomStyle: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     height: 80,
-    backgroundColor: "#000",
+    backgroundColor: '#000',
   },
   noResultsText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
     opacity: 0.7,
   },
   icon: {
@@ -354,10 +323,10 @@ const styles = StyleSheet.create({
     margin: 12,
   },
   linkContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1.5,
-    borderColor: "#fff",
+    borderColor: '#fff',
     paddingLeft: 20,
     paddingRight: 20,
     borderRadius: 40,
@@ -367,32 +336,32 @@ const styles = StyleSheet.create({
   linkText: {
     flex: 1,
     marginRight: 10,
-    color: "#fff",
+    color: '#fff',
     fontSize: 18,
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: '600',
     marginBottom: 15,
-    color: "#000",
+    color: '#000',
   },
   friendsGridPartial: {
     paddingVertical: 0,
     top: -40,
   },
   friendsGrid: {
-    justifyContent: "center",
+    justifyContent: 'center',
     paddingVertical: 30,
   },
   row: {
-    flexDirection: "row",
-    justifyContent: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   friendContainer: {
-    alignItems: "center",
+    alignItems: 'center',
     margin: 10,
-    backgroundColor: "black",
+    backgroundColor: 'black',
     padding: 5,
   },
   selectedFriend: {
@@ -403,51 +372,51 @@ const styles = StyleSheet.create({
     height: 55,
     borderRadius: 55,
 
-    backgroundColor: "red",
+    backgroundColor: 'red',
   },
   friendName: {
     fontSize: 14,
-    color: "#fff",
-    textAlign: "center",
-    fontFamily: "InterSemiBold",
+    color: '#fff',
+    textAlign: 'center',
+    fontFamily: 'InterSemiBold',
   },
   checkmark: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     right: 15,
-    backgroundColor: "#FF325E",
+    backgroundColor: '#FF325E',
     borderRadius: 10,
     width: 9,
     height: 9,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   moreButton: {
     width: 62,
     height: 62,
-    backgroundColor: "red",
+    backgroundColor: 'red',
     borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     top: -5,
   },
   moreButtonText: {
     fontSize: 14,
-    color: "#fff",
-    textAlign: "center",
-    fontFamily: "InterSemiBold",
+    color: '#fff',
+    textAlign: 'center',
+    fontFamily: 'InterSemiBold',
   },
   sendButton: {
     marginVertical: 30,
     marginRight: 15,
-    alignItems: "flex-end",
-    justifyContent: "flex-end",
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
   },
   sendRow: {
     flex: 1,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

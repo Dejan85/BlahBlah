@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -8,24 +8,24 @@ import {
   Animated,
   Text,
   Alert,
-} from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { useRouter } from "expo-router";
-import { runOnJS } from "react-native-reanimated";
+} from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { useRouter } from 'expo-router';
+import { runOnJS } from 'react-native-reanimated';
 
-import SearchComponent from "@/components/SearchComponent";
-import UserListComponent from "@/components/UserListComponent";
-import { supabase } from "@/utils/supabase";
-import { useAuth } from "@/context/AuthContext";
-import { IconButton } from "@/components/IconButton";
-import { GroupChat, Logo, Profile } from "@/assets/images";
-import { User } from "@/types";
-import { useFriendRequests } from "@/context/FriendRequestContext";
+import SearchComponent from '@/components/SearchComponent';
+import UserListComponent from '@/components/UserListComponent';
+import { supabase } from '@/utils/supabase';
+import { useAuth } from '@/context/AuthContext';
+import { IconButton } from '@/components/IconButton';
+import { GroupChat, Logo, Profile } from '@/assets/images';
+import { User } from '@/types';
+import { useFriendRequests } from '@/context/FriendRequestContext';
 import {
   EnhancedConversation,
   DBConversation,
   Conversation,
-} from "@/types/conversations";
+} from '@/types/conversations';
 
 const SEARCH_HEIGHT = 60;
 const SWIPE_THRESHOLD = 50;
@@ -38,20 +38,20 @@ const Chats: React.FC = () => {
   const { friendRequests } = useFriendRequests(); // <--- get requests
   const friendRequestCount = friendRequests.length; // <--- length
   const lastScrollPosition = useRef(0);
-  const scrollDirection = useRef("");
+  const scrollDirection = useRef('');
   const { user: currentUser } = useAuth();
   const currentUserId = currentUser?.id;
 
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [conversations, setConversations] = useState<EnhancedConversation[]>(
-    [],
+    []
   );
 
   const fetchConversations = async () => {
     if (!currentUserId) return;
 
     const { data, error } = (await supabase
-      .from("conversations")
+      .from('conversations')
       .select(
         `
         id,
@@ -60,17 +60,17 @@ const Chats: React.FC = () => {
         participant1:participant1_id (id, username, avatar_url, bio),
         participant2:participant2_id (id, username, avatar_url, bio),
         messages!messages_conversation_id_fkey (id, text, sender_id, created_at)
-      `,
+      `
       )
       .or(
-        `participant1_id.eq.${currentUserId},participant2_id.eq.${currentUserId}`,
+        `participant1_id.eq.${currentUserId},participant2_id.eq.${currentUserId}`
       )) as {
       data: DBConversation[] | null;
       error: any;
     };
 
     if (error) {
-      console.error("Error fetching conversations:", error);
+      console.error('Error fetching conversations:', error);
       return;
     }
 
@@ -82,13 +82,13 @@ const Chats: React.FC = () => {
 
         // Get messages not sent by the current user
         const receivedMessages = (conv.messages || []).filter(
-          (msg) => msg.sender_id !== currentUserId,
+          (msg) => msg.sender_id !== currentUserId
         );
 
         // Sort messages by creation time
         const sortedMessages = receivedMessages.sort(
           (a, b) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
 
         const lastMsg = sortedMessages[0];
@@ -96,16 +96,16 @@ const Chats: React.FC = () => {
         return {
           id: conv.id,
           username: isP1
-            ? (conv.participant2?.username ?? "Unknown")
-            : (conv.participant1?.username ?? "Unknown"),
+            ? (conv.participant2?.username ?? 'Unknown')
+            : (conv.participant1?.username ?? 'Unknown'),
           image: isP1
-            ? (conv.participant2?.avatar_url ?? "")
-            : (conv.participant1?.avatar_url ?? ""),
+            ? (conv.participant2?.avatar_url ?? '')
+            : (conv.participant1?.avatar_url ?? ''),
           bio: isP1
-            ? (conv.participant2?.bio ?? "")
-            : (conv.participant1?.bio ?? ""),
-          lastMessage: lastMsg?.text ?? "",
-          lastMessageTime: lastMsg?.created_at ?? "",
+            ? (conv.participant2?.bio ?? '')
+            : (conv.participant1?.bio ?? ''),
+          lastMessage: lastMsg?.text ?? '',
+          lastMessageTime: lastMsg?.created_at ?? '',
           isPinned: conv.is_pinned ?? false, // Add this line
           isMuted: conv.is_muted ?? false, // Add this line
         };
@@ -129,13 +129,13 @@ const Chats: React.FC = () => {
   // Real-time subscription to messages
   const subscribeToMessages = () => {
     return supabase
-      .channel("messages-changes")
+      .channel('messages-changes')
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "INSERT",
-          schema: "public",
-          table: "messages",
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
         },
         (payload) => {
           const newMessage = payload.new;
@@ -155,9 +155,9 @@ const Chats: React.FC = () => {
                 };
               }
               return conv;
-            }),
+            })
           );
-        },
+        }
       )
       .subscribe();
   };
@@ -183,14 +183,14 @@ const Chats: React.FC = () => {
 
       // Update in Supabase
       await supabase
-        .from("conversations")
+        .from('conversations')
         .update({ is_pinned: newPinnedState })
-        .eq("id", user.id);
+        .eq('id', user.id);
 
       // Update local state and sort
       setConversations((prev) => {
         const updatedConversations = prev.map((conv) =>
-          conv.id === user.id ? { ...conv, isPinned: newPinnedState } : conv,
+          conv.id === user.id ? { ...conv, isPinned: newPinnedState } : conv
         );
 
         // Sort conversations: pinned first, then by last message time
@@ -209,7 +209,7 @@ const Chats: React.FC = () => {
         });
       });
     } catch (error) {
-      console.error("Error updating pin status:", error);
+      console.error('Error updating pin status:', error);
     }
   };
 
@@ -218,46 +218,46 @@ const Chats: React.FC = () => {
     const newMutedState = !conversation?.isMuted;
 
     await supabase
-      .from("conversations")
+      .from('conversations')
       .update({ is_muted: newMutedState })
-      .eq("id", user.id);
+      .eq('id', user.id);
 
     setConversations((prev) =>
       prev.map((conv) =>
-        conv.id === user.id ? { ...conv, isMuted: newMutedState } : conv,
-      ),
+        conv.id === user.id ? { ...conv, isMuted: newMutedState } : conv
+      )
     );
   };
 
   const handleDelete = async (item: User) => {
     Alert.alert(
-      "Delete Conversation",
+      'Delete Conversation',
       `Are you sure you want to delete your conversation with ${item.username}?`,
       [
-        { text: "Cancel", style: "cancel" },
+        { text: 'Cancel', style: 'cancel' },
         {
-          text: "Delete",
-          style: "destructive",
+          text: 'Delete',
+          style: 'destructive',
           onPress: async () => {
             try {
               const { error } = await supabase
-                .from("conversations")
+                .from('conversations')
                 .delete()
-                .eq("id", item.id);
+                .eq('id', item.id);
 
               if (error) throw error;
 
               Alert.alert(
-                "Deleted",
-                `${item.username}'s conversation is deleted.`,
+                'Deleted',
+                `${item.username}'s conversation is deleted.`
               );
             } catch (err) {
-              console.error("Error deleting conversation:", err);
-              Alert.alert("Error", "Failed to delete the conversation.");
+              console.error('Error deleting conversation:', err);
+              Alert.alert('Error', 'Failed to delete the conversation.');
             }
           },
         },
-      ],
+      ]
     );
   };
 
@@ -268,8 +268,8 @@ const Chats: React.FC = () => {
       currentScrollPosition > lastScrollPosition.current &&
       currentScrollPosition > 0
     ) {
-      if (scrollDirection.current !== "down") {
-        scrollDirection.current = "down";
+      if (scrollDirection.current !== 'down') {
+        scrollDirection.current = 'down';
         Animated.sequence([
           Animated.timing(searchAnimation, {
             toValue: -20,
@@ -291,8 +291,8 @@ const Chats: React.FC = () => {
         ]).start();
       }
     } else {
-      if (scrollDirection.current !== "up") {
-        scrollDirection.current = "up";
+      if (scrollDirection.current !== 'up') {
+        scrollDirection.current = 'up';
         Animated.sequence([
           Animated.parallel([
             Animated.timing(searchAnimation, {
@@ -323,12 +323,12 @@ const Chats: React.FC = () => {
       .runOnJS(true)
       .activeOffsetX([-10, 10])
       .onEnd((event) => {
-        "worklet";
+        'worklet';
         if (event.velocityX > SWIPE_THRESHOLD) {
           runOnJS(handleBack)();
         }
       }),
-    Gesture.Native(),
+    Gesture.Native()
   );
 
   const navigateToProfile = () => {
@@ -337,7 +337,7 @@ const Chats: React.FC = () => {
       return;
     }
     router.push({
-      pathname: "/profile/test/[id]",
+      pathname: '/profile/test/[id]',
       params: { id: currentUserId },
     });
   };
@@ -346,12 +346,12 @@ const Chats: React.FC = () => {
     const conversation: Conversation = {
       id: user.id,
       username: user.username,
-      bio: user.bio ?? "", // Provide default empty string for optional bio
+      bio: user.bio ?? '', // Provide default empty string for optional bio
       image: user.image,
     };
 
     router.push({
-      pathname: "/chats/chat-room/[id]",
+      pathname: '/chats/chat-room/[id]',
       params: {
         id: conversation.id,
         username: conversation.username,
@@ -362,13 +362,13 @@ const Chats: React.FC = () => {
   };
 
   const filteredConversations = conversations.filter((conv) =>
-    conv.username?.toLowerCase().includes(searchQuery.toLowerCase()),
+    conv.username?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <GestureDetector gesture={gesture}>
       <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="dark-content" backgroundColor={"#fff"} />
+        <StatusBar barStyle="dark-content" backgroundColor={'#fff'} />
         <View style={styles.header}>
           <IconButton
             icon={<Profile />}
@@ -380,10 +380,10 @@ const Chats: React.FC = () => {
             <Logo style={styles.letterImage} />
             <Text style={styles.headerText}>ts</Text>
           </View>
-          <View style={{ position: "relative" }}>
+          <View style={{ position: 'relative' }}>
             <IconButton
               icon={<GroupChat />}
-              onPress={() => router.push("/friend-requests")}
+              onPress={() => router.push('/friend-requests')}
               size={34}
             />
             {friendRequestCount > 0 && (
@@ -444,35 +444,35 @@ const Chats: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-    backgroundColor: "#fff",
+    marginTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+    backgroundColor: '#fff',
   },
   searchWrapper: {
-    position: "absolute",
-    top: Platform.OS === "android" ? 90 : 130,
+    position: 'absolute',
+    top: Platform.OS === 'android' ? 90 : 130,
     left: 0,
     right: 0,
     zIndex: 10,
   },
   headerTextContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   badgeContainer: {
-    position: "absolute",
+    position: 'absolute',
     top: -12,
     right: -15,
-    backgroundColor: "red",
+    backgroundColor: 'red',
     borderRadius: 10,
     minWidth: 18,
     minHeight: 18,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   badgeText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 8,
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
   },
   letterImage: {
     width: 42, // Match font size
@@ -480,34 +480,34 @@ const styles = StyleSheet.create({
     marginTop: 5, // Adjust to align with text
   },
   messageFooter: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-end",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
     marginTop: 4,
     gap: 4,
   },
   seenLabel: {
     fontSize: 11,
-    color: "#9CA3AF",
-    fontFamily: "InterRegular",
+    color: '#9CA3AF',
+    fontFamily: 'InterRegular',
   },
   seenLabelActive: {
-    color: "#40E0D0",
+    color: '#40E0D0',
   },
   senderTimestamp: {
-    color: "rgba(255, 255, 255, 0.7)",
+    color: 'rgba(255, 255, 255, 0.7)',
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 30,
     paddingVertical: 10,
   },
   headerText: {
     fontSize: 38,
-    fontFamily: "InterBold",
-    color: "#202020",
+    fontFamily: 'InterBold',
+    color: '#202020',
   },
 });
 

@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
-import * as Location from "expo-location";
-import { Alert } from "react-native";
-import { supabase } from "@/utils/supabase";
+import { useState, useEffect, useCallback } from 'react';
+import * as Location from 'expo-location';
+import { Alert } from 'react-native';
+import { supabase } from '@/utils/supabase';
 
 interface LocationState {
   coords: {
@@ -24,9 +24,9 @@ export function useLocation(userId?: string) {
 
       try {
         const { data, error } = await supabase
-          .from("profiles")
-          .select("location_enabled")
-          .eq("id", userId)
+          .from('profiles')
+          .select('location_enabled')
+          .eq('id', userId)
           .single();
 
         if (error) throw error;
@@ -36,7 +36,7 @@ export function useLocation(userId?: string) {
         }
         setIsInitialized(true);
       } catch (error) {
-        console.error("Error fetching location state:", error);
+        console.error('Error fetching location state:', error);
         setIsInitialized(true);
       }
     };
@@ -45,20 +45,20 @@ export function useLocation(userId?: string) {
 
     // Subscribe to profile changes
     const channel = supabase
-      .channel("location-changes")
+      .channel('location-changes')
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "*",
-          schema: "public",
-          table: "profiles",
+          event: '*',
+          schema: 'public',
+          table: 'profiles',
           filter: `id=eq.${userId}`,
         },
         (payload) => {
-          if (payload.new && "location_enabled" in payload.new) {
+          if (payload.new && 'location_enabled' in payload.new) {
             setIsLocationEnabled(payload.new.location_enabled);
           }
-        },
+        }
       )
       .subscribe();
 
@@ -76,10 +76,10 @@ export function useLocation(userId?: string) {
       if (newState) {
         // Request permissions before enabling
         const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
+        if (status !== 'granted') {
           Alert.alert(
-            "Permission denied",
-            "Location permissions are required to share your location.",
+            'Permission denied',
+            'Location permissions are required to share your location.'
           );
           return;
         }
@@ -87,13 +87,13 @@ export function useLocation(userId?: string) {
 
       // Update database first
       const { error } = await supabase
-        .from("profiles")
+        .from('profiles')
         .update({
           location_enabled: newState,
           // Clear location data if disabling
           ...(newState ? {} : { latitude: null, longitude: null }),
         })
-        .eq("id", userId);
+        .eq('id', userId);
 
       if (error) throw error;
 
@@ -105,8 +105,8 @@ export function useLocation(userId?: string) {
         setLocation(null);
       }
     } catch (error) {
-      console.error("Error toggling location:", error);
-      Alert.alert("Error", "Failed to update location settings");
+      console.error('Error toggling location:', error);
+      Alert.alert('Error', 'Failed to update location settings');
     }
   }, [userId, isLocationEnabled]);
 
@@ -117,7 +117,7 @@ export function useLocation(userId?: string) {
 
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
+      if (status !== 'granted') {
         setIsLocationEnabled(false);
         return undefined;
       }
@@ -142,26 +142,26 @@ export function useLocation(userId?: string) {
 
           try {
             const { error } = await supabase
-              .from("profiles")
+              .from('profiles')
               .update({
                 latitude,
                 longitude,
                 updated_at: new Date().toISOString(),
               })
-              .eq("id", userId);
+              .eq('id', userId);
 
             if (error) {
-              console.error("Error updating location in Supabase:", error);
+              console.error('Error updating location in Supabase:', error);
             }
           } catch (err) {
-            console.error("Error while updating location:", err);
+            console.error('Error while updating location:', err);
           }
-        },
+        }
       );
 
       return subscription;
     } catch (error) {
-      console.error("Error starting location updates:", error);
+      console.error('Error starting location updates:', error);
       return undefined;
     }
   }, [userId]);

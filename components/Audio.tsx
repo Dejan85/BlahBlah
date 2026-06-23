@@ -1,13 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Dimensions, Platform } from "react-native";
-import { Audio } from "expo-av";
-import Animated, {
-  useAnimatedStyle,
-  withSpring,
-  useSharedValue,
-  withSequence,
-  withRepeat,
-} from "react-native-reanimated";
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Platform } from 'react-native';
+import { Audio } from 'expo-av';
+import Animated, { withSpring, useSharedValue } from 'react-native-reanimated';
 
 interface AudioWaveformProps {
   recording: Audio.Recording | null;
@@ -16,7 +10,6 @@ interface AudioWaveformProps {
   playbackDuration?: number;
 }
 
-const WINDOW_WIDTH = Dimensions.get("window").width;
 const BAR_WIDTH = 3;
 const BAR_MARGIN = 2;
 const MAX_HEIGHT = 50;
@@ -31,7 +24,7 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({
 }) => {
   const [amplitudes, setAmplitudes] = useState<number[]>([]);
   const animatedBars = useSharedValue<number[]>(Array(BARS_COUNT).fill(0));
-  const isAndroid = Platform.OS === "android";
+  const isAndroid = Platform.OS === 'android';
 
   useEffect(() => {
     if (recording) {
@@ -100,7 +93,7 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({
         damping: 15,
         stiffness: 100,
       }),
-      backgroundColor: isActive ? "#FF325E" : "#fff",
+      backgroundColor: isActive ? '#FF325E' : '#fff',
     };
   };
 
@@ -127,23 +120,23 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: "60%",
+    width: '60%',
     height: MAX_HEIGHT,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginVertical: 20,
   },
   barsContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    height: "100%",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
   },
   bar: {
     width: BAR_WIDTH,
     marginHorizontal: BAR_MARGIN,
     borderRadius: BAR_WIDTH / 2,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
 });
 

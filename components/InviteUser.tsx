@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,14 +7,12 @@ import {
   Text,
   Alert,
   ActivityIndicator,
-} from "react-native";
-import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/utils/supabase";
+} from 'react-native';
+import { supabase } from '@/utils/supabase';
 
 export const InviteUser = () => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { user } = useAuth();
 
   const validateEmail = (email: string) => {
     return email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
@@ -22,7 +20,7 @@ export const InviteUser = () => {
 
   const handleInvite = async () => {
     if (!email || !validateEmail(email)) {
-      Alert.alert("Invalid Email", "Please enter a valid email address");
+      Alert.alert('Invalid Email', 'Please enter a valid email address');
       return;
     }
 
@@ -34,37 +32,37 @@ export const InviteUser = () => {
         data: { session },
       } = await supabase.auth.getSession();
       if (!session?.access_token) {
-        throw new Error("No active session");
+        throw new Error('No active session');
       }
 
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/invite-user`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
             email,
           }),
-        },
+        }
       );
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to send invitation");
+        throw new Error(data.error || 'Failed to send invitation');
       }
 
-      Alert.alert("Success", "Invitation sent successfully!", [
-        { text: "OK", onPress: () => setEmail("") },
+      Alert.alert('Success', 'Invitation sent successfully!', [
+        { text: 'OK', onPress: () => setEmail('') },
       ]);
     } catch (error) {
-      console.error("Invitation error:", error);
+      console.error('Invitation error:', error);
       Alert.alert(
-        "Error",
-        error instanceof Error ? error.message : "Failed to send invitation",
+        'Error',
+        error instanceof Error ? error.message : 'Failed to send invitation'
       );
     } finally {
       setIsLoading(false);
@@ -103,25 +101,25 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: '#ddd',
     borderRadius: 8,
     padding: 12,
     marginBottom: 16,
     fontSize: 16,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   button: {
-    backgroundColor: "#FF325E",
+    backgroundColor: '#FF325E',
     padding: 12,
     borderRadius: 8,
-    alignItems: "center",
+    alignItems: 'center',
   },
   buttonDisabled: {
     opacity: 0.7,
   },
   buttonText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });

@@ -9,7 +9,7 @@
 ## 1. Šta je BlahBlah
 
 Social media mobilna aplikacija (Expo / React Native), hibrid **Snapchat + Instagram**.
-Stanje: **Faza 0 završena**, **Faza 1 u toku** (T1.1–T1.6 gotovi; ostaju T1.7 lint, T1.8/T1.9 konsolidacija profila). App se build-uje i diže na uređaju bez crash-a (vidi §8 dnevnik).
+Stanje: **Faza 0 završena**, **Faza 1 u toku** (T1.1–T1.7 gotovi; ostaju **T1.8/T1.9 konsolidacija profila**). App se build-uje i diže na uređaju bez crash-a (vidi §8 dnevnik). ESLint + Prettier postavljeni i prolaze čisto (0 errors); mrtav kod očišćen.
 
 ### Tech stack
 - **Expo 51** + **expo-router** (file-based routing, `app/` folder)
@@ -47,7 +47,7 @@ Aplikacija je obimna — ~298 fajlova, ~70 komponenti.
 
 | Oblast | Težina* | Završeno |
 |---|---|---|
-| Setup / build / infra (migracije, testovi) | 5% | ~50% |
+| Setup / build / infra (migracije, testovi, lint) | 5% | ~55% |
 | Auth & onboarding | 10% | ~55% |
 | Postovi / Feed (Home) | 12% | ~65% |
 | Kamera / kreiranje posta | 10% | ~60% |
@@ -102,6 +102,7 @@ Aplikacija je obimna — ~298 fajlova, ~70 komponenti.
 - [x] ~~**`package.json` ime je još `"test"`**~~ ✅ **REŠENO (T1.5)** — preimenovan u `blahblah`.
 - [x] ~~**README** je default Expo template~~ ✅ **REŠENO (T1.5)** — zamenjen pravim opisom (tech stack, env varovi, komande, struktura, konvencije, link na `docs/`).
 - [x] ~~**Curenje logova** — `utils/supabase.ts:8-11` loguje Supabase ključeve u konzolu~~ ✅ **REŠENO (T1.2)** — `console.log` linije uklonjene; zamenjene tihim `console.warn` guard-om koji javlja samo da env nedostaje (bez vrednosti).
+- [x] ~~**Nema lint/format setup-a; ~145 mrtvih importa/varijabli**~~ ✅ **REŠENO (T1.7)** — ESLint (`eslint-config-expo`) + Prettier (`.prettierrc` jedini izvor, `.prettierignore`) postavljeni i prolaze čisto (0 errors). Popravljena 2 prava errora (rules-of-hooks `useImage` u `FilterMenu`, `__dirname` no-undef u `metro.config.js`). Očišćeno svih ~145 mrtvih importa/varijabli (auto preko `eslint-plugin-unused-imports` + ručno za lokalne). **Ostaje 41 `react-hooks/exhaustive-deps` warninga — namerno ostavljeni** (popravka menja runtime ponašanje; zaseban opciono task).
 
 ---
 
@@ -110,7 +111,7 @@ Aplikacija je obimna — ~298 fajlova, ~70 komponenti.
 - [ ] **Šema baze NIJE u repozitorijumu** ⚠️ — nema SQL migracija, `supabase/` je u `.gitignore`. Cela struktura baze + RLS politike postoje samo u Supabase cloud-u. → Uraditi `supabase db pull` i commit-ovati migracije (backup + verzionisanje).
 - [x] ~~**Nema testova** iako je Jest konfigurisan~~ ✅ **REŠENO (T1.6)** — test infra potvrđena (smoke test prolazi, `@/*` alias mapiran). Pravi `lib/` testovi mehanika dolaze u Fazi 3 (T3.1+).
 - [ ] **Push notifikacije nedovršene** — firebase JS SDK uklonjen (T0.2); push (native Firebase) se radi u T4.3, trenutno nije implementiran.
-- [ ] **bottom-sheet ↔ reanimated neslaganje** ⚠️ (novo, iz T0.5) — `@gorhom/bottom-sheet@5` traži reanimated ≥3.16, a SDK 51 poravnanje ga je spustilo na 3.10. Testirati sve bottom-sheet-ove (`BottomModal`/`BS`); ako bagују → downgrade bottom-sheet na v4 ili držati reanimated viši.
+- [ ] **bottom-sheet ↔ reanimated neslaganje** ⚠️ (iz T0.5) — `@gorhom/bottom-sheet@5` traži reanimated ≥3.16, a SDK 51 poravnanje ga je spustilo na 3.10. Testirati sve bottom-sheet-ove (`BottomModal`/`BS`); ako bagují → downgrade bottom-sheet na v4 ili držati reanimated viši. **Nuspr. posledica (T1.7):** ovaj peer konflikt sada lomi svaki `npm install` (npr. `expo lint` auto-instalacija ESLint-a je pukla na ERESOLVE) → instalacije moraju ići sa `--legacy-peer-deps` dok se konflikt ne reši.
 
 > ✅ Sigurnost OK: `.env` i `firebase-adminsdk-*.json` **nisu** commit-ovani (pokriveni `.gitignore`-om).
 
@@ -177,4 +178,5 @@ npm run format
 - **2026-06-24** — ✅ **T1.4 gotov.** Preimenovan folder `app/freind-requests/` → `app/friend-requests/` (typo) preko `git mv` (čuva istoriju). Ažurirane dve `router.push` rute: `chats/index.tsx:386`, `Push.tsx:95`. Docs sinhronizovani (ARCHITECTURE §folderi, SCREENS §6 friend-requests, PROJECT_STATUS §4). `tsc --noEmit` prolazi. **Usput:** expo-ov file-watcher je usred rename-a regenerisao gitignored `.expo/types/router.d.ts` u prelazno stanje (sadržao i stari i novi naziv, sa zalutalim `\` koji escape-uje backtick → "unterminated template literal"); fajl ručno ispravljen, expo ga ionako regeneriše na sledeći `expo start`.
 - **2026-06-24** — ✅ **T1.6 gotov.** Jest test infra potvrđena. (1) `@/*` alias mapiran u jest config (`moduleNameMapper: "^@/(.*)$" → "<rootDir>/$1"`) — `jest-expo` ne čita tsconfig paths sam, a CLAUDE.md zahteva `@/` importe → bez ovoga bi svaki budući `lib/` test pukao. (2) `test` skripta promenjena sa `jest --watchAll` (visi u CI/jednokratno) na `jest`; dodat `test:watch`. (3) Smoke test `lib/smoke.test.ts` prolazi 2/2 — potvrđuje TS transpile + Jest run + `@/` alias (importuje `package.json` i proverava `name === "blahblah"`, bez throwaway koda). **Watch-item:** `npx tsc` je pukao na gitignored `.expo/types/router.d.ts` (isti T1.4 transient — zalutali `\` u `/friend-requests\` → unterminated template literal); fajl obrisan (expo ga regeneriše na `expo start`), tsc onda čist. Prvi pravi `lib/` test je T3.1 (`formatCount`).
 - **2026-06-24** — 📌 **Odluka o E2E alatu.** E2E (pokretanje prave app + driving UI-ja kao Cypress za web) = **Maestro**, dodat kao **T4.13** (Faza 4). Izabran umesto Detox-a (teži setup, native-vezan) i Cypress/Playwright-a (rade samo na `react-native-web` build-u, ne testiraju pravu native app). **Namerno odложено za Fazu 4:** E2E flow-ovi su krhki dok se ekrani menjaju (npr. profil se konsoliduje u T1.8/T1.9) → ima smisla tek na stabilizovanim flow-ovima. Slojevi testiranja: `lib/` Jest (mehanike, Faza 3) → opciono RNTL (component ponašanje) → Maestro E2E (kritični flow-ovi, Faza 4).
+- **2026-06-24** — ✅ **T1.7 gotov.** ESLint + Prettier postavljeni i prolaze čisto. (1) **Setup:** `eslint-config-expo` + `.eslintrc.js` (override `env:node` za `*.config.js`/`scripts`), `eslint-plugin-unused-imports` za pouzdano auto-uklanjanje mrtvih importa, `.prettierrc` ostao jedini izvor (uklonjen duplikat `prettier` ključ iz `package.json` koji se kosio s njim), nov `.prettierignore` (preskače `docs/`, `ios/`, `android/`, generisane JSON, sve `*.md` — da ručno kuriranе SSoT tabele ne reflow-uju). (2) **2 prava errora popravljena:** rules-of-hooks — `useImage(uri)` u `components/Camera/FilterMenu.tsx` zvan posle ranog `return` (hook pomeren pre svih return-a); `__dirname` no-undef u `metro.config.js` (Node env override). (3) **~145 mrtvih importa/varijabli očišćeno:** 77 importa auto (unused-imports `--fix`), 68 lokalnih ručno uz proveru konteksta (state setteri → `const [, setX]`, destrukturirani `data`/`error` → izbačeni, neiskorišćeni propovi/handleri uklonjeni), + 5 `react/display-name` (memo/forwardRef komponente dobile `displayName`). (4) **Prettier:** `--write` formatirao ~100 source fajlova (singleQuote, es5 trailing comma) → `--check` čist. **Rezultat:** `tsc` čist, `expo lint` 0 errors, testovi 2/2. **Ostaje 41 `react-hooks/exhaustive-deps` warninga — SVESNO ostavljeni** (popravka menja runtime ponašanje, npr. refetch/loop; rizik > korist za ovaj task). **Watch-item:** vidi §5 — `npm install` zahteva `--legacy-peer-deps` zbog bottom-sheet↔reanimated konflikta (ERESOLVE je oborio `expo lint` auto-instalaciju ESLint-a).
 - **2026-06-24** — ✅ **T1.5 gotov.** `package.json` name `"test"` → `"blahblah"`. README zamenjen sa default Expo starter-a pravim opisom: tech stack (Expo 51 / Supabase / TanStack Query / RevenueCat), preduslovi + env varovi (`EXPO_PUBLIC_SUPABASE_URL` / `EXPO_PUBLIC_SUPABASE_ANON_KEY`, potvrđeno iz `utils/supabase.ts`), komande (start/android/ios/tsc/test/lint/format), folder struktura, kratke konvencije (`lib/`, Custom komponente, `@/*` alias) i tabela linkova na `docs/`. `tsc --noEmit` prolazi.

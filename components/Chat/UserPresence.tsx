@@ -1,6 +1,6 @@
-import React from "react";
-import { Text, StyleSheet } from "react-native";
-import { formatPresence } from "@/hooks/usePresence";
+import React from 'react';
+import { Text, StyleSheet } from 'react-native';
+import { formatPresence } from '@/hooks/usePresence';
 
 interface UserPresenceProps {
   lastSeen: string | null;
@@ -27,13 +27,13 @@ export const UserPresence: React.FC<UserPresenceProps> = ({
 const styles = StyleSheet.create({
   text: {
     fontSize: 10,
-    fontFamily: "InterMedium",
-    color: "#B3B3B3",
+    fontFamily: 'InterMedium',
+    color: '#B3B3B3',
   },
   online: {
-    color: "#4CAF50",
+    color: '#4CAF50',
   },
   offline: {
-    color: "#6C757D",
+    color: '#6C757D',
   },
 });

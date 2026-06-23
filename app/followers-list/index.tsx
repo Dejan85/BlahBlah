@@ -1,22 +1,14 @@
-import React, { useRef, useState, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  StatusBar,
-  Animated,
-  Text,
-  Platform,
-  ActivityIndicator,
-} from "react-native";
-import SearchComponent from "@/components/SearchComponent";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Header from "@/components/Header";
-import { useRouter } from "expo-router";
-import { runOnJS } from "react-native-reanimated";
-import UserListComponent from "@/components/UserListComponent";
-import { supabase } from "@/utils/supabase";
-import { useAuth } from "@/context/AuthContext";
-import { User } from "@/types";
+import React, { useRef, useState, useEffect } from 'react';
+import { View, StyleSheet, StatusBar, Animated, Text } from 'react-native';
+import SearchComponent from '@/components/SearchComponent';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Header from '@/components/Header';
+import { useRouter } from 'expo-router';
+import { runOnJS } from 'react-native-reanimated';
+import UserListComponent from '@/components/UserListComponent';
+import { supabase } from '@/utils/supabase';
+import { useAuth } from '@/context/AuthContext';
+import { User } from '@/types';
 
 // Set constants for search animation
 const SEARCH_HEIGHT = 60;
@@ -43,18 +35,18 @@ interface FollowerRecord {
 
 // Extend your User type with a requestStatus (here we'll hardcode it as "friend")
 type Follower = User & {
-  requestStatus: "friend";
+  requestStatus: 'friend';
 };
 
 const FollowersList: React.FC = () => {
   const searchAnimation = useRef(new Animated.Value(0)).current;
   const searchOpacity = useRef(new Animated.Value(1)).current;
   const lastScrollPosition = useRef(0);
-  const scrollDirection = useRef("");
+  const scrollDirection = useRef('');
   const isSearchHidden = useRef(false);
 
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [followers, setFollowers] = useState<Follower[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -72,7 +64,7 @@ const FollowersList: React.FC = () => {
       // We join the profiles table via the foreign key on follower_id,
       // and alias the joined data as "follower_profile".
       const { data: followersData, error: followersError } = await supabase
-        .from("follows")
+        .from('follows')
         .select(
           `
             id,
@@ -86,12 +78,12 @@ const FollowersList: React.FC = () => {
               bio,
               full_name
             )
-            `,
+            `
         )
-        .eq("followed_id", currentUserId);
+        .eq('followed_id', currentUserId);
 
       if (followersError) {
-        console.error("Error fetching followers:", followersError);
+        console.error('Error fetching followers:', followersError);
         return;
       }
 
@@ -109,19 +101,19 @@ const FollowersList: React.FC = () => {
         processedFollowerIds.add(record.follower_profile.id);
         transformedFollowers.push({
           id: record.follower_profile.id,
-          username: record.follower_profile.username || "",
+          username: record.follower_profile.username || '',
           image:
             record.follower_profile.avatar_url ||
-            "https://via.placeholder.com/150",
-          bio: record.follower_profile.bio || "",
-          full_name: record.follower_profile.full_name || "",
-          requestStatus: "friend",
+            'https://via.placeholder.com/150',
+          bio: record.follower_profile.bio || '',
+          full_name: record.follower_profile.full_name || '',
+          requestStatus: 'friend',
         });
       });
 
       setFollowers(transformedFollowers);
     } catch (error) {
-      console.error("Error in fetchFollowers:", error);
+      console.error('Error in fetchFollowers:', error);
     } finally {
       setIsLoading(false);
     }
@@ -132,16 +124,16 @@ const FollowersList: React.FC = () => {
 
     // Subscribe to realtime changes in the follows table for the current user.
     const followersChannel = supabase
-      .channel("followers-changes")
+      .channel('followers-changes')
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "*",
-          schema: "public",
-          table: "follows",
+          event: '*',
+          schema: 'public',
+          table: 'follows',
           filter: `followed_id=eq.${currentUserId} OR follower_id=eq.${currentUserId}`,
         },
-        () => fetchFollowers(),
+        () => fetchFollowers()
       )
       .subscribe();
 
@@ -159,7 +151,7 @@ const FollowersList: React.FC = () => {
 
     if (isScrollingDown && hasScrolledEnough && !isSearchHidden.current) {
       isSearchHidden.current = true;
-      scrollDirection.current = "down";
+      scrollDirection.current = 'down';
 
       Animated.sequence([
         Animated.timing(searchAnimation, {
@@ -182,7 +174,7 @@ const FollowersList: React.FC = () => {
       ]).start();
     } else if (isScrollingUp && hasScrolledEnough && isSearchHidden.current) {
       isSearchHidden.current = false;
-      scrollDirection.current = "up";
+      scrollDirection.current = 'up';
 
       Animated.sequence([
         Animated.parallel([
@@ -217,30 +209,30 @@ const FollowersList: React.FC = () => {
       .runOnJS(true)
       .activeOffsetX([-10, 10])
       .onEnd((event) => {
-        "worklet";
+        'worklet';
         if (event.velocityX > SWIPE_THRESHOLD) {
           runOnJS(handleBack)();
         }
       }),
-    Gesture.Native(),
+    Gesture.Native()
   );
 
   const handleUserPress = (user: User) => {
     router.push({
-      pathname: "/profile/profile-details/[id]",
+      pathname: '/profile/profile-details/[id]',
       params: {
         id: user.id,
         username: user.username,
         bio: user.bio,
         image: user.image,
-        fullName: user.full_name || "",
-        lockProfile: user.requestStatus === "friend" ? "false" : "true",
+        fullName: user.full_name || '',
+        lockProfile: user.requestStatus === 'friend' ? 'false' : 'true',
       },
     });
   };
 
   const filteredFollowers = followers.filter((follower) =>
-    follower.username?.toLowerCase().includes(searchQuery.toLowerCase()),
+    follower.username?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -295,10 +287,10 @@ const FollowersList: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
   },
   searchWrapper: {
-    position: "absolute",
+    position: 'absolute',
     top: 20,
     left: 0,
     right: 0,
@@ -306,8 +298,8 @@ const styles = StyleSheet.create({
   },
   centerContent: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

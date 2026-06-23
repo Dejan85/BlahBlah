@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,27 +7,27 @@ import {
   Text,
   Alert,
   Platform,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { makeRedirectUri } from "expo-auth-session";
-import * as WebBrowser from "expo-web-browser";
-import { supabase } from "@/utils/supabase";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import SignInWithOtp from "./SignUpWithOtp";
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { makeRedirectUri } from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
+import { supabase } from '@/utils/supabase';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import SignInWithOtp from './SignUpWithOtp';
 
 WebBrowser.maybeCompleteAuthSession();
 
 // Configure Google Sign-in
 GoogleSignin.configure({
   webClientId:
-    "307003980819-g7e1fmdhbiu7lurl6j044oi83gi1hvtg.apps.googleusercontent.com",
-  scopes: ["email", "profile"],
-  iosClientId: "",
+    '307003980819-g7e1fmdhbiu7lurl6j044oi83gi1hvtg.apps.googleusercontent.com',
+  scopes: ['email', 'profile'],
+  iosClientId: '',
 });
 
 const redirectTo = makeRedirectUri({
-  scheme: "blahblah",
-  path: "auth/callback",
+  scheme: 'blahblah',
+  path: 'auth/callback',
 });
 
 type Provider = {
@@ -35,47 +35,47 @@ type Provider = {
   name: string;
   icon: string;
   color: string;
-  platform?: "android" | "ios" | "all";
+  platform?: 'android' | 'ios' | 'all';
 };
 
 const providers: Provider[] = [
   {
-    id: "phone",
-    name: "Phone",
-    icon: "phone-portrait-outline",
-    color: "#fff",
-    platform: "all",
+    id: 'phone',
+    name: 'Phone',
+    icon: 'phone-portrait-outline',
+    color: '#fff',
+    platform: 'all',
   },
   {
-    id: "google",
-    name: "Google",
-    icon: "logo-google",
-    color: "#fff",
-    platform: "android",
+    id: 'google',
+    name: 'Google',
+    icon: 'logo-google',
+    color: '#fff',
+    platform: 'android',
   },
   {
-    id: "facebook",
-    name: "Facebook",
-    icon: "logo-facebook",
-    color: "#fff",
-    platform: "all",
+    id: 'facebook',
+    name: 'Facebook',
+    icon: 'logo-facebook',
+    color: '#fff',
+    platform: 'all',
   },
   {
-    id: "twitter",
-    name: "Twitter",
-    icon: "logo-twitter",
-    color: "#fff",
-    platform: "all",
+    id: 'twitter',
+    name: 'Twitter',
+    icon: 'logo-twitter',
+    color: '#fff',
+    platform: 'all',
   },
 ];
 
 const createInitialProfile = async (
   userId: string,
   avatarUrl: string | null,
-  full_name: string | null,
+  full_name: string | null
 ) => {
   try {
-    const { error: profileError } = await supabase.from("profiles").insert({
+    const { error: profileError } = await supabase.from('profiles').insert({
       id: userId,
       username: null,
       full_name: full_name,
@@ -88,42 +88,42 @@ const createInitialProfile = async (
     });
 
     if (profileError) {
-      console.error("Error creating profile:", profileError);
+      console.error('Error creating profile:', profileError);
       throw profileError;
     }
 
     return true;
   } catch (error) {
-    console.error("Error in createInitialProfile:", error);
+    console.error('Error in createInitialProfile:', error);
     throw error;
   }
 };
 
 const createSessionFromUrl = async (url: string) => {
   try {
-    const params = new URLSearchParams(url.split("#")[1] || url.split("?")[1]);
-    let accessToken = params.get("access_token");
-    let refreshToken = params.get("refresh_token");
+    const params = new URLSearchParams(url.split('#')[1] || url.split('?')[1]);
+    let accessToken = params.get('access_token');
+    let refreshToken = params.get('refresh_token');
 
     if (Array.isArray(accessToken)) accessToken = accessToken[0];
     if (Array.isArray(refreshToken)) refreshToken = refreshToken[0];
 
     if (!accessToken) {
-      throw new Error("Access token not found");
+      throw new Error('Access token not found');
     }
 
     const { data, error } = await supabase.auth.setSession({
       access_token: accessToken,
-      refresh_token: refreshToken ?? "",
+      refresh_token: refreshToken ?? '',
     });
 
     if (error) throw error;
     return data.session;
   } catch (error) {
     if (error instanceof Error) {
-      Alert.alert("Error", error.message || "Could not create session");
+      Alert.alert('Error', error.message || 'Could not create session');
     } else {
-      Alert.alert("Error", "Could not create session");
+      Alert.alert('Error', 'Could not create session');
     }
   }
 };
@@ -144,15 +144,15 @@ const AuthProviders: React.FC<AuthProvidersProps> = ({
 
   const handleGoogleSignIn = async () => {
     try {
-      setLoadingProvider("google");
+      setLoadingProvider('google');
       onAuthStart?.();
 
       // Try Web-based OAuth flow instead of native
-      console.log("Using web-based OAuth flow...");
-      console.log("Redirect URL:", redirectTo);
+      console.log('Using web-based OAuth flow...');
+      console.log('Redirect URL:', redirectTo);
 
       const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
+        provider: 'google',
         options: {
           redirectTo: redirectTo,
           skipBrowserRedirect: true, // We'll handle browser manually
@@ -160,27 +160,27 @@ const AuthProviders: React.FC<AuthProvidersProps> = ({
       });
 
       if (error) {
-        console.error("OAuth error:", error);
+        console.error('OAuth error:', error);
         throw error;
       }
 
       if (!data?.url) {
-        throw new Error("No authorization URL returned from Supabase");
+        throw new Error('No authorization URL returned from Supabase');
       }
 
-      console.log("Opening browser for OAuth...");
+      console.log('Opening browser for OAuth...');
 
       // Open browser for authentication
       const result = await WebBrowser.openAuthSessionAsync(
         data.url,
-        redirectTo,
+        redirectTo
       );
 
-      console.log("Browser result:", result);
+      console.log('Browser result:', result);
 
-      if (result.type === "success" && result.url) {
-        console.log("OAuth successful, URL received");
-        console.log("URL (first 100 chars):", result.url.substring(0, 100));
+      if (result.type === 'success' && result.url) {
+        console.log('OAuth successful, URL received');
+        console.log('URL (first 100 chars):', result.url.substring(0, 100));
 
         // Supabase should automatically detect and set the session from the URL
         // because we enabled detectSessionInUrl: true
@@ -192,24 +192,24 @@ const AuthProviders: React.FC<AuthProvidersProps> = ({
         const { data: sessionData, error: sessionError } =
           await supabase.auth.getSession();
 
-        console.log("Session after OAuth:", {
+        console.log('Session after OAuth:', {
           hasSession: !!sessionData?.session,
           userId: sessionData?.session?.user?.id,
           error: sessionError?.message,
         });
 
         if (sessionError || !sessionData?.session) {
-          console.error("No session after OAuth, trying manual setSession...");
+          console.error('No session after OAuth, trying manual setSession...');
 
           // Fallback: Extract tokens manually
           const url = new URL(result.url);
           const params = new URLSearchParams(url.hash.substring(1));
 
-          const access_token = params.get("access_token");
-          const refresh_token = params.get("refresh_token");
+          const access_token = params.get('access_token');
+          const refresh_token = params.get('refresh_token');
 
           if (access_token && refresh_token) {
-            console.log("Manually setting session with extracted tokens...");
+            console.log('Manually setting session with extracted tokens...');
 
             const { data: manualSessionData, error: manualError } =
               await supabase.auth.setSession({
@@ -218,7 +218,7 @@ const AuthProviders: React.FC<AuthProvidersProps> = ({
               });
 
             if (manualError) {
-              console.error("Manual setSession error:", {
+              console.error('Manual setSession error:', {
                 name: manualError.name,
                 message: manualError.message,
                 status: manualError.status,
@@ -227,15 +227,15 @@ const AuthProviders: React.FC<AuthProvidersProps> = ({
             }
 
             if (!manualSessionData?.session) {
-              throw new Error("No session returned from manual setSession");
+              throw new Error('No session returned from manual setSession');
             }
 
             console.log(
-              "Manual session set successfully:",
-              manualSessionData.session.user.id,
+              'Manual session set successfully:',
+              manualSessionData.session.user.id
             );
           } else {
-            throw new Error("No session and no tokens available");
+            throw new Error('No session and no tokens available');
           }
         }
 
@@ -243,25 +243,25 @@ const AuthProviders: React.FC<AuthProvidersProps> = ({
         const { data: finalSession } = await supabase.auth.getSession();
 
         if (!finalSession?.session?.user) {
-          throw new Error("No user session after OAuth");
+          throw new Error('No user session after OAuth');
         }
 
         const userId = finalSession.session.user.id;
         const userMetadata = finalSession.session.user.user_metadata;
 
-        console.log("Final session confirmed:", userId);
+        console.log('Final session confirmed:', userId);
 
         // Check if user has a profile
         const { data: existingProfile, error: profileError } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", userId)
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
           .single();
 
-        if (profileError && profileError.code !== "PGRST116") {
-          console.error("Profile check error:", profileError);
+        if (profileError && profileError.code !== 'PGRST116') {
+          console.error('Profile check error:', profileError);
           throw new Error(
-            profileError.message || "Error checking user profile.",
+            profileError.message || 'Error checking user profile.'
           );
         }
 
@@ -272,10 +272,10 @@ const AuthProviders: React.FC<AuthProvidersProps> = ({
           const fullName =
             userMetadata?.full_name || userMetadata?.name || null;
 
-          console.log("Creating profile:", { userId, avatarUrl, fullName });
+          console.log('Creating profile:', { userId, avatarUrl, fullName });
 
           const { error: insertError } = await supabase
-            .from("profiles")
+            .from('profiles')
             .insert({
               id: userId,
               avatar_url: avatarUrl,
@@ -284,38 +284,38 @@ const AuthProviders: React.FC<AuthProvidersProps> = ({
             });
 
           if (insertError) {
-            console.error("Profile creation error:", insertError);
+            console.error('Profile creation error:', insertError);
             throw new Error(
-              insertError.message || "Error creating user profile.",
+              insertError.message || 'Error creating user profile.'
             );
           }
 
-          console.log("Profile created successfully");
+          console.log('Profile created successfully');
         }
 
-        console.log("Google sign-in completed successfully!");
-      } else if (result.type === "cancel") {
-        throw new Error("Sign-in cancelled");
+        console.log('Google sign-in completed successfully!');
+      } else if (result.type === 'cancel') {
+        throw new Error('Sign-in cancelled');
       } else {
-        throw new Error("OAuth flow did not complete successfully");
+        throw new Error('OAuth flow did not complete successfully');
       }
     } catch (error: any) {
-      console.error("Google sign-in error:", error);
-      console.error("Error code:", error?.code);
-      console.error("Error message:", error?.message);
+      console.error('Google sign-in error:', error);
+      console.error('Error code:', error?.code);
+      console.error('Error message:', error?.message);
 
-      let errorMessage = "Sign-in failed.";
+      let errorMessage = 'Sign-in failed.';
 
-      if (error?.code === "12501") {
-        errorMessage = "Sign-in cancelled. Please try again.";
-      } else if (error?.code === "10") {
+      if (error?.code === '12501') {
+        errorMessage = 'Sign-in cancelled. Please try again.';
+      } else if (error?.code === '10') {
         errorMessage =
-          "Google Play Services not available on this device. Please use a physical device or emulator with Google Play.";
+          'Google Play Services not available on this device. Please use a physical device or emulator with Google Play.';
       } else if (error?.message) {
         errorMessage = error.message;
       }
 
-      Alert.alert("Google Sign-In Error", errorMessage);
+      Alert.alert('Google Sign-In Error', errorMessage);
     } finally {
       setLoadingProvider(null);
       onAuthComplete?.();
@@ -338,11 +338,11 @@ const AuthProviders: React.FC<AuthProvidersProps> = ({
       if (error) throw error;
 
       const res = await WebBrowser.openAuthSessionAsync(
-        data?.url ?? "",
-        redirectTo,
+        data?.url ?? '',
+        redirectTo
       );
 
-      if (res.type === "success" && res.url) {
+      if (res.type === 'success' && res.url) {
         const session = await createSessionFromUrl(res.url);
 
         if (session?.user) {
@@ -354,9 +354,9 @@ const AuthProviders: React.FC<AuthProvidersProps> = ({
           const fullName = session.user?.user_metadata?.name || null;
 
           const { data: existingProfile } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("id", userId)
+            .from('profiles')
+            .select('*')
+            .eq('id', userId)
             .single();
 
           if (!existingProfile) {
@@ -365,12 +365,12 @@ const AuthProviders: React.FC<AuthProvidersProps> = ({
         }
       }
     } catch (error) {
-      console.error("OAuth sign-in error:", error);
+      console.error('OAuth sign-in error:', error);
       Alert.alert(
-        "Error",
+        'Error',
         error instanceof Error
           ? error.message
-          : "OAuth session did not complete successfully",
+          : 'OAuth session did not complete successfully'
       );
     } finally {
       setLoadingProvider(null);
@@ -379,18 +379,18 @@ const AuthProviders: React.FC<AuthProvidersProps> = ({
   };
 
   const shouldShowProvider = (provider: Provider) => {
-    if (provider.platform === "all") return true;
-    if (provider.platform === "android" && Platform.OS === "android")
+    if (provider.platform === 'all') return true;
+    if (provider.platform === 'android' && Platform.OS === 'android')
       return true;
-    if (provider.platform === "ios" && Platform.OS === "ios") return true;
+    if (provider.platform === 'ios' && Platform.OS === 'ios') return true;
     return false;
   };
 
   const handleProviderPress = (provider: Provider) => {
-    console.log("Provider pressed:", provider.id); // Debug log
-    if (provider.id === "phone") {
+    console.log('Provider pressed:', provider.id); // Debug log
+    if (provider.id === 'phone') {
       setShowPhoneSignIn(true);
-    } else if (provider.id === "google") {
+    } else if (provider.id === 'google') {
       handleGoogleSignIn();
     } else {
       handleOAuth(provider);
@@ -436,32 +436,32 @@ const AuthProviders: React.FC<AuthProvidersProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: "90%",
+    width: '90%',
 
-    alignSelf: "center",
+    alignSelf: 'center',
   },
   phoneSignInContainer: {
-    width: "100%",
+    width: '100%',
     paddingHorizontal: 20,
   },
   providersContainer: {
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: 20,
-    width: "100%",
+    width: '100%',
     marginTop: 30,
   },
   providerButton: {
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    alignContent: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    alignContent: 'center',
   },
   signInText: {
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
     fontSize: 18,
-    color: "#fff",
+    color: '#fff',
     paddingLeft: 5,
   },
 });

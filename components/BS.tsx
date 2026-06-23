@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -8,7 +8,7 @@ import {
   Dimensions,
   StyleProp,
   ViewStyle,
-} from "react-native";
+} from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -18,14 +18,14 @@ import Animated, {
   withTiming,
   interpolate,
   Extrapolate,
-} from "react-native-reanimated";
+} from 'react-native-reanimated';
 import {
   PanGestureHandler,
   GestureHandlerRootView,
-} from "react-native-gesture-handler";
-import { Close, Submit } from "@/assets/images";
+} from 'react-native-gesture-handler';
+import { Close, Submit } from '@/assets/images';
 
-const { height: SCREEN_HEIGHT } = Dimensions.get("window");
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 interface BottomSheetProps {
   visible: boolean;
@@ -35,8 +35,8 @@ interface BottomSheetProps {
   lineStyle?: StyleProp<ViewStyle>;
   header?: boolean;
   onSubmit?: () => void;
-  initialSnap?: "closed" | "partial" | "full";
-  onSnapChange?: (snap: "closed" | "partial" | "full") => void;
+  initialSnap?: 'closed' | 'partial' | 'full';
+  onSnapChange?: (snap: 'closed' | 'partial' | 'full') => void;
   snapPoint?: number | string;
   isOnBottom?: boolean;
   customSnapPoints?: {
@@ -56,7 +56,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
   lineStyle,
   header = false,
   onSubmit,
-  initialSnap = "partial",
+  initialSnap = 'partial',
   onSnapChange,
   isOnBottom,
   customSnapPoints,
@@ -74,15 +74,15 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
       PARTIAL: customSnapPoints?.PARTIAL ?? SCREEN_HEIGHT * 0.7,
       FULL: customSnapPoints?.FULL ?? SCREEN_HEIGHT * 0.1,
     }),
-    [customSnapPoints],
+    [customSnapPoints]
   );
   const initialPosition = useMemo(() => {
     switch (initialSnap) {
-      case "closed":
+      case 'closed':
         return SNAP_POINTS.CLOSED;
-      case "full":
+      case 'full':
         return SNAP_POINTS.FULL;
-      case "partial":
+      case 'partial':
       default:
         return SNAP_POINTS.PARTIAL;
     }
@@ -98,9 +98,9 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
       });
       if (onSnapChange) {
         if (initialPosition === SNAP_POINTS.FULL) {
-          runOnJS(onSnapChange)("full");
+          runOnJS(onSnapChange)('full');
         } else if (initialPosition === SNAP_POINTS.PARTIAL) {
-          runOnJS(onSnapChange)("partial");
+          runOnJS(onSnapChange)('partial');
         }
       }
     } else {
@@ -109,7 +109,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
         stiffness: 90,
       });
       if (onSnapChange) {
-        runOnJS(onSnapChange)("closed");
+        runOnJS(onSnapChange)('closed');
       }
       // Hide bottom view after animation
       setTimeout(() => {
@@ -127,7 +127,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
       const newTranslateY = context.startY + event.translationY;
       translateY.value = Math.max(
         SNAP_POINTS.FULL,
-        Math.min(newTranslateY, SCREEN_HEIGHT),
+        Math.min(newTranslateY, SCREEN_HEIGHT)
       );
 
       // Enable scrolling only when fully expanded
@@ -151,9 +151,9 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
               runOnJS(onClose)();
             }
             if (onSnapChange) {
-              runOnJS(onSnapChange)("closed");
+              runOnJS(onSnapChange)('closed');
             }
-          },
+          }
         );
       } else if (
         velocity < -500 ||
@@ -167,7 +167,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
         });
         scrollEnabled.value = true;
         if (onSnapChange) {
-          runOnJS(onSnapChange)("full");
+          runOnJS(onSnapChange)('full');
         }
       } else {
         // Otherwise snap to partial
@@ -178,7 +178,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
         });
         scrollEnabled.value = false;
         if (onSnapChange) {
-          runOnJS(onSnapChange)("partial");
+          runOnJS(onSnapChange)('partial');
         }
       }
     },
@@ -189,7 +189,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
       translateY.value,
       [SNAP_POINTS.FULL, SNAP_POINTS.PARTIAL],
       [0, 40],
-      Extrapolate.CLAMP,
+      Extrapolate.CLAMP
     );
 
     return {
@@ -204,7 +204,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
       translateY.value,
       [SCREEN_HEIGHT, SCREEN_HEIGHT - 1],
       [0, 0.5],
-      Extrapolate.CLAMP,
+      Extrapolate.CLAMP
     );
 
     return {
@@ -252,27 +252,27 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
 const styles = StyleSheet.create({
   container: {
     height: SCREEN_HEIGHT,
-    width: "100%",
-    position: "absolute",
+    width: '100%',
+    position: 'absolute',
   },
   overlay: {
-    backgroundColor: "#000",
-    position: "absolute",
-    width: "100%",
-    height: "100%",
+    backgroundColor: '#000',
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
   },
   onBottom: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 10, // Fixed distance from bottom
     left: 0,
     right: 0,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: '#F5F5F5',
     height: 80,
     marginHorizontal: 20, // Add some horizontal padding if needed
     borderRadius: 12, // Optional: add border radius
     borderTopWidth: 1,
-    borderTopColor: "#E5E5E5",
-    shadowColor: "#000",
+    borderTopColor: '#E5E5E5',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: -2,
@@ -287,14 +287,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sheet: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     height: SCREEN_HEIGHT,
-    width: "100%",
-    position: "absolute",
+    width: '100%',
+    position: 'absolute',
     top: 0,
     borderWidth: 3,
-    borderColor: "#B3B3B3",
-    shadowColor: "#000",
+    borderColor: '#B3B3B3',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
@@ -305,42 +305,42 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   closeButton: {
-    position: "absolute",
+    position: 'absolute',
     top: 54,
     left: 30,
     borderRadius: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#000",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000',
     opacity: 0.5,
     width: 40,
     height: 40,
   },
   submitButton: {
-    position: "absolute",
+    position: 'absolute',
     top: 50,
     right: 30,
-    backgroundColor: "#000",
+    backgroundColor: '#000',
     opacity: 0.5,
     borderRadius: 40,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     width: 40,
     height: 40,
   },
   line: {
     height: 3,
-    backgroundColor: "#B3B3B3",
+    backgroundColor: '#B3B3B3',
     marginTop: 14,
     marginBottom: 19,
     marginHorizontal: 20,
     borderRadius: 40,
     width: 50,
-    alignSelf: "center",
+    alignSelf: 'center',
   },
   contentWrapper: {
     flex: 1,
-    position: "relative", // Ensure positioning context
+    position: 'relative', // Ensure positioning context
   },
 
   content: {

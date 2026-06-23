@@ -1,16 +1,16 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   StyleSheet,
   Dimensions,
   Pressable,
   ScrollView,
-} from "react-native";
-import { Image } from "expo-image";
-import Text from "./CustomText";
-import { useRouter } from "expo-router";
+} from 'react-native';
+import { Image } from 'expo-image';
+import Text from './CustomText';
+import { useRouter } from 'expo-router';
 
-const { width } = Dimensions.get("window");
+const { width } = Dimensions.get('window');
 const ITEMS_PER_ROW = 3;
 const SPACING = 1;
 const TALL_HEIGHT = 143;
@@ -23,7 +23,7 @@ export interface GridPost {
   id: string;
   image: string | null;
   timestamp: number;
-  type?: "image" | "video";
+  type?: 'image' | 'video';
   uri?: string;
   user?: {
     id: string;
@@ -75,7 +75,7 @@ export const ProfilePosts: React.FC<ProfilePostsProps> = ({ posts }) => {
     const date = new Date(timestamp);
     const now = new Date();
     const diffInMinutes = Math.floor(
-      (now.getTime() - date.getTime()) / (1000 * 60),
+      (now.getTime() - date.getTime()) / (1000 * 60)
     );
 
     if (diffInMinutes < 60) return `${diffInMinutes}m`;
@@ -88,7 +88,7 @@ export const ProfilePosts: React.FC<ProfilePostsProps> = ({ posts }) => {
     // Transform all posts to FeedItem format for consistent viewing
     const feedPosts = sortedPosts.map((post) => {
       // Ensure we have a valid main image URL
-      const mainImageUrl = post.image || post.uri || "";
+      const mainImageUrl = post.image || post.uri || '';
       // Create a proper images array
       const allImages = post.images || [];
       if (mainImageUrl && !allImages.includes(mainImageUrl)) {
@@ -97,15 +97,15 @@ export const ProfilePosts: React.FC<ProfilePostsProps> = ({ posts }) => {
 
       return {
         id: post.id,
-        type: post.type || "image",
+        type: post.type || 'image',
         uri: mainImageUrl,
         user: post.user || {
-          id: "default",
-          username: "Anonymous",
-          profilePhoto: "https://via.placeholder.com/150",
+          id: 'default',
+          username: 'Anonymous',
+          profilePhoto: 'https://via.placeholder.com/150',
         },
         createdAt: new Date(post.timestamp).toISOString(),
-        music: post.music || "Original Audio",
+        music: post.music || 'Original Audio',
         comments: post.comments || [],
         hashtags: post.hashtags || [],
         images: allImages,
@@ -114,7 +114,7 @@ export const ProfilePosts: React.FC<ProfilePostsProps> = ({ posts }) => {
 
     // Navigate to the PostView with all posts data
     router.push({
-      pathname: "/profile/profile-post",
+      pathname: '/profile/profile-post',
       params: {
         posts: JSON.stringify(feedPosts),
         initialIndex: index,
@@ -155,7 +155,7 @@ export const ProfilePosts: React.FC<ProfilePostsProps> = ({ posts }) => {
         {rows.map((row, rowIndex) => (
           <View key={rowIndex} style={styles.row}>
             {row.map((post, colIndex) =>
-              renderPost(post, rowIndex * ITEMS_PER_ROW + colIndex),
+              renderPost(post, rowIndex * ITEMS_PER_ROW + colIndex)
             )}
             {row.length < ITEMS_PER_ROW &&
               Array(ITEMS_PER_ROW - row.length)
@@ -176,57 +176,57 @@ export const ProfilePosts: React.FC<ProfilePostsProps> = ({ posts }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   scrollContent: {
     paddingHorizontal: SPACING,
   },
   row: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
     marginBottom: SPACING,
   },
   gridItem: {
     width: ITEM_WIDTH,
     marginHorizontal: SPACING / 2,
     borderRadius: BORDER_RADIUS,
-    overflow: "hidden",
-    backgroundColor: "#f0f0f0",
+    overflow: 'hidden',
+    backgroundColor: '#f0f0f0',
   },
   image: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     borderRadius: BORDER_RADIUS,
   },
   emptyContainer: {
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingTop: 50,
   },
   emptyText: {
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
     fontSize: 16,
-    color: "#B3B3B3",
+    color: '#B3B3B3',
   },
   placeholderBackground: {
-    width: "100%",
-    height: "100%",
-    backgroundColor: "#F0F0F0",
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#F0F0F0',
     borderRadius: BORDER_RADIUS,
   },
   timestampContainer: {
-    position: "absolute",
+    position: 'absolute',
     top: 8,
     right: 8,
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 8,
   },
   timestamp: {
-    color: "#FFFFFF",
+    color: '#FFFFFF',
     fontSize: 10,
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
   },
 });
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   SafeAreaView,
   Text,
@@ -13,45 +13,27 @@ import {
   Dimensions,
   Linking,
   TouchableOpacity,
-  VirtualizedList,
   Switch,
-} from "react-native";
-import ProfilePosts from "@/components/ProfilePosts";
-import {
-  DefaultBunny,
-  Exclusive,
-  Eye,
-  ProfileBackButton,
-  ProfileOptions,
-  RedBunny,
-  Rocket,
-  Stop,
-} from "@/assets/images";
-import { useRouter } from "expo-router";
-import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/utils/supabase";
-import Avatar from "@/components/Avatar";
-import { IconButton } from "@/components/IconButton";
-import BottomModal from "@/components/BottomModal";
-import { DeleteAccount } from "@/components/DeleteAccount";
-import { InviteUser } from "@/components/InviteUser";
-import { Profile, ProfileState, EditFormState } from "@/types";
-import { FontAwesome5 } from "@expo/vector-icons";
-import * as Location from "expo-location";
-import { GridPost } from "@/components/ProfilePosts";
+} from 'react-native';
+import { Eye, ProfileBackButton, ProfileOptions } from '@/assets/images';
+import { useRouter } from 'expo-router';
+import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/utils/supabase';
+import Avatar from '@/components/Avatar';
+import { IconButton } from '@/components/IconButton';
+import BottomModal from '@/components/BottomModal';
+import { DeleteAccount } from '@/components/DeleteAccount';
+import { InviteUser } from '@/components/InviteUser';
+import { Profile, ProfileState, EditFormState } from '@/types';
+import { FontAwesome5 } from '@expo/vector-icons';
+import * as Location from 'expo-location';
+import { GridPost } from '@/components/ProfilePosts';
 
-import PremiumModal from "@/components/PremiumModal";
-import { usePost } from "@/context/PostContext";
-import GridPosts from "@/components/GridPost";
+import PremiumModal from '@/components/PremiumModal';
+import { usePost } from '@/context/PostContext';
+import GridPosts from '@/components/GridPost';
 
-const { height: windowHeight } = Dimensions.get("window");
-
-const INITIAL_POSTS: GridPost[] = Array.from({ length: 6 }, (_, i) => ({
-  id: String(i + 1),
-  image: "https://via.placeholder.com/150",
-  timestamp: Date.now() - i * 10000,
-  type: "image",
-}));
+const { height: windowHeight } = Dimensions.get('window');
 
 const ProfileSkeleton = () => (
   <View style={styles.skeletonContainer}>
@@ -71,11 +53,11 @@ const initialState: ProfileState = {
 };
 
 const initialEditForm: EditFormState = {
-  username: "",
-  fullName: "",
-  bio: "",
+  username: '',
+  fullName: '',
+  bio: '',
   avatarUrl: null,
-  websiteUrl: "",
+  websiteUrl: '',
   locationEnabled: false, // Initialize with false
 };
 
@@ -90,10 +72,9 @@ const ProfileScreen = () => {
   });
   const [editForm, setEditForm] = useState<EditFormState>(initialEditForm);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
-  const [posts, setPosts] = useState<GridPost[]>([]);
-  const [loadingPosts, setLoadingPosts] = useState(true);
+  const [, setPosts] = useState<GridPost[]>([]);
+  const [, setLoadingPosts] = useState(true);
   const { getUserPosts } = usePost(); // Import from PostContext
-  const profileId = user?.id;
   const fetchUserPosts = useCallback(async () => {
     if (!user) return;
 
@@ -122,7 +103,7 @@ const ProfileScreen = () => {
 
       setPosts(transformedPosts);
     } catch (error) {
-      console.error("Error fetching posts:", error);
+      console.error('Error fetching posts:', error);
     } finally {
       setLoadingPosts(false);
     }
@@ -133,18 +114,18 @@ const ProfileScreen = () => {
 
     // Subscribe to post changes
     const subscription = supabase
-      .channel("posts_changes")
+      .channel('posts_changes')
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "*",
-          schema: "public",
-          table: "posts",
+          event: '*',
+          schema: 'public',
+          table: 'posts',
           filter: user ? `user_id=eq.${user.id}` : undefined,
         },
         () => {
           fetchUserPosts();
-        },
+        }
       )
       .subscribe();
 
@@ -158,12 +139,12 @@ const ProfileScreen = () => {
   };
   const displayValues = useMemo(
     () => ({
-      username: state.profile?.username ?? "Guest",
-      fullName: state.profile?.full_name ?? "",
-      bio: state.profile?.bio ?? "wowish",
-      url: state.profile?.website_url ?? "https://blahblah.com",
+      username: state.profile?.username ?? 'Guest',
+      fullName: state.profile?.full_name ?? '',
+      bio: state.profile?.bio ?? 'wowish',
+      url: state.profile?.website_url ?? 'https://blahblah.com',
     }),
-    [state.profile],
+    [state.profile]
   );
 
   const fetchProfileData = useCallback(async () => {
@@ -177,22 +158,22 @@ const ProfileScreen = () => {
       const [profileResponse, followersResponse, followingResponse] =
         await Promise.all([
           supabase
-            .from("profiles")
+            .from('profiles')
             .select(
-              "username, full_name, avatar_url, bio, website_url, location_enabled, latitude, longitude",
+              'username, full_name, avatar_url, bio, website_url, location_enabled, latitude, longitude'
             )
-            .eq("id", user.id)
+            .eq('id', user.id)
             .single(),
           // Count rows where the current user is being followed
           supabase
-            .from("follows")
-            .select("*", { count: "exact", head: true })
-            .eq("followed_id", user.id),
+            .from('follows')
+            .select('*', { count: 'exact', head: true })
+            .eq('followed_id', user.id),
           // Count rows where the current user is following others
           supabase
-            .from("follows")
-            .select("*", { count: "exact", head: true })
-            .eq("follower_id", user.id),
+            .from('follows')
+            .select('*', { count: 'exact', head: true })
+            .eq('follower_id', user.id),
         ]);
 
       if (profileResponse.error) {
@@ -204,21 +185,21 @@ const ProfileScreen = () => {
       if (profileResponse.data?.location_enabled) {
         try {
           const { status } = await Location.requestForegroundPermissionsAsync();
-          if (status === "granted") {
+          if (status === 'granted') {
             currentLocation = await Location.getCurrentPositionAsync({});
             if (currentLocation) {
               await supabase
-                .from("profiles")
+                .from('profiles')
                 .update({
                   latitude: currentLocation.coords.latitude,
                   longitude: currentLocation.coords.longitude,
                   updated_at: new Date().toISOString(),
                 })
-                .eq("id", user.id);
+                .eq('id', user.id);
             }
           }
         } catch (error) {
-          console.error("Error getting location:", error);
+          console.error('Error getting location:', error);
         }
       }
 
@@ -236,14 +217,14 @@ const ProfileScreen = () => {
         followingCount: followingResponse.count || 0,
       }));
     } catch (error) {
-      console.error("Error fetching profile data:", error);
+      console.error('Error fetching profile data:', error);
       setState((prev) => ({ ...prev, loading: false }));
     }
   }, [user]);
 
-  const handlePlanSelection = (plan: "monthly" | "yearly") => {
+  const handlePlanSelection = (plan: 'monthly' | 'yearly') => {
     // Handle the plan selection here
-    console.log("Selected plan:", plan);
+    console.log('Selected plan:', plan);
   };
 
   useEffect(() => {
@@ -252,17 +233,17 @@ const ProfileScreen = () => {
     // Subscribe to changes on the "follows" table for changes where the current user
     // is either following someone or is being followed.
     const subscription = supabase
-      .channel("follows-changes")
+      .channel('follows-changes')
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "*",
-          schema: "public",
-          table: "follows",
+          event: '*',
+          schema: 'public',
+          table: 'follows',
           // Using the 'or' filter to capture changes for both columns:
           filter: `or(follower_id.eq.${user.id},followed_id.eq.${user.id})`,
         },
-        fetchProfileData,
+        fetchProfileData
       )
       .subscribe();
 
@@ -279,13 +260,13 @@ const ProfileScreen = () => {
       if (error) throw error;
       await signOut();
       setModalStates((prev) => ({ ...prev, main: false }));
-      router.replace("/");
+      router.replace('/');
     } catch (error) {
       Alert.alert(
-        "Error",
+        'Error',
         error instanceof Error
           ? error.message
-          : "An error occurred while signing out",
+          : 'An error occurred while signing out'
       );
     } finally {
       setState((prev) => ({ ...prev, loggingOut: false }));
@@ -298,9 +279,9 @@ const ProfileScreen = () => {
       setEditForm({
         username: state.profile.username,
         fullName: state.profile.full_name,
-        bio: state.profile.bio ?? "",
+        bio: state.profile.bio ?? '',
         avatarUrl: state.profile.avatar_url,
-        websiteUrl: state.profile.website_url ?? "",
+        websiteUrl: state.profile.website_url ?? '',
         locationEnabled: state.profile.location_enabled ?? false,
       });
     }
@@ -322,8 +303,8 @@ const ProfileScreen = () => {
       };
 
       const { error } = await supabase
-        .from("profiles")
-        .upsert(updates, { onConflict: "id" });
+        .from('profiles')
+        .upsert(updates, { onConflict: 'id' });
       if (error) throw error;
 
       setState((prev) => ({
@@ -334,8 +315,8 @@ const ProfileScreen = () => {
       setModalStates((prev) => ({ ...prev, edit: false }));
     } catch (error) {
       Alert.alert(
-        "Error",
-        error instanceof Error ? error.message : "An unexpected error occurred",
+        'Error',
+        error instanceof Error ? error.message : 'An unexpected error occurred'
       );
       setState((prev) => ({ ...prev, savingProfile: false }));
     }
@@ -371,17 +352,17 @@ const ProfileScreen = () => {
                 const urlToOpen =
                   state.profile?.website_url || displayValues.url;
                 if (urlToOpen) {
-                  const fullUrl = urlToOpen.startsWith("http")
+                  const fullUrl = urlToOpen.startsWith('http')
                     ? urlToOpen
                     : `https://${urlToOpen}`;
                   Linking.openURL(fullUrl).catch(() =>
-                    Alert.alert("Error", "Could not open the website"),
+                    Alert.alert('Error', 'Could not open the website')
                   );
                 }
               }}
             >
               <Text
-                style={[styles.website, { textDecorationLine: "underline" }]}
+                style={[styles.website, { textDecorationLine: 'underline' }]}
               >
                 {state.profile?.website_url || displayValues.url}
               </Text>
@@ -397,14 +378,14 @@ const ProfileScreen = () => {
           </View>
           <TouchableOpacity
             style={styles.textContainer}
-            onPress={() => router.push("/followers-list")}
+            onPress={() => router.push('/followers-list')}
           >
             <Text style={styles.blahs}>{state.followersCount}</Text>
             <Text style={styles.subtitle}>Followers</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.textContainer}
-            onPress={() => router.push("/following-list")}
+            onPress={() => router.push('/following-list')}
           >
             <Text style={styles.blahs}>{state.followingCount}</Text>
             <Text style={styles.subtitle}>Following</Text>
@@ -499,8 +480,8 @@ const ProfileScreen = () => {
             <View style={styles.locationContainer}>
               <Text style={styles.locationText}>Location</Text>
               <Switch
-                trackColor={{ false: "#B3B3B3", true: "#FF325E" }}
-                thumbColor={editForm.locationEnabled ? "#fff" : "#fff"}
+                trackColor={{ false: '#B3B3B3', true: '#FF325E' }}
+                thumbColor={editForm.locationEnabled ? '#fff' : '#fff'}
                 onValueChange={(value) =>
                   setEditForm((prev) => ({ ...prev, locationEnabled: value }))
                 }
@@ -546,34 +527,34 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#fff",
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    backgroundColor: '#fff',
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   continueButton: {
     marginHorizontal: 30,
   },
   continueButtonText: {
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
     fontSize: 26,
-    color: "#fff",
+    color: '#fff',
   },
   subscribe: {
     fontSize: 12,
-    fontFamily: "InterRegular",
-    color: "#B3B3B3",
-    textAlign: "center",
+    fontFamily: 'InterRegular',
+    color: '#B3B3B3',
+    textAlign: 'center',
     paddingTop: 10,
   },
   headerModal: {
-    alignItems: "center",
+    alignItems: 'center',
     marginTop: 37,
     marginBottom: 37,
   },
   title: {
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
     fontSize: 25,
-    color: "#FF325E",
-    textAlign: "center",
+    color: '#FF325E',
+    textAlign: 'center',
   },
   postListContainer: {
     flex: 1,
@@ -588,18 +569,18 @@ const styles = StyleSheet.create({
     borderWidth: 0,
   },
   website: {
-    color: "#FF325E",
-    fontFamily: "InterMedium",
+    color: '#FF325E',
+    fontFamily: 'InterMedium',
     fontSize: 12,
   },
   btnText: {
-    fontFamily: "InterSemiBold",
-    textAlign: "center",
-    color: "#fff",
+    fontFamily: 'InterSemiBold',
+    textAlign: 'center',
+    color: '#fff',
     paddingVertical: 8,
   },
   button: {
-    backgroundColor: "#B3B3B3",
+    backgroundColor: '#B3B3B3',
     borderRadius: 40,
     marginBottom: 12,
     marginHorizontal: 60,
@@ -609,13 +590,13 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   profileUname: {
-    fontFamily: "InterSemiBold",
+    fontFamily: 'InterSemiBold',
     fontSize: 18,
-    color: "#000",
+    color: '#000',
   },
   profileStatus: {
-    fontFamily: "InterMedium",
-    color: "#000",
+    fontFamily: 'InterMedium',
+    color: '#000',
     fontSize: 12,
   },
   container: {
@@ -623,58 +604,58 @@ const styles = StyleSheet.create({
   },
   header: {
     marginVertical: 20,
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginHorizontal: 30,
   },
   profileUsername: {
-    justifyContent: "center",
+    justifyContent: 'center',
     marginVertical: 40,
-    alignContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
+    alignContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   blahRow: {
-    flexDirection: "row",
-    justifyContent: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   editName: {
-    textAlign: "left",
+    textAlign: 'left',
     paddingTop: 0,
     paddingBottom: 0,
     paddingLeft: 5,
     top: 2,
   },
   blahs: {
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
     fontSize: 18,
-    color: "#000",
-    textAlign: "center",
+    color: '#000',
+    textAlign: 'center',
   },
   textContainer: {
     marginHorizontal: 12,
   },
   subtitle: {
-    textAlign: "center",
-    color: "#B3B3B3",
+    textAlign: 'center',
+    color: '#B3B3B3',
     fontSize: 15,
-    fontFamily: "InterSemiBold",
+    fontFamily: 'InterSemiBold',
   },
   editProfileContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignContent: "center",
-    alignSelf: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignContent: 'center',
+    alignSelf: 'center',
     marginTop: 40,
   },
   editProfile: {
-    flexDirection: "row",
+    flexDirection: 'row',
   },
   fullName: {
-    textAlign: "center",
+    textAlign: 'center',
     paddingTop: 40,
     paddingBottom: 10,
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
     fontSize: 18,
   },
   editContainer: {
@@ -682,32 +663,32 @@ const styles = StyleSheet.create({
   },
   editTitle: {
     fontSize: 20,
-    fontFamily: "InterSemiBold",
-    textAlign: "center",
+    fontFamily: 'InterSemiBold',
+    textAlign: 'center',
     marginBottom: 20,
   },
   input: {
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
     fontSize: 16,
     marginBottom: 15,
-    color: "#000",
+    color: '#000',
   },
   locationContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingVertical: 12,
     marginBottom: 15,
   },
   locationText: {
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
     fontSize: 16,
-    color: "#000",
+    color: '#000',
   },
   skeletonContainer: {
     flex: 1,
@@ -718,12 +699,12 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: "#E1E1E1",
+    backgroundColor: '#E1E1E1',
     marginBottom: 10,
   },
   contentSkeleton: {
     height: 100,
-    backgroundColor: "#E1E1E1",
+    backgroundColor: '#E1E1E1',
     borderRadius: 8,
   },
 });

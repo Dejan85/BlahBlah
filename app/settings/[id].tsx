@@ -5,10 +5,10 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from "react-native";
-import React, { useState, useEffect, useCallback } from "react";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import Header from "@/components/Header";
+} from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import Header from '@/components/Header';
 import {
   BlahRecovery,
   GroupSettings,
@@ -19,11 +19,11 @@ import {
   RedBunny,
   TermsSettings,
   TrashSettings,
-} from "@/assets/images";
-import SettingItem from "@/components/SettingItem";
-import Avatar from "@/components/Avatar";
-import { supabase } from "@/utils";
-import { useAuth } from "@/context/AuthContext";
+} from '@/assets/images';
+import SettingItem from '@/components/SettingItem';
+import Avatar from '@/components/Avatar';
+import { supabase } from '@/utils';
+import { useAuth } from '@/context/AuthContext';
 const Settings = () => {
   const [privateProfile, setPrivateProfile] = useState(false);
   const [lastSeen, setLastSeen] = useState(false);
@@ -31,7 +31,7 @@ const Settings = () => {
   const [muteNewFollowers, setMuteNewFollowers] = useState(false);
   const [muteMessages, setMuteMessages] = useState(false);
   const [mutePostLikesAndTags, setMutePostLikesAndTags] = useState(false);
-  const [profileData, setProfileData] = useState({ id: "", avatar_url: "" });
+  const [profileData, setProfileData] = useState({ id: '', avatar_url: '' });
   const [loggingOut, setLoggingOut] = useState(false);
 
   const { signOut } = useAuth();
@@ -67,9 +67,9 @@ const Settings = () => {
 
       try {
         const { data, error } = await supabase
-          .from("profiles")
-          .select("id, avatar_url")
-          .eq("id", id)
+          .from('profiles')
+          .select('id, avatar_url')
+          .eq('id', id)
           .single();
 
         if (error) throw error;
@@ -77,7 +77,7 @@ const Settings = () => {
           setProfileData(data);
         }
       } catch (error) {
-        console.error("Error fetching profile:", error);
+        console.error('Error fetching profile:', error);
       }
     };
 
@@ -90,13 +90,13 @@ const Settings = () => {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       await signOut();
-      router.replace("/");
+      router.replace('/');
     } catch (error) {
       Alert.alert(
-        "Error",
+        'Error',
         error instanceof Error
           ? error.message
-          : "An error occurred while signing out",
+          : 'An error occurred while signing out'
       );
     } finally {
       setLoggingOut(false);
@@ -129,14 +129,14 @@ const Settings = () => {
         <View
           style={{
             borderBottomWidth: 1,
-            borderBottomColor: "#B3B3B3",
+            borderBottomColor: '#B3B3B3',
             marginLeft: 12,
           }}
         />
         <View
           style={{
             borderBottomWidth: 1,
-            borderBottomColor: "#B3B3B3",
+            borderBottomColor: '#B3B3B3',
             marginLeft: 12,
             paddingVertical: 12,
           }}
@@ -158,7 +158,7 @@ const Settings = () => {
         <View
           style={{
             borderBottomWidth: 1,
-            borderBottomColor: "#B3B3B3",
+            borderBottomColor: '#B3B3B3',
             marginLeft: 12,
           }}
         />
@@ -191,7 +191,7 @@ const Settings = () => {
         <View
           style={{
             borderBottomWidth: 1,
-            borderBottomColor: "#B3B3B3",
+            borderBottomColor: '#B3B3B3',
             marginLeft: 12,
           }}
         />
@@ -208,7 +208,7 @@ const Settings = () => {
         <View
           style={{
             borderBottomWidth: 1,
-            borderBottomColor: "#B3B3B3",
+            borderBottomColor: '#B3B3B3',
             marginLeft: 12,
           }}
         />
@@ -255,7 +255,7 @@ const Settings = () => {
         </Text>
         <View
           style={{
-            borderBottomColor: "#B3B3B3",
+            borderBottomColor: '#B3B3B3',
             borderBottomWidth: 1,
             marginLeft: 12,
             marginRight: 12,
@@ -281,7 +281,7 @@ const Settings = () => {
         </Text>
         <View
           style={{
-            borderBottomColor: "#B3B3B3",
+            borderBottomColor: '#B3B3B3',
             borderBottomWidth: 1,
             marginHorizontal: 12,
           }}
@@ -328,7 +328,7 @@ const Settings = () => {
               loggingOut && { opacity: 0.7 },
             ]}
           >
-            {loggingOut ? "Logging out..." : "Logout"}
+            {loggingOut ? 'Logging out...' : 'Logout'}
           </Text>
         </TouchableOpacity>
 
@@ -368,13 +368,13 @@ const styles = StyleSheet.create({
     paddingBottom: 50,
   },
   logoutButton: {
-    width: "100%",
+    width: '100%',
   },
   logoutButtonDisabled: {
     opacity: 0.7,
   },
   buttonContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
   },
   mainContent: {
     marginLeft: 37,
@@ -386,24 +386,24 @@ const styles = StyleSheet.create({
     paddingRight: 0,
   },
   titleContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
   },
   title: {
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
     fontSize: 18,
-    color: "#111",
+    color: '#111',
   },
   titleBold: {
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
     fontSize: 18,
-    color: "#FF325E",
+    color: '#FF325E',
   },
   icon: {
     marginHorizontal: 12,
   },
   label: {
-    fontFamily: "InterRegular",
+    fontFamily: 'InterRegular',
     fontSize: 18,
-    color: "#111",
+    color: '#111',
   },
 });

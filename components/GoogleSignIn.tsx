@@ -1,17 +1,16 @@
 import {
   GoogleSignin,
-  GoogleSigninButton,
   statusCodes,
-} from "@react-native-google-signin/google-signin";
-import { useState } from "react";
-import { supabase } from "@/utils/supabase";
-import { Alert, View, Platform, StyleSheet, Pressable } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+} from '@react-native-google-signin/google-signin';
+import { useState } from 'react';
+import { supabase } from '@/utils/supabase';
+import { Alert, View, Platform, StyleSheet, Pressable } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 GoogleSignin.configure({
   webClientId:
-    "307003980819-g7e1fmdhbiu7lurl6j044oi83gi1hvtg.apps.googleusercontent.com",
-  scopes: ["email", "profile"],
-  iosClientId: "",
+    '307003980819-g7e1fmdhbiu7lurl6j044oi83gi1hvtg.apps.googleusercontent.com',
+  scopes: ['email', 'profile'],
+  iosClientId: '',
 });
 
 const GoogleLogin = () => {
@@ -26,12 +25,12 @@ const GoogleLogin = () => {
 
       if (userInfo?.data?.idToken) {
         const { error, data } = await supabase.auth.signInWithIdToken({
-          provider: "google",
+          provider: 'google',
           token: userInfo?.data?.idToken,
         });
 
         if (!data.user) {
-          Alert.alert("Error signing in with Google");
+          Alert.alert('Error signing in with Google');
           return;
         }
 
@@ -41,10 +40,10 @@ const GoogleLogin = () => {
       }
     } catch (error) {
       if (
-        typeof error === "object" &&
+        typeof error === 'object' &&
         error !== null &&
-        "code" in error &&
-        typeof (error as any).code === "string"
+        'code' in error &&
+        typeof (error as any).code === 'string'
       ) {
         const err = error as { code: string };
 
@@ -59,7 +58,7 @@ const GoogleLogin = () => {
         }
       } else {
         // Handle other types of errors
-        Alert.alert("An unexpected error occurred");
+        Alert.alert('An unexpected error occurred');
       }
     } finally {
       setLoading(false);
@@ -68,7 +67,7 @@ const GoogleLogin = () => {
 
   return (
     <View>
-      {Platform.OS === "android" ? (
+      {Platform.OS === 'android' ? (
         <>
           <Pressable
             style={styles.button}
@@ -85,12 +84,12 @@ const GoogleLogin = () => {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     width: 50,
     height: 50,
     borderRadius: 25,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginHorizontal: 10,
     marginTop: 10,
   },

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,16 +7,14 @@ import {
   SafeAreaView,
   Platform,
   StatusBar,
-  TouchableWithoutFeedback,
   Animated,
   Alert,
-} from "react-native";
-import { Audio } from "expo-av";
-import { useRouter } from "expo-router";
-import CustomTextInput from "@/components/CustomTextInput";
-import AudioWaveform from "@/components/AudioWaveForm";
-import { supabase } from "@/utils/supabase";
-import { useAuth } from "@/context/AuthContext";
+} from 'react-native';
+import { Audio } from 'expo-av';
+import CustomTextInput from '@/components/CustomTextInput';
+import AudioWaveform from '@/components/AudioWaveForm';
+import { supabase } from '@/utils/supabase';
+import { useAuth } from '@/context/AuthContext';
 
 interface BlahBroadcastProps {
   onSend?: () => void;
@@ -24,12 +22,11 @@ interface BlahBroadcastProps {
 
 export default function BlahBroadcast({ onSend }: BlahBroadcastProps) {
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
-  const [text, setText] = useState("");
+  const [text, setText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTimer, setRecordingTimer] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
   const [isUrgent, setIsUrgent] = useState(false);
-  const router = useRouter();
   const { user } = useAuth();
   const bunnyAnimation = useRef(new Animated.Value(0)).current;
 
@@ -41,15 +38,15 @@ export default function BlahBroadcast({ onSend }: BlahBroadcastProps) {
       const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
       const { data, error } = await supabase
-        .from("blahs")
-        .select("created_at")
-        .eq("sender_id", user.id)
-        .gte("created_at", twentyFourHoursAgo.toISOString())
-        .order("created_at", { ascending: false })
+        .from('blahs')
+        .select('created_at')
+        .eq('sender_id', user.id)
+        .gte('created_at', twentyFourHoursAgo.toISOString())
+        .order('created_at', { ascending: false })
         .limit(1);
 
       if (error) {
-        console.error("Error checking last blah:", error);
+        console.error('Error checking last blah:', error);
         return;
       }
 
@@ -74,7 +71,7 @@ export default function BlahBroadcast({ onSend }: BlahBroadcastProps) {
             }
           }
         } catch (error) {
-          console.error("Error calculating time:", error);
+          console.error('Error calculating time:', error);
           setTimeRemaining(null);
           setIsUrgent(false);
         }
@@ -126,10 +123,10 @@ export default function BlahBroadcast({ onSend }: BlahBroadcastProps) {
   const startRecording = async () => {
     try {
       const perm = await Audio.requestPermissionsAsync();
-      if (perm.status !== "granted") {
+      if (perm.status !== 'granted') {
         Alert.alert(
-          "Permission required",
-          "Please grant microphone permission to record audio.",
+          'Permission required',
+          'Please grant microphone permission to record audio.'
         );
         return;
       }
@@ -140,14 +137,14 @@ export default function BlahBroadcast({ onSend }: BlahBroadcastProps) {
       });
 
       const { recording: newRecording } = await Audio.Recording.createAsync(
-        Audio.RecordingOptionsPresets.HIGH_QUALITY,
+        Audio.RecordingOptionsPresets.HIGH_QUALITY
       );
 
       setRecording(newRecording);
       setIsRecording(true);
     } catch (err) {
-      console.error("Failed to start recording", err);
-      Alert.alert("Error", "Failed to start recording");
+      console.error('Failed to start recording', err);
+      Alert.alert('Error', 'Failed to start recording');
     }
   };
 
@@ -158,12 +155,12 @@ export default function BlahBroadcast({ onSend }: BlahBroadcastProps) {
     try {
       await recording.stopAndUnloadAsync();
       const uri = recording.getURI();
-      if (!uri) throw new Error("No recording URI");
+      if (!uri) throw new Error('No recording URI');
 
-      await sendBlah(uri, "audio");
+      await sendBlah(uri, 'audio');
     } catch (err) {
-      console.error("Failed to stop recording", err);
-      Alert.alert("Error", "Failed to stop recording");
+      console.error('Failed to stop recording', err);
+      Alert.alert('Error', 'Failed to stop recording');
     } finally {
       setRecording(null);
       setIsRecording(false);
@@ -171,33 +168,33 @@ export default function BlahBroadcast({ onSend }: BlahBroadcastProps) {
   };
 
   // Send Blah function
-  const sendBlah = async (content: string, type: "text" | "audio" = "text") => {
+  const sendBlah = async (content: string, type: 'text' | 'audio' = 'text') => {
     if (!user?.id) {
-      Alert.alert("Error", "You must be logged in to send Blahs");
+      Alert.alert('Error', 'You must be logged in to send Blahs');
       return;
     }
 
     try {
       // Get all followers except those marked as "No Blahs"
       const { data: followers, error: followersError } = await supabase
-        .from("follows")
-        .select("follower_id")
-        .eq("followed_id", user.id)
-        .eq("receive_blahs", true);
+        .from('follows')
+        .select('follower_id')
+        .eq('followed_id', user.id)
+        .eq('receive_blahs', true);
 
       if (followersError) throw followersError;
 
       if (!followers || followers.length === 0) {
         Alert.alert(
-          "No recipients",
-          "You don't have any followers who can receive Blahs",
+          'No recipients',
+          "You don't have any followers who can receive Blahs"
         );
         return;
       }
 
       // Create the Blah record
       const { data: blah, error: blahError } = await supabase
-        .from("blahs")
+        .from('blahs')
         .insert({
           sender_id: user.id,
           content,
@@ -214,15 +211,15 @@ export default function BlahBroadcast({ onSend }: BlahBroadcastProps) {
         followers.map(async (follower) => {
           // First check if a conversation exists between these users
           const { data: existingConv, error: convError } = await supabase
-            .from("conversations")
-            .select("id")
+            .from('conversations')
+            .select('id')
             .or(
               `and(participant1_id.eq.${user.id},participant2_id.eq.${follower.follower_id}),` +
-                `and(participant1_id.eq.${follower.follower_id},participant2_id.eq.${user.id})`,
+                `and(participant1_id.eq.${follower.follower_id},participant2_id.eq.${user.id})`
             )
             .single();
 
-          if (convError && convError.code !== "PGRST116") {
+          if (convError && convError.code !== 'PGRST116') {
             throw convError;
           }
 
@@ -230,7 +227,7 @@ export default function BlahBroadcast({ onSend }: BlahBroadcastProps) {
           if (!existingConv) {
             // Create new conversation
             const { data: newConv, error: createError } = await supabase
-              .from("conversations")
+              .from('conversations')
               .insert({
                 participant1_id: user.id,
                 participant2_id: follower.follower_id,
@@ -252,21 +249,21 @@ export default function BlahBroadcast({ onSend }: BlahBroadcastProps) {
             is_deleted: false,
             blah_id: blah.id,
           };
-        }),
+        })
       );
 
       const { error: messagesError } = await supabase
-        .from("messages")
+        .from('messages')
         .insert(messages);
 
       if (messagesError) throw messagesError;
 
-      setText("");
+      setText('');
       onSend?.();
-      Alert.alert("Success", "Your Blah has been sent to your followers!");
+      Alert.alert('Success', 'Your Blah has been sent to your followers!');
     } catch (error) {
-      console.error("Error sending Blah:", error);
-      Alert.alert("Error", "Failed to send Blah. Please try again.");
+      console.error('Error sending Blah:', error);
+      Alert.alert('Error', 'Failed to send Blah. Please try again.');
     }
   };
 
@@ -334,26 +331,26 @@ export default function BlahBroadcast({ onSend }: BlahBroadcastProps) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#fff",
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    backgroundColor: '#fff',
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   container: {
     flex: 1,
     padding: 20,
   },
   timerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 20,
   },
   timerText: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
+    fontWeight: 'bold',
+    color: '#333',
   },
   urgentText: {
-    color: "#FF325E",
+    color: '#FF325E',
   },
   bunny: {
     marginLeft: 10,
@@ -366,48 +363,48 @@ const styles = StyleSheet.create({
   },
   recordingContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginTop: 20,
   },
   recordButton: {
-    backgroundColor: "#FF325E",
+    backgroundColor: '#FF325E',
     padding: 15,
     borderRadius: 25,
     flex: 1,
     marginRight: 10,
   },
   sendButton: {
-    backgroundColor: "#FF325E",
+    backgroundColor: '#FF325E',
     padding: 15,
     borderRadius: 25,
     flex: 1,
     marginLeft: 10,
   },
   sendButtonDisabled: {
-    backgroundColor: "#ccc",
+    backgroundColor: '#ccc',
   },
   stopButton: {
-    backgroundColor: "#FF325E",
+    backgroundColor: '#FF325E',
     padding: 15,
     borderRadius: 25,
     marginTop: 20,
     width: 200,
-    alignItems: "center",
+    alignItems: 'center',
   },
   buttonText: {
-    color: "#fff",
-    textAlign: "center",
+    color: '#fff',
+    textAlign: 'center',
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   stopButtonText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
 });

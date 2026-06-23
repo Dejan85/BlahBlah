@@ -1,19 +1,18 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   View,
-  TextInput,
   StyleSheet,
   Text,
   Pressable,
   ActivityIndicator,
   Alert,
-} from "react-native";
-import { Envelope, Username, Lock, ShowPassword } from "@/assets/images";
-import CustomTextInput from "@/components/CustomTextInput";
-import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/utils/supabase";
-import { useRouter, useLocalSearchParams } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+} from 'react-native';
+import { Envelope, Username, Lock, ShowPassword } from '@/assets/images';
+import CustomTextInput from '@/components/CustomTextInput';
+import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/utils/supabase';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const isValidEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -21,12 +20,12 @@ const isValidEmail = (email: string): boolean => {
 };
 
 const isValidPassword = (
-  password: string,
+  password: string
 ): { isValid: boolean; message: string } => {
   if (password.length < 6) {
     return {
       isValid: false,
-      message: "Password must be at least 6 characters",
+      message: 'Password must be at least 6 characters',
     };
   }
   // if (!/[A-Z]/.test(password)) {
@@ -38,97 +37,97 @@ const isValidPassword = (
   // if (!/\d/.test(password)) {
   //   return { isValid: false, message: 'Password must contain at least one number' };
   // }
-  return { isValid: true, message: "" };
+  return { isValid: true, message: '' };
 };
 
 const isValidUsername = (
-  username: string,
+  username: string
 ): { isValid: boolean; message: string } => {
   if (username.length < 3) {
     return {
       isValid: false,
-      message: "Username must be at least 3 characters",
+      message: 'Username must be at least 3 characters',
     };
   }
   if (username.length > 20) {
     return {
       isValid: false,
-      message: "Username must not exceed 20 characters",
+      message: 'Username must not exceed 20 characters',
     };
   }
   const usernameRegex = /^[a-zA-Z0-9_]+$/;
   if (!usernameRegex.test(username)) {
     return {
       isValid: false,
-      message: "Username can only contain letters, numbers, and underscores",
+      message: 'Username can only contain letters, numbers, and underscores',
     };
   }
-  return { isValid: true, message: "" };
+  return { isValid: true, message: '' };
 };
 
 const isValidFullName = (
-  fullName: string,
+  fullName: string
 ): { isValid: boolean; message: string } => {
   if (fullName.trim().length < 2) {
     return {
       isValid: false,
-      message: "Full name must be at least 2 characters",
+      message: 'Full name must be at least 2 characters',
     };
   }
   const nameRegex = /^[a-zA-Z\s]+$/;
   if (!nameRegex.test(fullName)) {
     return {
       isValid: false,
-      message: "Full name can only contain letters and spaces",
+      message: 'Full name can only contain letters and spaces',
     };
   }
   const words = fullName.trim().split(/\s+/);
   if (words.length < 2) {
-    return { isValid: false, message: "Please enter both first and last name" };
+    return { isValid: false, message: 'Please enter both first and last name' };
   }
-  return { isValid: true, message: "" };
+  return { isValid: true, message: '' };
 };
 type SignUpProps = {
   initialStep?: number;
 };
 
-const SignUp: React.FC<SignUpProps> = ({ initialStep = 1 }) => {
+const SignUp: React.FC<SignUpProps> = () => {
   const router = useRouter();
   const { signUp, updateUsername, updateFullName } = useAuth();
   const [step, setStep] = useState<number>(1);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const [isEmailValid, setIsEmailValid] = useState(false);
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [usernameError, setUsernameError] = useState("");
-  const [fullNameError, setFullNameError] = useState("");
-  const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [usernameError, setUsernameError] = useState('');
+  const [fullNameError, setFullNameError] = useState('');
+  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const { verified } = useLocalSearchParams<{ verified: string }>();
-  const [fullName, setFullName] = useState("");
+  const [fullName, setFullName] = useState('');
 
   // First, add the resend function near your other auth functions
   const handleResendEmail = async () => {
     try {
       setLoading(true);
       const { error } = await supabase.auth.resend({
-        type: "signup",
+        type: 'signup',
         email: email,
         options: {
-          emailRedirectTo: "blahblah://",
+          emailRedirectTo: 'blahblah://',
         },
       });
 
       if (error) {
-        Alert.alert("Error", error.message);
+        Alert.alert('Error', error.message);
       } else {
-        Alert.alert("Success", "Verification email has been resent");
+        Alert.alert('Success', 'Verification email has been resent');
       }
     } catch (error) {
-      console.error("Error resending email:", error);
-      Alert.alert("Error", "Failed to resend verification email");
+      console.error('Error resending email:', error);
+      Alert.alert('Error', 'Failed to resend verification email');
     } finally {
       setLoading(false);
     }
@@ -138,7 +137,7 @@ const SignUp: React.FC<SignUpProps> = ({ initialStep = 1 }) => {
     setEmail(text);
     const valid = isValidEmail(text);
     setIsEmailValid(valid);
-    setEmailError(valid ? "" : "Please enter a valid email address");
+    setEmailError(valid ? '' : 'Please enter a valid email address');
   };
 
   const handlePasswordChange = (text: string) => {
@@ -163,9 +162,9 @@ const SignUp: React.FC<SignUpProps> = ({ initialStep = 1 }) => {
   useEffect(() => {
     const checkStoredState = async () => {
       try {
-        const storedStep = await AsyncStorage.getItem("signUpStep");
-        const storedEmail = await AsyncStorage.getItem("signUpEmail");
-        const storedPassword = await AsyncStorage.getItem("signUpPassword");
+        const storedStep = await AsyncStorage.getItem('signUpStep');
+        const storedEmail = await AsyncStorage.getItem('signUpEmail');
+        const storedPassword = await AsyncStorage.getItem('signUpPassword');
 
         if (storedStep && storedEmail && storedPassword) {
           setStep(parseInt(storedStep));
@@ -173,7 +172,7 @@ const SignUp: React.FC<SignUpProps> = ({ initialStep = 1 }) => {
           setPassword(storedPassword);
         }
       } catch (error) {
-        console.error("Error reading stored state:", error);
+        console.error('Error reading stored state:', error);
       }
     };
 
@@ -183,15 +182,15 @@ const SignUp: React.FC<SignUpProps> = ({ initialStep = 1 }) => {
   // Handle verification
   useEffect(() => {
     const handleVerification = async () => {
-      if (verified === "true") {
+      if (verified === 'true') {
         try {
           setLoading(true);
 
-          const storedEmail = await AsyncStorage.getItem("signUpEmail");
-          const storedPassword = await AsyncStorage.getItem("signUpPassword");
+          const storedEmail = await AsyncStorage.getItem('signUpEmail');
+          const storedPassword = await AsyncStorage.getItem('signUpPassword');
 
           if (!storedEmail || !storedPassword) {
-            throw new Error("Missing stored credentials");
+            throw new Error('Missing stored credentials');
           }
 
           setEmail(storedEmail);
@@ -201,19 +200,19 @@ const SignUp: React.FC<SignUpProps> = ({ initialStep = 1 }) => {
             {
               email: storedEmail,
               password: storedPassword,
-            },
+            }
           );
 
           if (signInError) throw signInError;
 
           setStep(4);
-          await AsyncStorage.setItem("signUpStep", "4");
+          await AsyncStorage.setItem('signUpStep', '4');
         } catch (error) {
-          console.error("Error handling verification:", error);
+          console.error('Error handling verification:', error);
           Alert.alert(
-            "Error",
-            "Failed to complete verification. Please try signing in manually.",
-            [{ text: "OK", onPress: () => router.replace("/") }],
+            'Error',
+            'Failed to complete verification. Please try signing in manually.',
+            [{ text: 'OK', onPress: () => router.replace('/') }]
           );
         } finally {
           setLoading(false);
@@ -246,31 +245,31 @@ const SignUp: React.FC<SignUpProps> = ({ initialStep = 1 }) => {
   const handleNext = async () => {
     if (step === 1) {
       if (!email) {
-        Alert.alert("Error", "Please enter your email");
+        Alert.alert('Error', 'Please enter your email');
         return;
       }
       try {
-        await AsyncStorage.setItem("signUpStep", "2");
-        await AsyncStorage.setItem("signUpEmail", email);
+        await AsyncStorage.setItem('signUpStep', '2');
+        await AsyncStorage.setItem('signUpEmail', email);
         setStep(2);
       } catch (error) {
-        console.error("Error saving signup state:", error);
+        console.error('Error saving signup state:', error);
       }
     } else if (step === 2) {
       if (!password) {
-        Alert.alert("Error", "Please enter a password.");
+        Alert.alert('Error', 'Please enter a password.');
         return;
       }
 
       try {
         setLoading(true);
-        await AsyncStorage.setItem("signUpPassword", password);
-        await AsyncStorage.setItem("signUpStep", "3");
+        await AsyncStorage.setItem('signUpPassword', password);
+        await AsyncStorage.setItem('signUpStep', '3');
         // Remove the signUp call here since we just want to show verification screen
         await signUp(email, password);
         setStep(3); // This will show the verification message
       } catch (error) {
-        console.error("Error during signup:", error);
+        console.error('Error during signup:', error);
       } finally {
         setLoading(false);
       }
@@ -279,7 +278,7 @@ const SignUp: React.FC<SignUpProps> = ({ initialStep = 1 }) => {
 
   const handleUsernameSubmit = async () => {
     if (!username) {
-      Alert.alert("Error", "Please enter a username");
+      Alert.alert('Error', 'Please enter a username');
       return;
     }
 
@@ -289,7 +288,7 @@ const SignUp: React.FC<SignUpProps> = ({ initialStep = 1 }) => {
       setStep(5);
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert("Error", error.message);
+        Alert.alert('Error', error.message);
       }
     } finally {
       setLoading(false);
@@ -298,7 +297,7 @@ const SignUp: React.FC<SignUpProps> = ({ initialStep = 1 }) => {
 
   const handleFullNameSubmit = async () => {
     if (!fullName.trim()) {
-      Alert.alert("Error", "Please enter your full name");
+      Alert.alert('Error', 'Please enter your full name');
       return;
     }
 
@@ -306,13 +305,13 @@ const SignUp: React.FC<SignUpProps> = ({ initialStep = 1 }) => {
       setLoading(true);
       await updateFullName(fullName);
       await AsyncStorage.multiRemove([
-        "signUpStep",
-        "signUpEmail",
-        "signUpPassword",
+        'signUpStep',
+        'signUpEmail',
+        'signUpPassword',
       ]);
-      router.replace("/auth/sign-up/permissionsStep");
+      router.replace('/auth/sign-up/permissionsStep');
     } catch (error) {
-      console.error("Error updating full name:", error);
+      console.error('Error updating full name:', error);
     } finally {
       setLoading(false);
     }
@@ -339,7 +338,7 @@ const SignUp: React.FC<SignUpProps> = ({ initialStep = 1 }) => {
               leftIcon={<Envelope />}
               returnKeyType="done"
             />
-            {emailError !== "" && (
+            {emailError !== '' && (
               <Text style={styles.errorText}>{emailError}</Text>
             )}
           </>
@@ -352,7 +351,7 @@ const SignUp: React.FC<SignUpProps> = ({ initialStep = 1 }) => {
               style={styles.input}
               styleContainer={[
                 styles.inputContainer,
-                passwordError !== "" &&
+                passwordError !== '' &&
                   password.length > 0 &&
                   styles.inputError,
               ]}
@@ -369,7 +368,7 @@ const SignUp: React.FC<SignUpProps> = ({ initialStep = 1 }) => {
               onRightIconPress={handleTogglePasswordVisibility}
               returnKeyType="done"
             />
-            {passwordError !== "" && (
+            {passwordError !== '' && (
               <Text style={styles.errorText}>{passwordError}</Text>
             )}
           </>
@@ -377,7 +376,7 @@ const SignUp: React.FC<SignUpProps> = ({ initialStep = 1 }) => {
       case 3:
         return (
           <View
-            style={{ justifyContent: "center", flex: 1, marginHorizontal: 20 }}
+            style={{ justifyContent: 'center', flex: 1, marginHorizontal: 20 }}
           >
             <Text style={styles.title}>Verify your email address</Text>
             <Text style={[styles.title, styles.subtitle]}>
@@ -390,7 +389,7 @@ const SignUp: React.FC<SignUpProps> = ({ initialStep = 1 }) => {
               disabled={loading}
             >
               <Text style={styles.resendButtonText}>
-                {loading ? "Sending..." : "Resend email"}
+                {loading ? 'Sending...' : 'Resend email'}
               </Text>
             </Pressable>
           </View>
@@ -398,14 +397,14 @@ const SignUp: React.FC<SignUpProps> = ({ initialStep = 1 }) => {
       case 4:
         return (
           <View
-            style={{ justifyContent: "center", flex: 1, marginHorizontal: 20 }}
+            style={{ justifyContent: 'center', flex: 1, marginHorizontal: 20 }}
           >
             <Text style={styles.title}>Pick a username for your account</Text>
             <CustomTextInput
               style={styles.input}
               styleContainer={[
                 styles.inputContainer,
-                usernameError !== "" &&
+                usernameError !== '' &&
                   username.length > 0 &&
                   styles.inputError,
               ]}
@@ -417,7 +416,7 @@ const SignUp: React.FC<SignUpProps> = ({ initialStep = 1 }) => {
               leftIcon={<Username />}
               returnKeyType="done"
             />
-            {usernameError !== "" && (
+            {usernameError !== '' && (
               <Text style={styles.errorText}>{usernameError}</Text>
             )}
           </View>
@@ -425,14 +424,14 @@ const SignUp: React.FC<SignUpProps> = ({ initialStep = 1 }) => {
       case 5:
         return (
           <View
-            style={{ justifyContent: "center", flex: 1, marginHorizontal: 20 }}
+            style={{ justifyContent: 'center', flex: 1, marginHorizontal: 20 }}
           >
             <Text style={styles.title}>Enter your full name</Text>
             <CustomTextInput
               style={styles.input}
               styleContainer={[
                 styles.inputContainer,
-                fullNameError !== "" &&
+                fullNameError !== '' &&
                   fullName.length > 0 &&
                   styles.inputError,
               ]}
@@ -443,7 +442,7 @@ const SignUp: React.FC<SignUpProps> = ({ initialStep = 1 }) => {
               autoCapitalize="words"
               returnKeyType="done"
             />
-            {fullNameError !== "" && (
+            {fullNameError !== '' && (
               <Text style={styles.errorText}>{fullNameError}</Text>
             )}
           </View>
@@ -524,7 +523,7 @@ const SignUp: React.FC<SignUpProps> = ({ initialStep = 1 }) => {
           }
           disabled={loading || isNextButtonDisabled()}
         >
-          <Text style={styles.btnText}>{loading ? "Loading..." : "Next"}</Text>
+          <Text style={styles.btnText}>{loading ? 'Loading...' : 'Next'}</Text>
         </Pressable>
       )}
     </View>
@@ -535,18 +534,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
 
-    backgroundColor: "#FF325E",
+    backgroundColor: '#FF325E',
   },
   inputContainer: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 50,
     marginVertical: 15,
   },
   title: {
     fontSize: 14,
-    textAlign: "center",
-    fontFamily: "InterMedium",
-    color: "#fff",
+    textAlign: 'center',
+    fontFamily: 'InterMedium',
+    color: '#fff',
   },
   subtitle: {
     marginTop: 8,
@@ -554,49 +553,49 @@ const styles = StyleSheet.create({
   },
   resendButton: {
     marginTop: 20,
-    alignContent: "center",
-    alignSelf: "center",
+    alignContent: 'center',
+    alignSelf: 'center',
     borderWidth: 1,
-    borderColor: "#fff",
+    borderColor: '#fff',
     borderRadius: 50,
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
   resendButtonText: {
-    fontFamily: "InterRegular",
+    fontFamily: 'InterRegular',
     fontSize: 14,
-    color: "#fff",
-    textAlign: "center",
+    color: '#fff',
+    textAlign: 'center',
   },
   whiteButtonContainer: {
     marginTop: 20,
-    alignContent: "center",
-    alignSelf: "center",
+    alignContent: 'center',
+    alignSelf: 'center',
     borderRadius: 50,
     paddingHorizontal: 30,
     paddingVertical: 14,
     borderWidth: 1,
-    color: "#000",
-    borderColor: "#fff",
+    color: '#000',
+    borderColor: '#fff',
     marginBottom: 100,
   },
   inputError: {
-    borderColor: "#fff",
+    borderColor: '#fff',
     borderWidth: 1,
   },
   errorText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 12,
     marginTop: -10,
     marginLeft: 15,
-    fontFamily: "InterRegular",
+    fontFamily: 'InterRegular',
   },
   buttonContainer: {
     marginTop: 20,
-    alignContent: "center",
-    alignSelf: "center",
+    alignContent: 'center',
+    alignSelf: 'center',
     borderWidth: 2,
-    borderColor: "#fff",
+    borderColor: '#fff',
     borderRadius: 50,
     paddingHorizontal: 30,
     paddingVertical: 14,
@@ -606,10 +605,10 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   btnText: {
-    fontFamily: "InterSemiBold",
+    fontFamily: 'InterSemiBold',
     fontSize: 18,
-    color: "#fff",
-    textAlign: "center",
+    color: '#fff',
+    textAlign: 'center',
   },
   input: {
     flex: 1,
@@ -617,14 +616,14 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
   },
   loadingOverlay: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
 
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     zIndex: 1000,
   },
 });

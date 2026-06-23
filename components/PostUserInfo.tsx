@@ -1,10 +1,10 @@
-import React from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
-import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
-import { PostUserInfoProps } from "@/types";
-import { supabase } from "@/utils";
+import React from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { PostUserInfoProps } from '@/types';
+import { supabase } from '@/utils';
 
 const formatTimestamp = (timestamp: string) => {
   const now = new Date();
@@ -12,10 +12,10 @@ const formatTimestamp = (timestamp: string) => {
   const diffInHours = Math.abs(now.getTime() - postDate.getTime()) / 36e5;
 
   if (diffInHours < 24) {
-    return "Today";
+    return 'Today';
   } else {
     const diffInDays = Math.floor(diffInHours / 24);
-    return `${diffInDays} ${diffInDays === 1 ? "day" : "days"} ago`;
+    return `${diffInDays} ${diffInDays === 1 ? 'day' : 'days'} ago`;
   }
 };
 
@@ -24,11 +24,9 @@ export const PostUserInfo: React.FC<PostUserInfoProps> = ({
   profilePhoto,
   comments,
   hashtags,
-  postId,
   music,
   createdAt,
   userId,
-  isOwnProfile = false,
 }) => {
   const router = useRouter();
 
@@ -37,22 +35,22 @@ export const PostUserInfo: React.FC<PostUserInfoProps> = ({
 
     // Default navigation logic when onPress is not provided
     if (!userId) {
-      console.error("User ID is undefined");
+      console.error('User ID is undefined');
       return;
     }
 
     try {
       const [profileResponse, followersCount, followingCount] =
         await Promise.all([
-          supabase.from("profiles").select("*").eq("id", userId).single(),
+          supabase.from('profiles').select('*').eq('id', userId).single(),
           supabase
-            .from("follows")
-            .select("*", { count: "exact", head: true })
-            .eq("followed_id", userId),
+            .from('follows')
+            .select('*', { count: 'exact', head: true })
+            .eq('followed_id', userId),
           supabase
-            .from("follows")
-            .select("*", { count: "exact", head: true })
-            .eq("follower_id", userId),
+            .from('follows')
+            .select('*', { count: 'exact', head: true })
+            .eq('follower_id', userId),
         ]);
 
       if (profileResponse.error) throw profileResponse.error;
@@ -96,31 +94,31 @@ export const PostUserInfo: React.FC<PostUserInfoProps> = ({
       // }
 
       router.push({
-        pathname: "/profile/test/[id]",
+        pathname: '/profile/test/[id]',
         params: {
           id: userId,
           username: profileData.username || username,
           image: profileData.avatar_url || profilePhoto,
-          bio: profileData.bio || "",
-          lockProfile: "false",
-          fullName: profileData.full_name || "",
-          website_url: profileData.website_url || "",
+          bio: profileData.bio || '',
+          lockProfile: 'false',
+          fullName: profileData.full_name || '',
+          website_url: profileData.website_url || '',
           followers_count: String(profileData.followers_count),
           following_count: String(profileData.following_count),
         },
       });
     } catch (error) {
-      console.error("Error fetching profile data:", error);
+      console.error('Error fetching profile data:', error);
       router.push({
-        pathname: "/profile/profile-details/[id]",
+        pathname: '/profile/profile-details/[id]',
         params: {
           id: userId,
           username: username,
           image: profilePhoto,
-          bio: "",
-          lockProfile: "false",
-          fullName: "",
-          website_url: "",
+          bio: '',
+          lockProfile: 'false',
+          fullName: '',
+          website_url: '',
         },
       });
     }
@@ -129,14 +127,14 @@ export const PostUserInfo: React.FC<PostUserInfoProps> = ({
   return (
     <>
       <LinearGradient
-        colors={["rgba(0,0,0,0.8)", "transparent"]}
+        colors={['rgba(0,0,0,0.8)', 'transparent']}
         style={styles.topGradient}
       >
         <Text style={styles.timestamp}>{formatTimestamp(createdAt)}</Text>
       </LinearGradient>
 
       <LinearGradient
-        colors={["transparent", "rgba(0,0,0,0.8)"]}
+        colors={['transparent', 'rgba(0,0,0,0.8)']}
         style={styles.bottomGradient}
       >
         <View style={styles.container}>
@@ -171,7 +169,7 @@ export const PostUserInfo: React.FC<PostUserInfoProps> = ({
 
 const styles = StyleSheet.create({
   topGradient: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
@@ -179,89 +177,89 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   bottomGradient: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     height: 250,
-    justifyContent: "flex-end",
+    justifyContent: 'flex-end',
     paddingBottom: 20,
   },
   timestamp: {
-    position: "absolute",
+    position: 'absolute',
     left: 26,
     top: 70,
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-    fontFamily: "InterBold",
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    fontFamily: 'InterBold',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
     zIndex: 11,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   container: {
     marginLeft: 30,
-    width: "50%",
+    width: '50%',
     marginBottom: 110,
   },
   userContainer: {
-    flexDirection: "row",
-    alignItems: "flex-start",
+    flexDirection: 'row',
+    alignItems: 'flex-start',
   },
   profilePhoto: {
     width: 45,
     height: 45,
     borderRadius: 30,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.2)",
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   textContainer: {
-    flexDirection: "column",
+    flexDirection: 'column',
     paddingLeft: 15,
-    justifyContent: "center",
-    alignItems: "flex-start",
+    justifyContent: 'center',
+    alignItems: 'flex-start',
   },
   username: {
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
     fontSize: 18,
-    color: "#fff",
+    color: '#fff',
     marginBottom: 4,
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
   },
   musicContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
     marginBottom: 30,
   },
   musicText: {
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
     fontSize: 12,
-    color: "#fff",
+    color: '#fff',
     marginLeft: 4,
-    textAlign: "center",
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
   },
   comments: {
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
     fontSize: 12,
-    color: "#fff",
+    color: '#fff',
     marginBottom: 2,
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
   },
   hashtags: {
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
     fontSize: 12,
-    color: "#fff",
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    color: '#fff',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
   },

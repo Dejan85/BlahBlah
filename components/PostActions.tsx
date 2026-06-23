@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from 'react';
 import {
   View,
   Text,
@@ -6,11 +6,10 @@ import {
   StyleSheet,
   Animated,
   Easing,
-} from "react-native";
-import { Comment, Like, Share } from "@/assets/images";
-import ShareModal from "./ShareModal";
-import CommentModal from "./CommentModal";
-import { supabase } from "@/utils/supabase";
+} from 'react-native';
+import { Comment, Like, Share } from '@/assets/images';
+import ShareModal from './ShareModal';
+import CommentModal from './CommentModal';
 
 interface PostActionsProps {
   postId: string;
@@ -68,16 +67,16 @@ const PostActions: React.FC<PostActionsProps> = ({
 
   const formatNumber = (num: number): string => {
     if (num >= 1000000) {
-      return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+      return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
     }
     if (num >= 1000) {
-      return (num / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+      return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
     }
     return num.toString();
   };
 
   const iconStyle = {
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -85,7 +84,7 @@ const PostActions: React.FC<PostActionsProps> = ({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
   };
 
   return (
@@ -102,7 +101,7 @@ const PostActions: React.FC<PostActionsProps> = ({
             hideLikes && { marginRight: 0 },
           ]}
         >
-          <Like fill={isLiked ? "red" : "white"} style={iconStyle} />
+          <Like fill={isLiked ? 'red' : 'white'} style={iconStyle} />
         </Animated.View>
         {!hideLikes && likes !== null && likes !== undefined && (
           <Text style={styles.actionText}>{formatNumber(likes)}</Text>
@@ -153,17 +152,17 @@ const PostActions: React.FC<PostActionsProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    position: "absolute",
+    position: 'absolute',
     zIndex: 10,
-    top: "40%",
+    top: '40%',
     right: 15,
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "flex-start",
-    backgroundColor: "transparent", // Add this
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    backgroundColor: 'transparent', // Add this
 
     // Add shadow to container
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -173,31 +172,31 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   actionButton: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginVertical: 20,
     padding: 8, // Add padding for better touch area
-    backgroundColor: "rgba(0, 0, 0, 0.3)", // Semi-transparent background
+    backgroundColor: 'rgba(0, 0, 0, 0.3)', // Semi-transparent background
     borderRadius: 20, // Rounded corners
     minWidth: 80, // Minimum width for consistency
   },
   actionButtonNoText: {
-    flexDirection: "row",
+    flexDirection: 'row',
 
     marginVertical: 20,
     padding: 10,
     right: 0,
     left: 30,
-    backgroundColor: "rgba(0, 0, 0, 0.3)", // Semi-transparent background
+    backgroundColor: 'rgba(0, 0, 0, 0.3)', // Semi-transparent background
     borderRadius: 20, // Rounded corners
 
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   iconWrapper: {
     marginRight: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -205,13 +204,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    backgroundColor: "transparent", // Add this
+    backgroundColor: 'transparent', // Add this
   },
   actionText: {
     fontSize: 16,
-    color: "#fff",
-    fontFamily: "InterBold",
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    color: '#fff',
+    fontFamily: 'InterBold',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
   },

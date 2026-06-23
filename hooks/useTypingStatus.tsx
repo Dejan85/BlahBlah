@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { supabase } from "@/utils/supabase";
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { supabase } from '@/utils/supabase';
 
 export const useTypingStatus = (
   currentUserId: string,
-  conversationId: string,
+  conversationId: string
 ) => {
   const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -16,8 +16,8 @@ export const useTypingStatus = (
     const channel = supabase
       .channel(`typing-${conversationId}`)
       .on(
-        "broadcast",
-        { event: "typing" },
+        'broadcast',
+        { event: 'typing' },
         ({ payload }: { payload: { userId: string; isTyping: boolean } }) => {
           if (payload.userId !== currentUserId) {
             setIsOtherUserTyping(payload.isTyping);
@@ -34,7 +34,7 @@ export const useTypingStatus = (
               }, 3000); // Longer timeout for more stable indication
             }
           }
-        },
+        }
       )
       .subscribe();
 
@@ -50,12 +50,12 @@ export const useTypingStatus = (
   const broadcastTypingStatus = useCallback(
     async (isTyping: boolean) => {
       await supabase.channel(`typing-${conversationId}`).send({
-        type: "broadcast",
-        event: "typing",
+        type: 'broadcast',
+        event: 'typing',
         payload: { userId: currentUserId, isTyping },
       });
     },
-    [conversationId, currentUserId],
+    [conversationId, currentUserId]
   );
 
   // Handler for when user is typing with improved debouncing

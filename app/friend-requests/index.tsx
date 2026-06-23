@@ -1,21 +1,20 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
   Animated,
   StatusBar,
-  Platform,
   ActivityIndicator,
-} from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { useRouter } from "expo-router";
-import { runOnJS } from "react-native-reanimated";
-import Header from "@/components/Header";
-import SearchComponent from "@/components/SearchComponent";
-import UserListComponent from "@/components/UserListComponent";
-import { useAuth } from "@/context/AuthContext";
-import { User } from "@/types";
-import { useFriendRequests } from "@/context/FriendRequestContext";
+} from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { useRouter } from 'expo-router';
+import { runOnJS } from 'react-native-reanimated';
+import Header from '@/components/Header';
+import SearchComponent from '@/components/SearchComponent';
+import UserListComponent from '@/components/UserListComponent';
+import { useAuth } from '@/context/AuthContext';
+import { User } from '@/types';
+import { useFriendRequests } from '@/context/FriendRequestContext';
 
 const SEARCH_HEIGHT = 60;
 const SWIPE_THRESHOLD = 50;
@@ -25,33 +24,33 @@ const FriendRequests: React.FC = () => {
   const searchOpacity = useRef(new Animated.Value(1)).current;
   const router = useRouter();
   const lastScrollPosition = useRef(0);
-  const scrollDirection = useRef("");
+  const scrollDirection = useRef('');
   const isSearchHidden = useRef(false);
 
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
 
   const { user: currentUser } = useAuth();
   const currentUserId = currentUser?.id;
 
   const { friendRequests, updateRequestStatus } = useFriendRequests();
 
-  console.log("Current follow requests:", friendRequests);
+  console.log('Current follow requests:', friendRequests);
 
   // Transform follow requests to match User type.
   // We assume the related profile data comes in under the "profiles" key.
   const transformedRequests = friendRequests.map((request) => ({
     id: request.id,
-    username: request.profiles?.username || "",
-    image: request.profiles?.avatar_url || "https://via.placeholder.com/150",
-    subtitle: "Wants to follow you",
-    full_name: request.profiles?.full_name || "",
+    username: request.profiles?.username || '',
+    image: request.profiles?.avatar_url || 'https://via.placeholder.com/150',
+    subtitle: 'Wants to follow you',
+    full_name: request.profiles?.full_name || '',
     // Using the new column name: follower_id
     follower_id: request.follower_id,
   }));
 
   // Filter requests based on search
   const filteredRequests = transformedRequests.filter((req) =>
-    req.username.toLowerCase().includes(searchQuery.toLowerCase()),
+    req.username.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleScroll = (event: any) => {
@@ -63,7 +62,7 @@ const FriendRequests: React.FC = () => {
 
     if (isScrollingDown && hasScrolledEnough && !isSearchHidden.current) {
       isSearchHidden.current = true;
-      scrollDirection.current = "down";
+      scrollDirection.current = 'down';
 
       Animated.sequence([
         Animated.timing(searchAnimation, {
@@ -86,7 +85,7 @@ const FriendRequests: React.FC = () => {
       ]).start();
     } else if (isScrollingUp && hasScrolledEnough && isSearchHidden.current) {
       isSearchHidden.current = false;
-      scrollDirection.current = "up";
+      scrollDirection.current = 'up';
 
       Animated.sequence([
         Animated.parallel([
@@ -118,35 +117,35 @@ const FriendRequests: React.FC = () => {
 
   const handleUserPress = (user: User) => {
     router.push({
-      pathname: "/profile/profile-details/[id]",
+      pathname: '/profile/profile-details/[id]',
       params: {
         id: user.id,
         username: user.username,
         subtitle: user.subtitle,
         image: user.image,
-        fullName: user.full_name || "",
+        fullName: user.full_name || '',
       },
     });
   };
 
   const handleAcceptRequest = async (user: User) => {
     try {
-      await updateRequestStatus(user.id, "accepted");
+      await updateRequestStatus(user.id, 'accepted');
     } catch (error) {
-      console.error("Error accepting follow request:", error);
+      console.error('Error accepting follow request:', error);
     }
   };
 
   const handleDeclineRequest = async (user: User) => {
     try {
-      await updateRequestStatus(user.id, "denied");
+      await updateRequestStatus(user.id, 'denied');
     } catch (error) {
-      console.error("Error declining follow request:", error);
+      console.error('Error declining follow request:', error);
     }
   };
 
   const handleGoNext = () => {
-    router.push("/search-detailed");
+    router.push('/search-detailed');
   };
 
   const gesture = Gesture.Race(
@@ -154,7 +153,7 @@ const FriendRequests: React.FC = () => {
       .runOnJS(true)
       .activeOffsetX([-10, 10])
       .onEnd((event) => {
-        "worklet";
+        'worklet';
         if (event.velocityX > SWIPE_THRESHOLD) {
           runOnJS(handleBack)();
         }
@@ -162,7 +161,7 @@ const FriendRequests: React.FC = () => {
           runOnJS(handleGoNext)();
         }
       }),
-    Gesture.Native(),
+    Gesture.Native()
   );
 
   if (!currentUserId) {
@@ -217,13 +216,13 @@ const FriendRequests: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   mainContainer: {
     flex: 1,
   },
   searchWrapper: {
-    position: "absolute",
+    position: 'absolute',
     top: 12,
     left: 0,
     right: 0,
@@ -231,8 +230,8 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

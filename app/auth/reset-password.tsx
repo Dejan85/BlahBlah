@@ -1,17 +1,15 @@
-import React, { useState } from "react";
-import { View, Alert, StyleSheet, Text, Button } from "react-native";
-import { supabase } from "@/utils/supabase";
-import Header from "@/components/Header";
-import CustomTextInput from "@/components/CustomTextInput";
-import { useRouter } from "expo-router";
-import { Lock, ShowPassword } from "@/assets/images";
-import { Pressable } from "react-native";
-import { useAuth } from "@/context/AuthContext";
+import React, { useState } from 'react';
+import { View, Alert, StyleSheet, Text } from 'react-native';
+import { supabase } from '@/utils/supabase';
+import Header from '@/components/Header';
+import CustomTextInput from '@/components/CustomTextInput';
+import { useRouter } from 'expo-router';
+import { Lock, ShowPassword } from '@/assets/images';
+import { Pressable } from 'react-native';
 
 const ResetPasswordScreen = () => {
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const { signOut } = useAuth();
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const router = useRouter();
 
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -28,18 +26,18 @@ const ResetPasswordScreen = () => {
 
   const handleResetPassword = async () => {
     if (newPassword !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
+      Alert.alert('Error', 'Passwords do not match');
       return;
     }
 
     const { error } = await supabase.auth.updateUser({ password: newPassword });
 
     if (error) {
-      Alert.alert("Error", error.message);
+      Alert.alert('Error', error.message);
     } else {
-      Alert.alert("Success", "Password has been reset successfully!");
+      Alert.alert('Success', 'Password has been reset successfully!');
 
-      router.replace("/");
+      router.replace('/');
       // Optionally navigate to login screen
     }
   };
@@ -91,31 +89,31 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 24,
-    justifyContent: "center",
-    backgroundColor: "#FF325E",
+    justifyContent: 'center',
+    backgroundColor: '#FF325E',
   },
   input: {
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
     fontSize: 14,
-    color: "#000000",
+    color: '#000000',
     marginVertical: 15,
   },
   inputContainer: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 50,
-    justifyContent: "center",
+    justifyContent: 'center',
     marginVertical: 24,
   },
   btnText: {
-    fontFamily: "InterMedium",
-    color: "#000",
+    fontFamily: 'InterMedium',
+    color: '#000',
     fontSize: 18,
-    textAlign: "center",
+    textAlign: 'center',
     paddingVertical: 18,
   },
   loginBtn: {
     marginTop: 50,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 50,
   },
 });

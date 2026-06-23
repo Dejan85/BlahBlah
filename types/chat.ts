@@ -1,4 +1,4 @@
-export type MessageType = "text" | "audio" | "image" | "file";
+export type MessageType = 'text' | 'audio' | 'image' | 'file';
 
 export interface MessageReaction {
   emoji: string;
@@ -13,12 +13,12 @@ export interface Message {
   senderId: string;
   created_at: string;
   messageType: string;
-  reactions?: Array<{
+  reactions?: {
     emoji: string;
     name: string;
     count: number;
     users: string[];
-  }>;
+  }[];
 }
 
 export interface Conversation {
@@ -40,7 +40,7 @@ export type RealtimeMessagePayload = {
   old?: {
     id: string;
   };
-  eventType: "INSERT" | "UPDATE" | "DELETE";
+  eventType: 'INSERT' | 'UPDATE' | 'DELETE';
 };
 
 export type RealtimeReactionPayload = {
@@ -58,5 +58,5 @@ export type RealtimeReactionPayload = {
     reaction_type: string;
     reaction_emoji: string;
   } | null;
-  eventType: "INSERT" | "UPDATE" | "DELETE";
+  eventType: 'INSERT' | 'UPDATE' | 'DELETE';
 };

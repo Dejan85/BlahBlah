@@ -1,7 +1,7 @@
 // hooks/usePresence.ts
-import { useState, useEffect } from "react";
-import { supabase } from "@/utils/supabase";
-import { RealtimeChannel } from "@supabase/supabase-js";
+import { useState, useEffect } from 'react';
+import { supabase } from '@/utils/supabase';
+import { RealtimeChannel } from '@supabase/supabase-js';
 
 interface PresenceState {
   [key: string]: {
@@ -13,7 +13,7 @@ interface PresenceState {
 interface UserPresenceDB {
   user_id: string;
   last_seen: string;
-  status: "online" | "offline";
+  status: 'online' | 'offline';
   created_at: string;
 }
 
@@ -29,20 +29,20 @@ export const usePresence = (currentUserId: string) => {
 
     const updatePresence = async () => {
       try {
-        const { error } = await supabase.from("user_presence").upsert(
+        const { error } = await supabase.from('user_presence').upsert(
           {
             user_id: currentUserId,
             last_seen: new Date().toISOString(),
-            status: "online",
+            status: 'online',
           },
           {
-            onConflict: "user_id",
-          },
+            onConflict: 'user_id',
+          }
         );
 
         if (error) throw error;
       } catch (error) {
-        console.error("Error updating presence:", error);
+        console.error('Error updating presence:', error);
       }
     };
 
@@ -52,7 +52,7 @@ export const usePresence = (currentUserId: string) => {
         await updatePresence();
 
         // Create and configure the channel
-        presenceChannel = supabase.channel("online-users", {
+        presenceChannel = supabase.channel('online-users', {
           config: {
             presence: {
               key: currentUserId,
@@ -62,7 +62,7 @@ export const usePresence = (currentUserId: string) => {
 
         // Subscribe to status changes
         presenceChannel
-          .on("presence", { event: "join" }, ({ key }) => {
+          .on('presence', { event: 'join' }, ({ key }) => {
             setPresenceState((prev) => ({
               ...prev,
               [key]: {
@@ -71,7 +71,7 @@ export const usePresence = (currentUserId: string) => {
               },
             }));
           })
-          .on("presence", { event: "leave" }, ({ key, leftPresences }) => {
+          .on('presence', { event: 'leave' }, ({ key }) => {
             setPresenceState((prev) => ({
               ...prev,
               [key]: {
@@ -82,8 +82,8 @@ export const usePresence = (currentUserId: string) => {
           });
 
         // Track the user's presence
-        const status = await presenceChannel.subscribe(async (status) => {
-          if (status === "SUBSCRIBED") {
+        await presenceChannel.subscribe(async (status) => {
+          if (status === 'SUBSCRIBED') {
             await presenceChannel.track({
               online_at: new Date().toISOString(),
               user_id: currentUserId,
@@ -93,13 +93,13 @@ export const usePresence = (currentUserId: string) => {
 
         // Set up database listener for presence changes
         const dbChannel = supabase
-          .channel("db-presence")
+          .channel('db-presence')
           .on(
-            "postgres_changes",
+            'postgres_changes',
             {
-              event: "*",
-              schema: "public",
-              table: "user_presence",
+              event: '*',
+              schema: 'public',
+              table: 'user_presence',
             },
             (payload) => {
               if (payload.new) {
@@ -108,11 +108,11 @@ export const usePresence = (currentUserId: string) => {
                   ...prev,
                   [newData.user_id]: {
                     lastSeen: newData.last_seen,
-                    isOnline: newData.status === "online",
+                    isOnline: newData.status === 'online',
                   },
                 }));
               }
-            },
+            }
           )
           .subscribe();
 
@@ -126,7 +126,7 @@ export const usePresence = (currentUserId: string) => {
           updateLastSeen(currentUserId);
         };
       } catch (error) {
-        console.error("Error setting up presence:", error);
+        console.error('Error setting up presence:', error);
       }
     };
 
@@ -148,12 +148,12 @@ export const usePresence = (currentUserId: string) => {
   const updateLastSeen = async (userId: string) => {
     try {
       const { error } = await supabase
-        .from("user_presence")
+        .from('user_presence')
         .update({
           last_seen: new Date().toISOString(),
-          status: "offline",
+          status: 'offline',
         })
-        .eq("user_id", userId);
+        .eq('user_id', userId);
 
       if (error) throw error;
 
@@ -165,7 +165,7 @@ export const usePresence = (currentUserId: string) => {
         },
       }));
     } catch (error) {
-      console.error("Error updating last seen:", error);
+      console.error('Error updating last seen:', error);
     }
   };
 
@@ -176,16 +176,16 @@ export const usePresence = (currentUserId: string) => {
 };
 
 export const formatPresence = (lastSeen: string | null, isOnline: boolean) => {
-  if (isOnline) return "online";
-  if (!lastSeen) return "gone exploring";
+  if (isOnline) return 'online';
+  if (!lastSeen) return 'gone exploring';
 
   const now = new Date();
   const lastSeenDate = new Date(lastSeen);
   const diffInSeconds = Math.floor(
-    (now.getTime() - lastSeenDate.getTime()) / 1000,
+    (now.getTime() - lastSeenDate.getTime()) / 1000
   );
 
-  if (diffInSeconds < 60) return "gone exploring just now";
+  if (diffInSeconds < 60) return 'gone exploring just now';
   if (diffInSeconds < 3600) {
     const minutes = Math.floor(diffInSeconds / 60);
     return `gone exploring ${minutes}m ago`;

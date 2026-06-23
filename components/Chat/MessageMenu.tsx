@@ -1,12 +1,6 @@
 // MessageContextMenu.tsx
-import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Animated,
-} from "react-native";
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 interface MessageContextMenuProps {
   isVisible: boolean;
@@ -65,11 +59,11 @@ export const QuotedMessage: React.FC<{
 
 const styles = StyleSheet.create({
   contextMenu: {
-    position: "absolute",
-    backgroundColor: "#FFFFFF",
+    position: 'absolute',
+    backgroundColor: '#FFFFFF',
     borderRadius: 8,
     padding: 8,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -82,44 +76,44 @@ const styles = StyleSheet.create({
   },
   menuText: {
     fontSize: 16,
-    color: "#000000",
-    fontFamily: "InterMedium",
+    color: '#000000',
+    fontFamily: 'InterMedium',
   },
   deleteItem: {
     borderTopWidth: 1,
-    borderTopColor: "#E5E5E5",
+    borderTopColor: '#E5E5E5',
   },
   deleteText: {
-    color: "#FF325E",
+    color: '#FF325E',
   },
   quotedContainer: {
-    flexDirection: "row",
-    backgroundColor: "#F5F5F5",
+    flexDirection: 'row',
+    backgroundColor: '#F5F5F5',
     borderLeftWidth: 4,
-    borderLeftColor: "#FF325E",
+    borderLeftColor: '#FF325E',
     padding: 8,
     marginBottom: 8,
     borderRadius: 8,
-    alignItems: "center",
+    alignItems: 'center',
   },
   quotedContent: {
     flex: 1,
   },
   quotedUsername: {
     fontSize: 12,
-    color: "#FF325E",
-    fontFamily: "InterBold",
+    color: '#FF325E',
+    fontFamily: 'InterBold',
   },
   quotedText: {
     fontSize: 14,
-    color: "#666666",
-    fontFamily: "InterRegular",
+    color: '#666666',
+    fontFamily: 'InterRegular',
   },
   cancelQuote: {
     padding: 4,
   },
   cancelText: {
     fontSize: 16,
-    color: "#666666",
+    color: '#666666',
   },
 });

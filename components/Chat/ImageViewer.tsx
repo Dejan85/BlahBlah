@@ -1,5 +1,5 @@
 // components/ImageViewer.tsx
-import React from "react";
+import React from 'react';
 import {
   Modal,
   StyleSheet,
@@ -8,16 +8,15 @@ import {
   Dimensions,
   SafeAreaView,
   StatusBar,
-  Text,
-} from "react-native";
-import { GestureDetector, Gesture } from "react-native-gesture-handler";
+} from 'react-native';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-} from "react-native-reanimated";
-import { Image } from "expo-image";
-import { Ionicons } from "@expo/vector-icons";
+} from 'react-native-reanimated';
+import { Image } from 'expo-image';
+import { Ionicons } from '@expo/vector-icons';
 
 interface ImageViewerProps {
   isVisible: boolean;
@@ -25,7 +24,7 @@ interface ImageViewerProps {
   onClose: () => void;
 }
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const ImageViewer: React.FC<ImageViewerProps> = ({
   isVisible,
@@ -75,7 +74,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
   const composed = Gesture.Simultaneous(
     pinchGesture,
     panGesture,
-    doubleTapGesture,
+    doubleTapGesture
   );
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -111,7 +110,7 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
         <StatusBar barStyle="light-content" backgroundColor="#000" />
         <View style={styles.header}>
           <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-            <Ionicons name="close" size={24} color={"#fff"} />
+            <Ionicons name="close" size={24} color={'#fff'} />
           </TouchableOpacity>
         </View>
         <GestureDetector gesture={composed}>
@@ -131,30 +130,30 @@ const ImageViewer: React.FC<ImageViewerProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   header: {
-    position: "absolute",
+    position: 'absolute',
     top: 60,
     left: 0,
     right: 0,
     zIndex: 10,
     padding: 20,
-    flexDirection: "row",
-    justifyContent: "flex-end",
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
   },
   closeButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#111",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#111',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   imageContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   image: {
     width: SCREEN_WIDTH,

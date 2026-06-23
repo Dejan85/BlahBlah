@@ -1,24 +1,20 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
-  Image,
   TouchableOpacity,
-  TextInput,
   StyleSheet,
-  Keyboard,
   KeyboardAvoidingView,
   Platform,
-} from "react-native";
-import BottomModal from "./BottomModal";
-import { Like, Send, SendChat, Star } from "@/assets/images";
-import { FlashList } from "@shopify/flash-list";
-import CustomTextInput from "./CustomTextInput";
-import BottomSheet from "./BS";
-import { supabase } from "@/utils";
-import { useAuth } from "@/context/AuthContext";
-import Avatar from "./Avatar";
-import { Ionicons } from "@expo/vector-icons";
+} from 'react-native';
+import { Like, SendChat } from '@/assets/images';
+import { FlashList } from '@shopify/flash-list';
+import CustomTextInput from './CustomTextInput';
+import BottomSheet from './BS';
+import { supabase } from '@/utils';
+import { useAuth } from '@/context/AuthContext';
+import Avatar from './Avatar';
+import { Ionicons } from '@expo/vector-icons';
 interface CommentUser {
   username: string;
   avatar_url: string;
@@ -73,20 +69,20 @@ const CommentModal: React.FC<CommentModalProps> = ({
   onClose,
   postId,
 }) => {
-  const [newComment, setNewComment] = useState("");
+  const [newComment, setNewComment] = useState('');
 
   const flashListRef = useRef<FlashList<Comment>>(null);
   const { user } = useAuth();
   const [showAllComments, setShowAllComments] = useState(false);
-  const [currentSnap, setCurrentSnap] = useState<"closed" | "partial" | "full">(
-    "partial",
+  const [currentSnap, setCurrentSnap] = useState<'closed' | 'partial' | 'full'>(
+    'partial'
   );
-  const [isLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
 
   const [comments, setComments] = useState<Comment[]>([]);
   const [replyingTo, setReplyingTo] = useState<ReplyingTo | null>(null);
 
-  const handleSnapChange = (snap: "closed" | "partial" | "full") => {
+  const handleSnapChange = (snap: 'closed' | 'partial' | 'full') => {
     setCurrentSnap(snap);
   };
 
@@ -105,21 +101,21 @@ const CommentModal: React.FC<CommentModalProps> = ({
       prevComments.map((comment) =>
         comment.id === commentId
           ? { ...comment, showReplies: !comment.showReplies }
-          : comment,
-      ),
+          : comment
+      )
     );
   }, []);
 
   const fetchComments = useCallback(async () => {
     if (!postId) {
-      console.error("No postId provided to CommentModal");
+      console.error('No postId provided to CommentModal');
       return;
     }
 
     try {
       setIsLoading(true);
       const { data: commentsData, error: commentsError } = await supabase
-        .from("comments")
+        .from('comments')
         .select(
           `
           *,
@@ -129,11 +125,11 @@ const CommentModal: React.FC<CommentModalProps> = ({
             profile:profiles!comment_replies_profile_id_fkey(username, avatar_url),
             reply_to_profile:profiles!comment_replies_reply_to_profile_id_fkey(username)
           )
-        `,
+        `
         )
-        .eq("post_id", postId)
-        .eq("is_deleted", false)
-        .order("created_at", { ascending: false });
+        .eq('post_id', postId)
+        .eq('is_deleted', false)
+        .order('created_at', { ascending: false });
 
       if (commentsError) throw commentsError;
 
@@ -142,9 +138,9 @@ const CommentModal: React.FC<CommentModalProps> = ({
       // Only fetch likes if user is authenticated
       if (user?.id) {
         const { data: userLikes, error: likesError } = await supabase
-          .from("comment_likes")
-          .select("comment_id")
-          .eq("profile_id", user.id);
+          .from('comment_likes')
+          .select('comment_id')
+          .eq('profile_id', user.id);
 
         if (!likesError && userLikes) {
           likedCommentIds = new Set(userLikes.map((like) => like.comment_id));
@@ -164,7 +160,7 @@ const CommentModal: React.FC<CommentModalProps> = ({
 
       setComments(transformedComments);
     } catch (error) {
-      console.error("Error fetching comments:", error);
+      console.error('Error fetching comments:', error);
     } finally {
       setIsLoading(false);
     }
@@ -185,11 +181,11 @@ const CommentModal: React.FC<CommentModalProps> = ({
       if (replyingTo) {
         // Find the comment being replied to
         const commentToReplyTo = comments.find(
-          (c) => c.id === replyingTo.commentId,
+          (c) => c.id === replyingTo.commentId
         );
 
         if (!commentToReplyTo) {
-          throw new Error("Comment not found");
+          throw new Error('Comment not found');
         }
 
         // Determine the profile_id to reply to
@@ -199,7 +195,7 @@ const CommentModal: React.FC<CommentModalProps> = ({
 
         // Create reply
         const { data, error } = await supabase
-          .from("comment_replies")
+          .from('comment_replies')
           .insert({
             comment_id: replyingTo.commentId,
             profile_id: user.id,
@@ -211,7 +207,7 @@ const CommentModal: React.FC<CommentModalProps> = ({
             *,
             profile:profiles!comment_replies_profile_id_fkey(username, avatar_url),
             reply_to_profile:profiles!comment_replies_reply_to_profile_id_fkey(username)
-          `,
+          `
           )
           .single();
 
@@ -232,13 +228,13 @@ const CommentModal: React.FC<CommentModalProps> = ({
                   ],
                   showReplies: true,
                 }
-              : comment,
-          ),
+              : comment
+          )
         );
       } else {
         // Create new comment logic remains the same
         const { data, error } = await supabase
-          .from("comments")
+          .from('comments')
           .insert({
             post_id: postId,
             profile_id: user.id,
@@ -248,7 +244,7 @@ const CommentModal: React.FC<CommentModalProps> = ({
             `
             *,
             profile:profiles(username, avatar_url)
-          `,
+          `
           )
           .single();
 
@@ -265,10 +261,10 @@ const CommentModal: React.FC<CommentModalProps> = ({
         ]);
       }
 
-      setNewComment("");
+      setNewComment('');
       setReplyingTo(null);
     } catch (error) {
-      console.error("Error sending comment:", error);
+      console.error('Error sending comment:', error);
       // You might want to show an error message to the user here
     }
   };
@@ -281,20 +277,20 @@ const CommentModal: React.FC<CommentModalProps> = ({
       if (replyId) {
         // Handle reply like
         const { data: existingLike } = await supabase
-          .from("reply_likes")
+          .from('reply_likes')
           .select()
-          .eq("reply_id", replyId)
-          .eq("profile_id", user.id)
+          .eq('reply_id', replyId)
+          .eq('profile_id', user.id)
           .single();
 
         if (existingLike) {
           await supabase
-            .from("reply_likes")
+            .from('reply_likes')
             .delete()
-            .eq("reply_id", replyId)
-            .eq("profile_id", user.id);
+            .eq('reply_id', replyId)
+            .eq('profile_id', user.id);
         } else {
-          await supabase.from("reply_likes").insert({
+          await supabase.from('reply_likes').insert({
             reply_id: replyId,
             profile_id: user.id,
           });
@@ -313,27 +309,27 @@ const CommentModal: React.FC<CommentModalProps> = ({
                       : reply.likes_count + 1,
                     is_liked: !reply.is_liked,
                   }
-                : reply,
+                : reply
             ),
-          })),
+          }))
         );
       } else {
         // Handle comment like
         const { data: existingLike } = await supabase
-          .from("comment_likes")
+          .from('comment_likes')
           .select()
-          .eq("comment_id", commentId)
-          .eq("profile_id", user.id)
+          .eq('comment_id', commentId)
+          .eq('profile_id', user.id)
           .single();
 
         if (existingLike) {
           await supabase
-            .from("comment_likes")
+            .from('comment_likes')
             .delete()
-            .eq("comment_id", commentId)
-            .eq("profile_id", user.id);
+            .eq('comment_id', commentId)
+            .eq('profile_id', user.id);
         } else {
-          await supabase.from("comment_likes").insert({
+          await supabase.from('comment_likes').insert({
             comment_id: commentId,
             profile_id: user.id,
           });
@@ -350,12 +346,12 @@ const CommentModal: React.FC<CommentModalProps> = ({
                     : comment.likes_count + 1,
                   is_liked: !comment.is_liked,
                 }
-              : comment,
-          ),
+              : comment
+          )
         );
       }
     } catch (error) {
-      console.error("Error handling like:", error);
+      console.error('Error handling like:', error);
     }
   };
 
@@ -386,7 +382,7 @@ const CommentModal: React.FC<CommentModalProps> = ({
               <Text style={styles.username}>{item.profile.username}</Text>
               {item.reply_to_profile && (
                 <Text style={styles.replyingToIndicator}>
-                  replying to{" "}
+                  replying to{' '}
                   <Text style={styles.replyToUsername}>
                     {item.reply_to_profile.username}
                   </Text>
@@ -432,7 +428,7 @@ const CommentModal: React.FC<CommentModalProps> = ({
             onPress={() => handleLike(commentId, item.id)}
             style={styles.likeContainer}
           >
-            <Like fill={item.is_liked ? "#FF325E" : "#fff"} />
+            <Like fill={item.is_liked ? '#FF325E' : '#fff'} />
           </TouchableOpacity>
         </View>
 
@@ -512,7 +508,7 @@ const CommentModal: React.FC<CommentModalProps> = ({
             onPress={() => handleLike(item.id)}
             style={styles.likeContainer}
           >
-            <Like fill={item.is_liked ? "#FF325E" : "#fff"} />
+            <Like fill={item.is_liked ? '#FF325E' : '#fff'} />
           </TouchableOpacity>
         </View>
 
@@ -523,7 +519,7 @@ const CommentModal: React.FC<CommentModalProps> = ({
           >
             <Text style={styles.showRepliesText}>
               {item.showReplies
-                ? "Hide replies"
+                ? 'Hide replies'
                 : `Show replies (${item.replies.length})`}
             </Text>
           </TouchableOpacity>
@@ -547,7 +543,7 @@ const CommentModal: React.FC<CommentModalProps> = ({
     <CustomTextInput
       value={newComment}
       onChangeText={setNewComment}
-      placeholder={"Type..."}
+      placeholder={'Type...'}
       placeholderTextColor="#919191"
       style={styles.input}
       styleContainer={styles.inputContainerStyle}
@@ -577,14 +573,14 @@ const CommentModal: React.FC<CommentModalProps> = ({
       bottomStyle={styles.sendRow}
     >
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
       >
         <View
           style={[
             styles.listContainer,
-            currentSnap === "full" && styles.fullScreenList,
+            currentSnap === 'full' && styles.fullScreenList,
           ]}
         >
           <FlashList
@@ -595,7 +591,7 @@ const CommentModal: React.FC<CommentModalProps> = ({
             estimatedItemSize={100}
             showsVerticalScrollIndicator={true}
             contentContainerStyle={styles.listContentContainer}
-            scrollEnabled={currentSnap === "full"}
+            scrollEnabled={currentSnap === 'full'}
           />
 
           {comments.length > INITIAL_VISIBLE_COMMENTS && !showAllComments && (
@@ -608,12 +604,12 @@ const CommentModal: React.FC<CommentModalProps> = ({
           )}
         </View>
 
-        {currentSnap === "full" && (
+        {currentSnap === 'full' && (
           <View style={styles.inputWrapper}>
             {(replyingTo || replyingTo) && (
               <View style={styles.replyingToContainer}>
                 <Text style={styles.replyingToText}>
-                  Replying to{" "}
+                  Replying to{' '}
                   {replyingTo
                     ? replyingTo.username
                     : comments.find((c) => c.id === replyingTo)?.username}
@@ -640,18 +636,18 @@ const styles = StyleSheet.create({
   },
 
   inputWrapper: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "#007bff",
-    paddingBottom: Platform.OS === "ios" ? 130 : 160,
+    backgroundColor: '#007bff',
+    paddingBottom: Platform.OS === 'ios' ? 130 : 160,
     paddingHorizontal: 24,
     paddingTop: 10,
   },
   replyingSpace: {
     height: 60, // Adjust this value to control spacing
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     marginTop: 10,
     marginBottom: 10,
     borderRadius: 10,
@@ -664,51 +660,51 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   line: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     width: 28,
     marginTop: 7,
   },
   replyHeader: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
   sendRow: {
     flex: 1,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    position: "absolute",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
     bottom: 120,
     marginHorizontal: 20,
     marginTop: 10,
     top: 0,
   },
   topCommentContainer: {
-    backgroundColor: "#FF325E",
+    backgroundColor: '#FF325E',
     borderRadius: 20,
     paddingHorizontal: 10,
     marginHorizontal: 5,
-    flexDirection: "row",
+    flexDirection: 'row',
     paddingVertical: 3,
     top: -2,
   },
   replyingToIndicator: {
     fontSize: 12,
-    color: "#fff",
+    color: '#fff',
     opacity: 0.7,
-    fontFamily: "InterRegular",
+    fontFamily: 'InterRegular',
   },
   replyToUsername: {
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
   },
   commentRow: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginVertical: 20,
     paddingHorizontal: 20,
   },
   profileContainer: {
-    alignItems: "center",
+    alignItems: 'center',
     marginRight: 10,
   },
   fullScreenList: {
@@ -722,64 +718,64 @@ const styles = StyleSheet.create({
   },
   commentContent: {
     flex: 1,
-    flexDirection: "column",
+    flexDirection: 'column',
     paddingLeft: 10,
     paddingTop: 5,
   },
   username: {
     fontSize: 16,
-    color: "#fff",
-    fontFamily: "InterSemiBold",
+    color: '#fff',
+    fontFamily: 'InterSemiBold',
   },
   listContainer: {
     flex: 1,
     marginBottom: 10,
-    height: "100%", // Add this
+    height: '100%', // Add this
   },
 
   modalContainer: {
     borderRadius: 0,
     borderWidth: 0,
-    backgroundColor: "#007bff",
+    backgroundColor: '#007bff',
     paddingBottom: 0,
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
   },
   contentText: {
     fontSize: 12,
-    color: "#fff",
-    fontFamily: "InterMedium",
+    color: '#fff',
+    fontFamily: 'InterMedium',
     paddingVertical: 3,
   },
   commentFooter: {
-    flexDirection: "row",
+    flexDirection: 'row',
   },
   timeAgo: {
     fontSize: 10,
-    color: "#fff",
-    fontFamily: "InterSemiBold",
+    color: '#fff',
+    fontFamily: 'InterSemiBold',
   },
   listContentContainer: {
     paddingVertical: 10,
   },
   likesCount: {
     fontSize: 10,
-    color: "#fff",
-    fontFamily: "InterSemiBold",
+    color: '#fff',
+    fontFamily: 'InterSemiBold',
   },
   likeContainer: {
-    justifyContent: "center",
+    justifyContent: 'center',
     paddingLeft: 10,
   },
 
   inputContainerStyle: {
-    width: "100%",
-    backgroundColor: "#fff",
+    width: '100%',
+    backgroundColor: '#fff',
     borderRadius: 40,
     paddingRight: 10,
-    justifyContent: "center",
-    alignContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
   },
   input: {
     paddingVertical: 12,
@@ -788,8 +784,8 @@ const styles = StyleSheet.create({
   },
   textInputTextStyle: {
     fontSize: 14,
-    color: "#919191",
-    fontFamily: "InterMedium",
+    color: '#919191',
+    fontFamily: 'InterMedium',
   },
 
   commentContainer: {
@@ -803,8 +799,8 @@ const styles = StyleSheet.create({
   },
 
   usernameRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 
   starIcon: {
@@ -814,8 +810,8 @@ const styles = StyleSheet.create({
 
   replyButton: {
     fontSize: 10,
-    color: "#fff",
-    fontFamily: "InterRegular",
+    color: '#fff',
+    fontFamily: 'InterRegular',
     paddingLeft: 10,
   },
 
@@ -824,7 +820,7 @@ const styles = StyleSheet.create({
   },
 
   replyContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     paddingLeft: 77,
     paddingRight: 20,
     marginTop: 10,
@@ -842,35 +838,35 @@ const styles = StyleSheet.create({
   },
   showRepliesText: {
     fontSize: 12,
-    color: "#fff",
-    fontFamily: "InterMedium",
+    color: '#fff',
+    fontFamily: 'InterMedium',
     opacity: 0.8,
   },
   showAllButton: {
-    alignItems: "center",
+    alignItems: 'center',
     paddingVertical: 10,
   },
   showAllText: {
     fontSize: 14,
-    color: "#fff",
-    fontFamily: "InterMedium",
+    color: '#fff',
+    fontFamily: 'InterMedium',
   },
 
   replyingToContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingBottom: 10,
   },
   replyingToText: {
     fontSize: 12,
-    color: "#fff",
-    fontFamily: "InterMedium",
+    color: '#fff',
+    fontFamily: 'InterMedium',
   },
   cancelReplyText: {
     fontSize: 12,
-    color: "#FF325E",
-    fontFamily: "InterSemiBold",
+    color: '#FF325E',
+    fontFamily: 'InterSemiBold',
   },
 });
 

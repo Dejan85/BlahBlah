@@ -1,13 +1,13 @@
-import { DeleteAction, MuteAction, Pin, PinAction } from "@/assets/images";
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { GestureDetector, Gesture } from "react-native-gesture-handler";
+import { DeleteAction, MuteAction, Pin, PinAction } from '@/assets/images';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
   runOnJS,
-} from "react-native-reanimated";
+} from 'react-native-reanimated';
 
 interface SwipeableChatItemProps {
   children: React.ReactNode;
@@ -33,7 +33,7 @@ const SwipeableChatItem: React.FC<SwipeableChatItemProps> = ({
   const actionWidth = 180;
 
   const resetPosition = () => {
-    "worklet";
+    'worklet';
     translateX.value = withSpring(0, {
       damping: 15,
       stiffness: 100,
@@ -46,7 +46,7 @@ const SwipeableChatItem: React.FC<SwipeableChatItemProps> = ({
     .activeOffsetX([-10, 10])
     .enabled(enableSwipe) // Enable/disable gesture based on prop
     .onUpdate((event) => {
-      "worklet";
+      'worklet';
       if (isOpen.value) {
         // If actions are visible, only allow swiping back (right)
         if (event.translationX > 0) {
@@ -61,7 +61,7 @@ const SwipeableChatItem: React.FC<SwipeableChatItemProps> = ({
       }
     })
     .onEnd((event) => {
-      "worklet";
+      'worklet';
       const velocity = event.velocityX;
 
       if (isOpen.value) {
@@ -93,19 +93,19 @@ const SwipeableChatItem: React.FC<SwipeableChatItemProps> = ({
   }));
 
   const handlePin = () => {
-    "worklet";
+    'worklet';
     runOnJS(onPin)();
     runOnJS(resetPosition)();
   };
 
   const handleMute = () => {
-    "worklet";
+    'worklet';
     runOnJS(onMute)();
     runOnJS(resetPosition)();
   };
 
   const handleDelete = () => {
-    "worklet";
+    'worklet';
     runOnJS(onDelete)();
     runOnJS(resetPosition)();
   };
@@ -120,7 +120,7 @@ const SwipeableChatItem: React.FC<SwipeableChatItemProps> = ({
           <View style={styles.borderLineLeft} />
           <PinAction />
 
-          <Text style={styles.actionText}>{isPinned ? "Unpin" : "Pin"}</Text>
+          <Text style={styles.actionText}>{isPinned ? 'Unpin' : 'Pin'}</Text>
           <View style={styles.borderLineRight} />
         </TouchableOpacity>
 
@@ -130,7 +130,7 @@ const SwipeableChatItem: React.FC<SwipeableChatItemProps> = ({
         >
           <View style={styles.borderLineLeft} />
           <MuteAction />
-          <Text style={styles.actionText}>{isMuted ? "Unmute" : "Mute"}</Text>
+          <Text style={styles.actionText}>{isMuted ? 'Unmute' : 'Mute'}</Text>
           <View style={styles.borderLineRight} />
         </TouchableOpacity>
 
@@ -139,7 +139,7 @@ const SwipeableChatItem: React.FC<SwipeableChatItemProps> = ({
           onPress={handleDelete}
         >
           <View style={styles.borderLineLeft} />
-          <DeleteAction fill={"#111"} />
+          <DeleteAction fill={'#111'} />
           <Text style={styles.actionText}>Delete</Text>
           <View style={styles.borderLineRight} />
         </TouchableOpacity>
@@ -161,66 +161,66 @@ const SwipeableChatItem: React.FC<SwipeableChatItemProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    position: "relative",
+    position: 'relative',
 
     marginVertical: 10,
   },
   contentContainer: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
     zIndex: 2,
   },
   borderLineLeft: {
-    position: "absolute",
+    position: 'absolute',
     left: 0,
-    top: "25%", // Start at 25% from the top
-    height: "50%", // 50% height
+    top: '25%', // Start at 25% from the top
+    height: '50%', // 50% height
     width: 0.5, // Border thickness
-    backgroundColor: "#D9D9D9",
+    backgroundColor: '#D9D9D9',
   },
   borderLineRight: {
-    position: "absolute",
+    position: 'absolute',
     right: 0,
-    top: "25%",
-    height: "50%",
+    top: '25%',
+    height: '50%',
     width: 0.5,
-    backgroundColor: "#D9D9D9",
+    backgroundColor: '#D9D9D9',
   },
   actionsContainer: {
-    position: "absolute",
+    position: 'absolute',
     right: 10,
-    top: "50%", // Position at 50% from top
+    top: '50%', // Position at 50% from top
     transform: [{ translateY: -25 }], // Half of your button height to center perfectly
     height: 50, // Explicit height for the buttons
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     zIndex: 1,
   },
   actionButton: {
     width: 37,
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    position: "relative", // Needed for absolute-positioned children
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative', // Needed for absolute-positioned children
   },
 
   actionText: {
-    color: "#B3B3B3",
+    color: '#B3B3B3',
     fontSize: 8,
-    fontFamily: "InterRegular",
+    fontFamily: 'InterRegular',
   },
   pinButton: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   muteButton: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   deleteButton: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   pinnedBadge: {
-    position: "absolute",
+    position: 'absolute',
     right: 10,
-    top: "50%",
+    top: '50%',
     transform: [{ translateY: -10 }],
 
     paddingHorizontal: 8,
@@ -229,8 +229,8 @@ const styles = StyleSheet.create({
   },
   pinnedText: {
     fontSize: 12,
-    fontFamily: "InterMedium",
-    color: "#666666",
+    fontFamily: 'InterMedium',
+    color: '#666666',
   },
 });
 

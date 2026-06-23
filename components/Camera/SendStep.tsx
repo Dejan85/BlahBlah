@@ -1,31 +1,27 @@
-import React, { useState, useContext, useCallback } from "react";
+import React, { useState, useContext, useCallback } from 'react';
 import {
   View,
   Text,
   ScrollView,
   Image,
-  TextInput,
   StyleSheet,
   TouchableOpacity,
-  Dimensions,
   Alert,
   Platform,
   ActivityIndicator,
-} from "react-native";
-import PagerView from "react-native-pager-view";
-import { Video, ResizeMode } from "expo-av";
-import * as ImagePicker from "expo-image-picker";
-import { CameraContext } from "@/context/CameraContext";
+} from 'react-native';
+import PagerView from 'react-native-pager-view';
+import { Video, ResizeMode } from 'expo-av';
+import * as ImagePicker from 'expo-image-picker';
+import { CameraContext } from '@/context/CameraContext';
 import {
   Canvas,
   Image as SkiaImage,
   useImage,
   ColorMatrix,
-} from "@shopify/react-native-skia";
-import { getFilterMatrixByName } from "@/types/filter";
+} from '@shopify/react-native-skia';
+import { getFilterMatrixByName } from '@/types/filter';
 import {
-  Back,
-  EditPencil,
   Music,
   NoComments,
   NoLikes,
@@ -33,17 +29,16 @@ import {
   ProfileBackButton,
   RedBunny,
   SendGallery,
-} from "@/assets/images";
-import SettingItem from "../SettingItem";
-import { Ionicons } from "@expo/vector-icons";
-import { CommentSection } from "../CommentSection";
-import PremiumModal from "../PremiumModal";
-import { usePost } from "@/context/PostContext";
-import type { CreatePostData } from "@/context/PostContext"; // Import CreatePostData type
+} from '@/assets/images';
+import SettingItem from '../SettingItem';
+import { Ionicons } from '@expo/vector-icons';
+import PremiumModal from '../PremiumModal';
+import { usePost } from '@/context/PostContext';
+import type { CreatePostData } from '@/context/PostContext'; // Import CreatePostData type
 
 interface Post {
   comment: string;
-  additionalMedia: { uri: string; type: "image" | "video" }[];
+  additionalMedia: { uri: string; type: 'image' | 'video' }[];
   mentions: string[];
   hashtags: string[];
 }
@@ -84,7 +79,7 @@ export const SendStep = ({
   const [currentPage, setCurrentPage] = useState(0);
   const { isUploading, uploadProgress, createPost } = usePost();
   const [postDetails, setPostDetails] = useState<Post>({
-    comment: "",
+    comment: '',
     additionalMedia: [],
     mentions: [],
     hashtags: [],
@@ -98,8 +93,8 @@ export const SendStep = ({
   const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   // Add these handlers
-  const handlePlanSelection = (plan: "monthly" | "yearly") => {
-    console.log("Selected plan:", plan);
+  const handlePlanSelection = (plan: 'monthly' | 'yearly') => {
+    console.log('Selected plan:', plan);
     // Handle plan selection logic
   };
 
@@ -110,7 +105,7 @@ export const SendStep = ({
 
   const handleSubmit = async () => {
     try {
-      const mediaType = video ? ("video" as const) : ("image" as const);
+      const mediaType = video ? ('video' as const) : ('image' as const);
 
       const postData: CreatePostData = {
         mediaType,
@@ -134,8 +129,8 @@ export const SendStep = ({
 
       onSubmit(postDetails);
     } catch (error) {
-      Alert.alert("Error", "Failed to create post. Please try again.", [
-        { text: "OK" },
+      Alert.alert('Error', 'Failed to create post. Please try again.', [
+        { text: 'OK' },
       ]);
     }
   };
@@ -149,12 +144,12 @@ export const SendStep = ({
       }
       setLockPost(value);
     },
-    [isPremiumUser],
+    [isPremiumUser]
   );
 
   const allMedia = capturedPhoto?.uri
     ? [
-        { uri: capturedPhoto.uri, type: "image" as const, isMain: true },
+        { uri: capturedPhoto.uri, type: 'image' as const, isMain: true },
         ...postDetails.additionalMedia.map((media) => ({
           ...media,
           isMain: false,
@@ -162,22 +157,10 @@ export const SendStep = ({
       ]
     : [];
 
-  const handleCommentChange = (text: string) => {
-    const mentions = text.match(/@[\w\d]+/g) || [];
-    const hashtags = text.match(/#[\w\d]+/g) || [];
-
-    setPostDetails((prev) => ({
-      ...prev,
-      comment: text,
-      mentions,
-      hashtags,
-    }));
-  };
-
   const handleMediaTap = (index: number) => {
     const selectedMedia = allMedia[index];
     setCapturedPhoto({ uri: selectedMedia.uri });
-    setStep("preview");
+    setStep('preview');
   };
 
   const handleDeleteImage = (index: number) => {
@@ -192,16 +175,16 @@ export const SendStep = ({
     } else if (index === 0) {
       // If it's the only photo, go back
       Alert.alert(
-        "Delete Photo",
-        "Do you want to delete this photo and go back?",
+        'Delete Photo',
+        'Do you want to delete this photo and go back?',
         [
-          { text: "Cancel", style: "cancel" },
+          { text: 'Cancel', style: 'cancel' },
           {
-            text: "Delete",
-            style: "destructive",
-            onPress: () => setStep("capture"),
+            text: 'Delete',
+            style: 'destructive',
+            onPress: () => setStep('capture'),
           },
-        ],
+        ]
       );
     } else {
       // Delete from additional media
@@ -218,8 +201,8 @@ export const SendStep = ({
 
     if (currentPhotoCount >= 3) {
       Alert.alert(
-        "Limit Reached",
-        "You can only add up to 2 additional photos.",
+        'Limit Reached',
+        'You can only add up to 2 additional photos.'
       );
       return;
     }
@@ -236,7 +219,7 @@ export const SendStep = ({
     if (!result.canceled && result.assets) {
       const newMedia = result.assets.map((asset) => ({
         uri: asset.uri,
-        type: "image" as const,
+        type: 'image' as const,
       }));
 
       setPostDetails((prev) => ({
@@ -266,16 +249,16 @@ export const SendStep = ({
               style={styles.deleteButton}
               onPress={() => {
                 Alert.alert(
-                  "Delete Video",
-                  "Do you want to delete this video and go back?",
+                  'Delete Video',
+                  'Do you want to delete this video and go back?',
                   [
-                    { text: "Cancel", style: "cancel" },
+                    { text: 'Cancel', style: 'cancel' },
                     {
-                      text: "Delete",
-                      style: "destructive",
-                      onPress: () => setStep("capture"),
+                      text: 'Delete',
+                      style: 'destructive',
+                      onPress: () => setStep('capture'),
                     },
-                  ],
+                  ]
                 );
               }}
             >
@@ -306,7 +289,7 @@ export const SendStep = ({
                 onPress={() => handleMediaTap(index)}
                 activeOpacity={0.9}
               >
-                {filterMatrix && selectedFilter !== "Normal" ? (
+                {filterMatrix && selectedFilter !== 'Normal' ? (
                   <FilteredImage uri={media.uri} filterMatrix={filterMatrix} />
                 ) : (
                   <Image
@@ -350,7 +333,7 @@ export const SendStep = ({
       >
         <View style={styles.header}>
           <TouchableOpacity onPress={onBack} style={styles.backButton}>
-            <ProfileBackButton fill={"#111"} />
+            <ProfileBackButton fill={'#111'} />
           </TouchableOpacity>
         </View>
 
@@ -373,7 +356,7 @@ export const SendStep = ({
             <Text style={styles.addPhotosText}>
               {postDetails.additionalMedia.length > 0
                 ? `${postDetails.additionalMedia.length + 1} Photos`
-                : "1 Photo"}
+                : '1 Photo'}
             </Text>
           </TouchableOpacity>
         )}
@@ -435,20 +418,20 @@ export const SendStep = ({
 
 const styles = StyleSheet.create({
   uploadingContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 20,
   },
   uploadingText: {
     marginLeft: 10,
-    color: "#FF325E",
+    color: '#FF325E',
     fontSize: 16,
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
   },
   mainContainer: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   container: {
     flex: 1,
@@ -475,61 +458,61 @@ const styles = StyleSheet.create({
   },
   pageContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   mediaWrapper: {
-    position: "relative",
+    position: 'relative',
     width: 269,
     height: 269,
     borderRadius: 20,
-    overflow: "hidden",
-    backgroundColor: "#f0f0f0",
-    justifyContent: "center",
-    alignContent: "center",
-    alignItems: "center",
-    alignSelf: "center",
+    overflow: 'hidden',
+    backgroundColor: '#f0f0f0',
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
   },
   mediaPreview: {
     width: 269,
     height: 269,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: '#f0f0f0',
     borderRadius: 20,
   },
   pagination: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 50,
     left: 0,
     right: 0,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: 4,
-    backgroundColor: "red",
-    overflow: "hidden",
+    backgroundColor: 'red',
+    overflow: 'hidden',
   },
   paginationDot: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
   paginationDotActive: {
     width: 20,
-    backgroundColor: "#FF325E",
+    backgroundColor: '#FF325E',
   },
   deleteButton: {
-    position: "absolute",
+    position: 'absolute',
     top: 10,
     right: 10,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: 'rgba(0,0,0,0.5)',
     borderRadius: 20,
     padding: 8,
     zIndex: 10,
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 20,
     paddingTop: 50,
   },
@@ -541,10 +524,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   inputWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     borderRadius: 10,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: '#f8f8f8',
     padding: 10,
     marginBottom: 10,
   },
@@ -553,45 +536,45 @@ const styles = StyleSheet.create({
     minHeight: 37,
     fontSize: 16,
     paddingRight: 30,
-    color: "#111",
+    color: '#111',
   },
   editPencil: {
-    position: "absolute",
+    position: 'absolute',
     right: 10,
   },
   commentPreview: {
     padding: 10,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 8,
   },
   previewText: {
     fontSize: 14,
     lineHeight: 20,
-    color: "#111",
+    color: '#111',
   },
   mentionText: {
-    color: "#FF325E",
-    fontFamily: "InterSemiBold",
+    color: '#FF325E',
+    fontFamily: 'InterSemiBold',
   },
   hashtagText: {
-    color: "#0095F6",
-    fontFamily: "InterSemiBold",
+    color: '#0095F6',
+    fontFamily: 'InterSemiBold',
   },
   seeMoreText: {
-    color: "#888",
+    color: '#888',
     marginTop: 5,
     fontSize: 14,
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
   },
   suggestionsContainer: {
-    position: "absolute",
-    top: "100%",
+    position: 'absolute',
+    top: '100%',
     left: 15,
     right: 15,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 8,
     padding: 10,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -600,18 +583,18 @@ const styles = StyleSheet.create({
   },
   suggestionsText: {
     fontSize: 14,
-    color: "#666",
-    fontFamily: "InterRegular",
+    color: '#666',
+    fontFamily: 'InterRegular',
   },
   sendButton: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginLeft: 24,
     marginVertical: 10,
   },
   addPhotosText: {
     fontSize: 15,
-    color: "#111",
-    fontFamily: "InterMedium",
+    color: '#111',
+    fontFamily: 'InterMedium',
     paddingLeft: 18,
   },
   settings: {
@@ -624,18 +607,18 @@ const styles = StyleSheet.create({
   },
 
   nextButton: {
-    backgroundColor: "#FF325E",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#FF325E',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 40,
-    alignSelf: "flex-end",
+    alignSelf: 'flex-end',
     right: 24,
     marginTop: 24,
   },
   submitButtonText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 23,
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
     paddingHorizontal: 35,
     paddingVertical: 8,
   },

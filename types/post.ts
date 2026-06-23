@@ -6,7 +6,7 @@ export type UserForPost = {
 
 export type FeedItem = {
   id: string;
-  type: "video" | "image";
+  type: 'video' | 'image';
   uri: string;
   user?: UserForPost;
   images?: string[];

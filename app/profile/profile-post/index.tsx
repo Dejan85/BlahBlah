@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -10,37 +10,37 @@ import {
   Platform,
   Alert,
   RefreshControl,
-} from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { FeedItem } from "@/types";
-import Post from "@/components/Post";
-import Text from "@/components/CustomText";
+} from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { FeedItem } from '@/types';
+import Post from '@/components/Post';
+import Text from '@/components/CustomText';
 import {
   GestureDetector,
   Gesture,
   GestureHandlerRootView,
-} from "react-native-gesture-handler";
+} from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   withSpring,
   useSharedValue,
   runOnJS,
-} from "react-native-reanimated";
-import BottomModal from "@/components/BottomModal";
+} from 'react-native-reanimated';
+import BottomModal from '@/components/BottomModal';
 import {
   DeleteAction,
   NoComments,
   NoLikes,
   NoShares,
   RedBunny,
-} from "@/assets/images";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import SettingItem from "@/components/SettingItem";
-import CustomButton from "@/components/CustomButton";
-import { usePost } from "@/context/PostContext";
-import { Image } from "expo-image";
+} from '@/assets/images';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import SettingItem from '@/components/SettingItem';
+import CustomButton from '@/components/CustomButton';
+import { usePost } from '@/context/PostContext';
+import { Image } from 'expo-image';
 
-const { width, height } = Dimensions.get("window");
+const { width, height } = Dimensions.get('window');
 const SWIPE_THRESHOLD = 50;
 const VELOCITY_THRESHOLD = 500;
 const NAVIGATION_ZONE_WIDTH = width * 0.15;
@@ -68,21 +68,21 @@ const PostView = () => {
   // Prefetch images for better performance
   useEffect(() => {
     const imagesToPrefetch = posts.flatMap((post) =>
-      post.images ? post.images : post.uri ? [post.uri] : [],
+      post.images ? post.images : post.uri ? [post.uri] : []
     );
 
     Image.prefetch(imagesToPrefetch);
   }, [posts]);
 
   // Log received posts data
-  console.log("Received posts in PostView:", JSON.stringify(posts, null, 2));
+  console.log('Received posts in PostView:', JSON.stringify(posts, null, 2));
 
   const closeScreen = () => {
     router.back();
   };
 
   const showToast = (message: string) => {
-    if (Platform.OS === "android") {
+    if (Platform.OS === 'android') {
       ToastAndroid.show(message, ToastAndroid.SHORT);
     } else {
       console.log(message);
@@ -94,9 +94,9 @@ const PostView = () => {
     try {
       // Add your refresh logic here
       // For example, refetch posts or update current post
-      showToast("Feed refreshed");
+      showToast('Feed refreshed');
     } catch (error) {
-      console.error("Error refreshing:", error);
+      console.error('Error refreshing:', error);
     } finally {
       setRefreshing(false);
     }
@@ -107,7 +107,7 @@ const PostView = () => {
     .onStart((event) => {
       // Only activate if touch starts in the left zone
       if (event.x <= NAVIGATION_ZONE_WIDTH) {
-        runOnJS(setActiveZone)("left");
+        runOnJS(setActiveZone)('left');
       }
     })
     .onUpdate((event) => {
@@ -137,7 +137,7 @@ const PostView = () => {
     .onStart((event) => {
       // Only activate if touch starts in the right zone
       if (event.x >= width - NAVIGATION_ZONE_WIDTH) {
-        runOnJS(setActiveZone)("right");
+        runOnJS(setActiveZone)('right');
       }
     })
     .onUpdate((event) => {
@@ -166,29 +166,29 @@ const PostView = () => {
     setActionsModalVisible(false);
 
     Alert.alert(
-      "Delete Post",
-      "Are you sure?",
+      'Delete Post',
+      'Are you sure?',
       [
         {
-          text: "No",
-          style: "cancel",
+          text: 'No',
+          style: 'cancel',
         },
         {
-          text: "Yes",
+          text: 'Yes',
           onPress: async () => {
             try {
               const currentPost = posts[currentIndex];
               const result = await deletePost(currentPost.id);
 
               if (result.success) {
-                showToast("Post deleted successfully");
+                showToast('Post deleted successfully');
                 if (posts.length === 1) {
                   closeScreen();
                   return;
                 }
 
                 const newPosts = posts.filter(
-                  (post) => post.id !== currentPost.id,
+                  (post) => post.id !== currentPost.id
                 );
                 router.setParams({
                   posts: JSON.stringify(newPosts),
@@ -198,13 +198,13 @@ const PostView = () => {
                 throw new Error(result.error);
               }
             } catch (error) {
-              Alert.alert("Error", "Failed to delete post. Please try again.");
+              Alert.alert('Error', 'Failed to delete post. Please try again.');
             }
           },
-          style: "destructive",
+          style: 'destructive',
         },
       ],
-      { cancelable: true },
+      { cancelable: true }
     );
   };
 
@@ -236,7 +236,7 @@ const PostView = () => {
     ({ item, index }: { item: FeedItem; index: number }) => (
       <Post item={item} index={index} isVisible={currentIndex === index} />
     ),
-    [currentIndex],
+    [currentIndex]
   );
 
   return (
@@ -249,7 +249,7 @@ const PostView = () => {
             style={[
               styles.navigationZone,
               styles.leftZone,
-              activeZone === "left" && styles.activeZone,
+              activeZone === 'left' && styles.activeZone,
             ]}
           />
         </GestureDetector>
@@ -260,7 +260,7 @@ const PostView = () => {
             style={[
               styles.navigationZone,
               styles.rightZone,
-              activeZone === "right" && styles.activeZone,
+              activeZone === 'right' && styles.activeZone,
             ]}
           />
         </GestureDetector>
@@ -298,7 +298,7 @@ const PostView = () => {
         >
           <MaterialCommunityIcons
             name="dots-vertical"
-            color={"#fff"}
+            color={'#fff'}
             size={24}
           />
         </Pressable>
@@ -340,7 +340,7 @@ const PostView = () => {
         </View>
 
         <Pressable style={styles.deleteAction} onPress={handleDelete}>
-          <DeleteAction fill={"#FF325E"} />
+          <DeleteAction fill={'#FF325E'} />
           <Text style={styles.deleteText}>Delete</Text>
         </Pressable>
       </BottomModal>
@@ -349,7 +349,7 @@ const PostView = () => {
         variant="primary"
         size="sm"
         style={styles.blahButton}
-        onPress={() => router.push("/blahs")}
+        onPress={() => router.push('/blahs')}
       >
         <Text variant="body" color="#fff">
           Blahs
@@ -362,10 +362,10 @@ const PostView = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: '#000',
   },
   navigationZone: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     bottom: 0,
     width: NAVIGATION_ZONE_WIDTH,
@@ -378,19 +378,19 @@ const styles = StyleSheet.create({
     right: 0,
   },
   activeZone: {
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
   deleteAction: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginLeft: 50,
     marginTop: 50,
   },
   deleteText: {
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
     fontSize: 15,
     top: -3,
     paddingLeft: 18,
-    color: "#FF325E",
+    color: '#FF325E',
   },
   content: {
     flex: 1,
@@ -398,18 +398,18 @@ const styles = StyleSheet.create({
   postContainer: {
     width: width,
     height: height,
-    backgroundColor: "#000",
+    backgroundColor: '#000',
   },
   modalContainer: {
     borderWidth: 0,
   },
   blahButton: {
-    position: "absolute",
-    bottom: Platform.OS === "ios" ? 150 : 140,
+    position: 'absolute',
+    bottom: Platform.OS === 'ios' ? 150 : 140,
     right: 24,
-    backgroundColor: "#FF325E",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#FF325E',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 40,
     width: 82,
     height: 48,
@@ -417,7 +417,7 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     borderRadius: 20,
-    position: "absolute",
+    position: 'absolute',
     right: 30,
     top: 70,
   },

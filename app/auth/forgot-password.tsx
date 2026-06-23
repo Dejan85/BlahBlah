@@ -1,31 +1,23 @@
-import React, { useState } from "react";
-import {
-  View,
-  Alert,
-  StyleSheet,
-  Text,
-  TextInput,
-  Button,
-  Pressable,
-} from "react-native";
-import { supabase } from "@/utils/supabase";
-import Header from "@/components/Header";
-import { useRouter } from "expo-router";
-import CustomTextInput from "@/components/CustomTextInput";
-import { Envelope } from "@/assets/images";
+import React, { useState } from 'react';
+import { View, Alert, StyleSheet, Text, Pressable } from 'react-native';
+import { supabase } from '@/utils/supabase';
+import Header from '@/components/Header';
+import { useRouter } from 'expo-router';
+import CustomTextInput from '@/components/CustomTextInput';
+import { Envelope } from '@/assets/images';
 
 const ForgotPasswordScreen = () => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const router = useRouter();
   const handleForgotPassword = async () => {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "com.supabase://auth/reset-password", // The deep link for password reset
+      redirectTo: 'com.supabase://auth/reset-password', // The deep link for password reset
     });
 
     if (error) {
-      Alert.alert("Error", error.message);
+      Alert.alert('Error', error.message);
     } else {
-      Alert.alert("Success", "Password reset email sent!");
+      Alert.alert('Success', 'Password reset email sent!');
     }
   };
 
@@ -59,33 +51,33 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
 
-    justifyContent: "center",
-    backgroundColor: "#FF325E",
+    justifyContent: 'center',
+    backgroundColor: '#FF325E',
   },
   input: {
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
     fontSize: 14,
-    color: "#000000",
+    color: '#000000',
     paddingVertical: 14,
 
     flex: 1,
   },
   inputContainer: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 50,
-    justifyContent: "center",
+    justifyContent: 'center',
     marginVertical: 24,
   },
   btnText: {
-    fontFamily: "InterMedium",
-    color: "#000",
+    fontFamily: 'InterMedium',
+    color: '#000',
     fontSize: 18,
-    textAlign: "center",
+    textAlign: 'center',
     paddingVertical: 18,
   },
   loginBtn: {
     marginTop: 100,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 50,
   },
 });

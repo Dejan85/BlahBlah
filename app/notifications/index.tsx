@@ -1,11 +1,11 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
-import React, { useState, useEffect } from "react";
-import Header from "@/components/Header";
-import { useRouter } from "expo-router";
-import { supabase } from "@/utils";
-import { useAuth } from "@/context/AuthContext";
-import { NotificationsList } from "@/components/Push";
-import { Notification, Profile } from "@/components/Push";
+import { ScrollView, StyleSheet, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import Header from '@/components/Header';
+import { useRouter } from 'expo-router';
+import { supabase } from '@/utils';
+import { useAuth } from '@/context/AuthContext';
+import { NotificationsList } from '@/components/Push';
+import { Notification } from '@/components/Push';
 
 const Index = () => {
   const router = useRouter();
@@ -22,7 +22,7 @@ const Index = () => {
     try {
       // First fetch notifications with sender profiles
       const { data, error } = await supabase
-        .from("notifications")
+        .from('notifications')
         .select(
           `
           id,
@@ -38,10 +38,10 @@ const Index = () => {
             avatar_url,
             full_name
           )
-        `,
+        `
         )
-        .eq("recipient_id", user?.id)
-        .order("created_at", { ascending: false });
+        .eq('recipient_id', user?.id)
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
 
@@ -58,7 +58,7 @@ const Index = () => {
           .filter(({ sender }) => sender) // Filter out notifications with missing sender data
           .map(({ notification, sender }) => ({
             id: notification.id,
-            type: notification.type as "FOLLOW_REQUEST" | "MESSAGE",
+            type: notification.type as 'FOLLOW_REQUEST' | 'MESSAGE',
             sender: {
               username: sender.username,
               avatar_url: sender.avatar_url,
@@ -82,7 +82,7 @@ const Index = () => {
         setNotifications(formattedNotifications);
       }
     } catch (error) {
-      console.error("Error fetching notifications:", error);
+      console.error('Error fetching notifications:', error);
     }
   };
 
@@ -90,11 +90,11 @@ const Index = () => {
     try {
       // Handle navigation based on notification type
       if (
-        notification.type === "MESSAGE" &&
+        notification.type === 'MESSAGE' &&
         notification.payload?.conversationId
       ) {
         router.push({
-          pathname: "/chats/chat-room/[id]",
+          pathname: '/chats/chat-room/[id]',
           params: {
             id: notification.payload.conversationId,
             username: notification.username, // Use the flattened username
@@ -106,21 +106,21 @@ const Index = () => {
       // Mark as read if not already
       if (!notification.is_read) {
         const { error } = await supabase
-          .from("notifications")
+          .from('notifications')
           .update({ is_read: true })
-          .eq("id", notification.id);
+          .eq('id', notification.id);
 
         if (error) throw error;
 
         // Update local state
         setNotifications((prevNotifications) =>
           prevNotifications.map((n) =>
-            n.id === notification.id ? { ...n, is_read: true } : n,
-          ),
+            n.id === notification.id ? { ...n, is_read: true } : n
+          )
         );
       }
     } catch (error) {
-      console.error("Error handling notification:", error);
+      console.error('Error handling notification:', error);
     }
   };
 
@@ -142,12 +142,12 @@ export default Index;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   title: {
-    fontFamily: "InterSemiBold",
+    fontFamily: 'InterSemiBold',
     fontSize: 16,
-    textAlign: "center",
+    textAlign: 'center',
     paddingTop: 20,
   },
 });

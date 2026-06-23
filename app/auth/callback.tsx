@@ -1,7 +1,7 @@
-import { useEffect } from "react";
-import { useRouter, useLocalSearchParams } from "expo-router";
-import { View, ActivityIndicator, Text } from "react-native";
-import { supabase } from "@/utils/supabase";
+import { useEffect } from 'react';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { View, ActivityIndicator, Text } from 'react-native';
+import { supabase } from '@/utils/supabase';
 
 export default function AuthCallback() {
   const router = useRouter();
@@ -11,7 +11,7 @@ export default function AuthCallback() {
     // Handle the OAuth callback
     const handleCallback = async () => {
       try {
-        console.log("Auth callback params:", params);
+        console.log('Auth callback params:', params);
 
         // Supabase sends tokens as URL fragments, we need to extract them
         // The URL will look like: blahblah://auth/callback#access_token=xxx&refresh_token=yyy
@@ -25,31 +25,31 @@ export default function AuthCallback() {
           error,
         } = await supabase.auth.getSession();
 
-        console.log("Session check:", { session: !!session, error });
+        console.log('Session check:', { session: !!session, error });
 
         if (error) {
-          console.error("Auth callback error:", error);
-          router.replace("/auth" as any);
+          console.error('Auth callback error:', error);
+          router.replace('/auth' as any);
           return;
         }
 
         if (session) {
-          console.log("Session received, user logged in!", session.user.id);
+          console.log('Session received, user logged in!', session.user.id);
 
           // Check if user has a profile
           const { data: profile, error: profileError } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("id", session.user.id)
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
             .single();
 
-          if (profileError && profileError.code !== "PGRST116") {
-            console.error("Profile check error:", profileError);
+          if (profileError && profileError.code !== 'PGRST116') {
+            console.error('Profile check error:', profileError);
           }
 
           if (!profile) {
             // Create initial profile
-            console.log("Creating profile for user:", session.user.id);
+            console.log('Creating profile for user:', session.user.id);
             const avatarUrl = session.user.user_metadata?.avatar_url || null;
             const fullName =
               session.user.user_metadata?.full_name ||
@@ -57,7 +57,7 @@ export default function AuthCallback() {
               null;
 
             const { error: insertError } = await supabase
-              .from("profiles")
+              .from('profiles')
               .insert({
                 id: session.user.id,
                 avatar_url: avatarUrl,
@@ -66,22 +66,22 @@ export default function AuthCallback() {
               });
 
             if (insertError) {
-              console.error("Profile creation error:", insertError);
+              console.error('Profile creation error:', insertError);
             } else {
-              console.log("Profile created successfully");
+              console.log('Profile created successfully');
             }
           }
 
           // Navigate to home
-          console.log("Navigating to home...");
-          router.replace("/home" as any);
+          console.log('Navigating to home...');
+          router.replace('/home' as any);
         } else {
-          console.log("No session found, redirecting to auth");
-          router.replace("/auth" as any);
+          console.log('No session found, redirecting to auth');
+          router.replace('/auth' as any);
         }
       } catch (error) {
-        console.error("Callback handling error:", error);
-        router.replace("/auth" as any);
+        console.error('Callback handling error:', error);
+        router.replace('/auth' as any);
       }
     };
 
@@ -92,9 +92,9 @@ export default function AuthCallback() {
     <View
       style={{
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#fff",
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
       }}
     >
       <ActivityIndicator size="large" color="#FF325E" />

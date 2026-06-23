@@ -1,12 +1,11 @@
 // app/test/[id].tsx
-import React, { useState, useEffect, useCallback, useMemo, FC } from "react";
+import React, { useState, useEffect, useCallback, useMemo, FC } from 'react';
 import {
   SafeAreaView,
   View,
   Text,
   TouchableOpacity,
   TextInput,
-  Modal,
   ActivityIndicator,
   StyleSheet,
   Linking,
@@ -16,33 +15,31 @@ import {
   StatusBar,
   Dimensions,
   Switch,
-} from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { supabase } from "@/utils/supabase";
-import { useAuth } from "@/context/AuthContext";
-import { IconButton } from "@/components/IconButton";
+} from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { supabase } from '@/utils/supabase';
+import { useAuth } from '@/context/AuthContext';
+import { IconButton } from '@/components/IconButton';
 import {
   ProfileBackButton,
   ProfileOptions,
-  ProfileLock,
   Block,
   MuteAction,
   Report,
   Eye,
-} from "@/assets/images";
-import Avatar from "@/components/Avatar";
-import GridPosts from "@/components/GridPost";
-import BottomModal from "@/components/BottomModal";
+} from '@/assets/images';
+import Avatar from '@/components/Avatar';
+import BottomModal from '@/components/BottomModal';
 
-import ReportMenu from "@/components/ReportMenu";
-import PremiumModal from "@/components/PremiumModal";
-import { FontAwesome5 } from "@expo/vector-icons";
-import * as Location from "expo-location";
-import SettingItem from "@/components/SettingItem";
-import { useMessage } from "@/context/MessageContext";
-import { BlockBadge } from "@/components/BlockBadge";
+import ReportMenu from '@/components/ReportMenu';
+import PremiumModal from '@/components/PremiumModal';
+import { FontAwesome5 } from '@expo/vector-icons';
+import * as Location from 'expo-location';
+import SettingItem from '@/components/SettingItem';
+import { useMessage } from '@/context/MessageContext';
+import { BlockBadge } from '@/components/BlockBadge';
 
-const { height: windowHeight } = Dimensions.get("window");
+const { height: windowHeight } = Dimensions.get('window');
 
 // --- INITIAL STATES ---
 interface Profile {
@@ -88,11 +85,11 @@ const initialState: ProfileState = {
 };
 
 const initialEditForm: EditFormState = {
-  username: "",
-  fullName: "",
-  bio: "",
-  avatarUrl: "",
-  websiteUrl: "",
+  username: '',
+  fullName: '',
+  bio: '',
+  avatarUrl: '',
+  websiteUrl: '',
   locationEnabled: false,
 };
 
@@ -101,12 +98,12 @@ interface ProfileDetailsProps {
 }
 
 // --- MAIN COMPONENT ---
-const ProfileScreen: FC<ProfileDetailsProps> = ({ lockProfile = false }) => {
+const ProfileScreen: FC<ProfileDetailsProps> = () => {
   // Read the optional id from the route.
   // If no id is provided, assume it's your own profile.
   const { id } = useLocalSearchParams<{ id?: string }>();
   const router = useRouter();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const { createOrNavigateToChat } = useMessage();
   // Ensure a boolean value for "isOwnProfile"
   const isOwnProfile: boolean = !id || (user ? user.id === id : false);
@@ -130,26 +127,26 @@ const ProfileScreen: FC<ProfileDetailsProps> = ({ lockProfile = false }) => {
   const [isMuted, setIsMuted] = useState(false);
 
   // State for posts (grid)
-  const [posts, setPosts] = useState<any[]>([]);
-  const [loadingPosts, setLoadingPosts] = useState(true);
+  const [, setPosts] = useState<any[]>([]);
+  const [, setLoadingPosts] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
 
   const goToSettings = () => {
     router.push({
-      pathname: "/settings/[id]",
-      params: { id: currentUser ?? "default" },
+      pathname: '/settings/[id]',
+      params: { id: currentUser ?? 'default' },
     });
   };
 
   // Derived display values (fallbacks)
   const displayValues = useMemo(
     () => ({
-      username: state.profile?.username ?? "Guest",
-      fullName: state.profile?.full_name ?? "",
-      bio: state.profile?.bio ?? "Welcome!",
-      url: state.profile?.website_url ?? "https://example.com",
+      username: state.profile?.username ?? 'Guest',
+      fullName: state.profile?.full_name ?? '',
+      bio: state.profile?.bio ?? 'Welcome!',
+      url: state.profile?.website_url ?? 'https://example.com',
     }),
-    [state.profile],
+    [state.profile]
   );
 
   const fetchProfileData = useCallback(async () => {
@@ -162,20 +159,20 @@ const ProfileScreen: FC<ProfileDetailsProps> = ({ lockProfile = false }) => {
       const [profileResponse, followersResponse, followingResponse] =
         await Promise.all([
           supabase
-            .from("profiles")
+            .from('profiles')
             .select(
-              "username, full_name, avatar_url, bio, website_url, location_enabled, latitude, longitude",
+              'username, full_name, avatar_url, bio, website_url, location_enabled, latitude, longitude'
             )
-            .eq("id", profileId)
+            .eq('id', profileId)
             .single(),
           supabase
-            .from("follows")
-            .select("*", { count: "exact", head: true })
-            .eq("followed_id", profileId),
+            .from('follows')
+            .select('*', { count: 'exact', head: true })
+            .eq('followed_id', profileId),
           supabase
-            .from("follows")
-            .select("*", { count: "exact", head: true })
-            .eq("follower_id", profileId),
+            .from('follows')
+            .select('*', { count: 'exact', head: true })
+            .eq('follower_id', profileId),
         ]);
       if (profileResponse.error) throw profileResponse.error;
 
@@ -184,21 +181,21 @@ const ProfileScreen: FC<ProfileDetailsProps> = ({ lockProfile = false }) => {
       if (profileResponse.data?.location_enabled) {
         try {
           const { status } = await Location.requestForegroundPermissionsAsync();
-          if (status === "granted") {
+          if (status === 'granted') {
             currentLocation = await Location.getCurrentPositionAsync({});
             if (currentLocation) {
               await supabase
-                .from("profiles")
+                .from('profiles')
                 .update({
                   latitude: currentLocation.coords.latitude,
                   longitude: currentLocation.coords.longitude,
                   updated_at: new Date().toISOString(),
                 })
-                .eq("id", user.id);
+                .eq('id', user.id);
             }
           }
         } catch (error) {
-          console.error("Error getting location:", error);
+          console.error('Error getting location:', error);
         }
       }
       setState((prev) => ({
@@ -219,16 +216,16 @@ const ProfileScreen: FC<ProfileDetailsProps> = ({ lockProfile = false }) => {
       // If it's your own profile, prefill the edit form.
       if (isOwnProfile) {
         setEditForm({
-          username: profileResponse.data.username || "",
-          fullName: profileResponse.data.full_name || "",
-          bio: profileResponse.data.bio || "",
-          websiteUrl: profileResponse.data.website_url || "",
-          avatarUrl: profileResponse.data.avatar_url || "",
+          username: profileResponse.data.username || '',
+          fullName: profileResponse.data.full_name || '',
+          bio: profileResponse.data.bio || '',
+          websiteUrl: profileResponse.data.website_url || '',
+          avatarUrl: profileResponse.data.avatar_url || '',
           locationEnabled: profileResponse.data.location_enabled || false,
         });
       }
     } catch (error) {
-      console.error("Error fetching profile data:", error);
+      console.error('Error fetching profile data:', error);
       setState((prev) => ({ ...prev, loading: false }));
     }
   }, [profileId, user, isOwnProfile]);
@@ -240,18 +237,18 @@ const ProfileScreen: FC<ProfileDetailsProps> = ({ lockProfile = false }) => {
     try {
       // Check if the current user has blocked the target profile.
       const { data: blockedByMe } = await supabase
-        .from("blocks")
-        .select("*")
-        .eq("blocker_id", user.id)
-        .eq("blocked_id", id)
+        .from('blocks')
+        .select('*')
+        .eq('blocker_id', user.id)
+        .eq('blocked_id', id)
         .single();
 
       // Check if the target profile has blocked the current user.
       const { data: blockedMe } = await supabase
-        .from("blocks")
-        .select("*")
-        .eq("blocker_id", id)
-        .eq("blocked_id", user.id)
+        .from('blocks')
+        .select('*')
+        .eq('blocker_id', id)
+        .eq('blocked_id', user.id)
         .single();
 
       setBlockState({
@@ -259,7 +256,7 @@ const ProfileScreen: FC<ProfileDetailsProps> = ({ lockProfile = false }) => {
         isBlockedBy: !!blockedMe,
       });
     } catch (error) {
-      console.error("Error checking block status:", error);
+      console.error('Error checking block status:', error);
     }
   };
 
@@ -277,16 +274,16 @@ const ProfileScreen: FC<ProfileDetailsProps> = ({ lockProfile = false }) => {
     try {
       setLoadingPosts(true);
       const { data: postsData, error } = await supabase
-        .from("posts")
+        .from('posts')
         .select(
           `
             id, main_media_url, media_type, created_at,
             additional_media, music, hashtags,
             profile:profiles (id, username, avatar_url)
-          `,
+          `
         )
-        .eq("profile_id", profileId)
-        .order("created_at", { ascending: false });
+        .eq('profile_id', profileId)
+        .order('created_at', { ascending: false });
       if (error) throw error;
       const transformedPosts = (postsData || []).map((post: any) => ({
         id: post.id,
@@ -307,7 +304,7 @@ const ProfileScreen: FC<ProfileDetailsProps> = ({ lockProfile = false }) => {
       }));
       setPosts(transformedPosts);
     } catch (error) {
-      console.error("Error fetching posts:", error);
+      console.error('Error fetching posts:', error);
     } finally {
       setLoadingPosts(false);
     }
@@ -321,13 +318,13 @@ const ProfileScreen: FC<ProfileDetailsProps> = ({ lockProfile = false }) => {
   const checkFollowStatus = useCallback(async () => {
     if (!user || isOwnProfile || !profileId) return;
     const { data, error } = await supabase
-      .from("follows")
-      .select("*")
-      .eq("follower_id", user.id)
-      .eq("followed_id", profileId)
+      .from('follows')
+      .select('*')
+      .eq('follower_id', user.id)
+      .eq('followed_id', profileId)
       .maybeSingle();
-    if (error && error.code !== "PGRST116") {
-      console.error("Error checking follow status:", error);
+    if (error && error.code !== 'PGRST116') {
+      console.error('Error checking follow status:', error);
     }
     setIsFollowing(!!data);
   }, [user, profileId, isOwnProfile]);
@@ -345,9 +342,9 @@ const ProfileScreen: FC<ProfileDetailsProps> = ({ lockProfile = false }) => {
       setEditForm({
         username: state.profile.username,
         fullName: state.profile.full_name,
-        bio: state.profile.bio || "",
+        bio: state.profile.bio || '',
         avatarUrl: state.profile.avatar_url,
-        websiteUrl: state.profile.website_url || "",
+        websiteUrl: state.profile.website_url || '',
         locationEnabled: state.profile.location_enabled || false,
       });
     }
@@ -368,15 +365,15 @@ const ProfileScreen: FC<ProfileDetailsProps> = ({ lockProfile = false }) => {
         updated_at: new Date().toISOString(),
       };
       const { error } = await supabase
-        .from("profiles")
-        .upsert(updates, { onConflict: "id" });
+        .from('profiles')
+        .upsert(updates, { onConflict: 'id' });
       if (error) throw error;
       setState((prev) => ({ ...prev, profile: updates, savingProfile: false }));
       setModalStates((prev) => ({ ...prev, edit: false }));
     } catch (error) {
       Alert.alert(
-        "Error",
-        error instanceof Error ? error.message : "Unexpected error",
+        'Error',
+        error instanceof Error ? error.message : 'Unexpected error'
       );
       setState((prev) => ({ ...prev, savingProfile: false }));
     }
@@ -385,62 +382,62 @@ const ProfileScreen: FC<ProfileDetailsProps> = ({ lockProfile = false }) => {
   // --- FOLLOW / UNFOLLOW (for public profiles) ---
   const handleFollowAction = async () => {
     if (!user) {
-      Alert.alert("Error", "You must be logged in to follow users");
+      Alert.alert('Error', 'You must be logged in to follow users');
       return;
     }
     try {
       if (isFollowing) {
         const { error } = await supabase
-          .from("follows")
+          .from('follows')
           .delete()
-          .eq("follower_id", user.id)
-          .eq("followed_id", profileId);
+          .eq('follower_id', user.id)
+          .eq('followed_id', profileId);
         if (error) throw error;
         setIsFollowing(false);
         setHasUnfollowed(true);
       } else {
         const { error } = await supabase
-          .from("follows")
+          .from('follows')
           .insert({ follower_id: user.id, followed_id: profileId });
         if (error) throw error;
         setIsFollowing(true);
       }
     } catch (error) {
-      console.error("Error updating follow status:", error);
-      Alert.alert("Error", "Failed to update follow status");
+      console.error('Error updating follow status:', error);
+      Alert.alert('Error', 'Failed to update follow status');
     }
   };
 
   // --- BLOCK USER ---
   const handleBlockUser = async () => {
     if (!currentUser || !id) {
-      Alert.alert("Error", "You must be logged in to block users");
+      Alert.alert('Error', 'You must be logged in to block users');
       return;
     }
     try {
       // Check if a block record already exists
       const { data: existingBlock, error: checkError } = await supabase
-        .from("blocks")
-        .select("*")
-        .eq("blocker_id", currentUser)
-        .eq("blocked_id", id)
+        .from('blocks')
+        .select('*')
+        .eq('blocker_id', currentUser)
+        .eq('blocked_id', id)
         .maybeSingle();
 
       if (checkError) {
-        console.error("Error checking block status:", checkError);
+        console.error('Error checking block status:', checkError);
         return;
       }
 
       if (existingBlock) {
         // Block exists: so we delete it (i.e. unblock)
         const { error: deleteError } = await supabase
-          .from("blocks")
+          .from('blocks')
           .delete()
-          .eq("blocker_id", currentUser)
-          .eq("blocked_id", id);
+          .eq('blocker_id', currentUser)
+          .eq('blocked_id', id);
 
         if (deleteError) {
-          console.error("Error unblocking:", deleteError);
+          console.error('Error unblocking:', deleteError);
           throw deleteError;
         }
 
@@ -448,17 +445,17 @@ const ProfileScreen: FC<ProfileDetailsProps> = ({ lockProfile = false }) => {
         if (isFollowing) {
           await handleFollowAction();
         }
-        Alert.alert("Success", "User has been unblocked");
+        Alert.alert('Success', 'User has been unblocked');
         return;
       }
 
       // Otherwise, insert a new block record (block the user)
-      const { error } = await supabase.from("blocks").insert({
+      const { error } = await supabase.from('blocks').insert({
         blocker_id: currentUser,
         blocked_id: id,
       });
       if (error) {
-        console.error("Error blocking:", error);
+        console.error('Error blocking:', error);
         throw error;
       }
 
@@ -466,32 +463,32 @@ const ProfileScreen: FC<ProfileDetailsProps> = ({ lockProfile = false }) => {
       if (isFollowing) {
         await handleFollowAction();
       }
-      Alert.alert("Success", "User has been blocked");
+      Alert.alert('Success', 'User has been blocked');
     } catch (error) {
-      console.error("Error:", error);
-      Alert.alert("Error", "Failed to update block status");
+      console.error('Error:', error);
+      Alert.alert('Error', 'Failed to update block status');
     }
   };
 
   // --- MESSAGE (navigate to chat room) ---
   const handleMessage = async () => {
     if (!user || !profileId) {
-      Alert.alert("Error", "You must be logged in to send messages");
+      Alert.alert('Error', 'You must be logged in to send messages');
       return;
     }
     // Call the context function, passing the current user’s id and a target user object
     await createOrNavigateToChat(user.id, {
       id: profileId,
       username: displayValues.username,
-      image: state?.profile?.avatar_url ?? "",
+      image: state?.profile?.avatar_url ?? '',
 
       bio: state.profile?.bio,
     });
   };
 
   // --- PREMIUM HANDLERS ---
-  const handlePlanSelection = (plan: "monthly" | "yearly" | "onetime") => {
-    console.log("Selected plan:", plan);
+  const handlePlanSelection = (plan: 'monthly' | 'yearly' | 'onetime') => {
+    console.log('Selected plan:', plan);
   };
   const handleContinue = () => {
     setShowPremiumModal(false);
@@ -543,17 +540,17 @@ const ProfileScreen: FC<ProfileDetailsProps> = ({ lockProfile = false }) => {
                 const urlToOpen =
                   state.profile?.website_url || displayValues.url;
                 if (urlToOpen) {
-                  const fullUrl = urlToOpen.startsWith("http")
+                  const fullUrl = urlToOpen.startsWith('http')
                     ? urlToOpen
                     : `https://${urlToOpen}`;
                   Linking.openURL(fullUrl).catch(() =>
-                    Alert.alert("Error", "Could not open the website"),
+                    Alert.alert('Error', 'Could not open the website')
                   );
                 }
               }}
             >
               <Text
-                style={[styles.website, { textDecorationLine: "underline" }]}
+                style={[styles.website, { textDecorationLine: 'underline' }]}
               >
                 {state.profile?.website_url || displayValues.url}
               </Text>
@@ -572,14 +569,14 @@ const ProfileScreen: FC<ProfileDetailsProps> = ({ lockProfile = false }) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.textContainer}
-            onPress={() => router.push("/followers-list")}
+            onPress={() => router.push('/followers-list')}
           >
             <Text style={styles.blahs}>{state.followersCount}</Text>
             <Text style={styles.subtitle}>Followers</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.textContainer}
-            onPress={() => router.push("/following-list")}
+            onPress={() => router.push('/following-list')}
           >
             <Text style={styles.blahs}>{state.followingCount}</Text>
             <Text style={styles.subtitle}>Following</Text>
@@ -621,10 +618,10 @@ const ProfileScreen: FC<ProfileDetailsProps> = ({ lockProfile = false }) => {
               >
                 <Text style={styles.unffolow}>
                   {isFollowing
-                    ? "Unfollow"
+                    ? 'Unfollow'
                     : hasUnfollowed
-                      ? "Follow Back"
-                      : "Follow"}
+                      ? 'Follow Back'
+                      : 'Follow'}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -673,7 +670,7 @@ const ProfileScreen: FC<ProfileDetailsProps> = ({ lockProfile = false }) => {
 
             <SettingItem
               icon={<Block />}
-              title={blockState.isBlocked ? "Unblock" : "Block"}
+              title={blockState.isBlocked ? 'Unblock' : 'Block'}
               value={blockState.isBlocked}
               style={styles.item}
               onValueChange={handleBlockUser}
@@ -733,8 +730,8 @@ const ProfileScreen: FC<ProfileDetailsProps> = ({ lockProfile = false }) => {
               <View style={styles.locationContainer}>
                 <Text style={styles.locationText}>Location</Text>
                 <Switch
-                  trackColor={{ false: "#B3B3B3", true: "#FF325E" }}
-                  thumbColor={editForm.locationEnabled ? "#fff" : "#fff"}
+                  trackColor={{ false: '#B3B3B3', true: '#FF325E' }}
+                  thumbColor={editForm.locationEnabled ? '#fff' : '#fff'}
                   onValueChange={(value) =>
                     setEditForm((prev) => ({ ...prev, locationEnabled: value }))
                   }
@@ -792,8 +789,8 @@ const ProfileScreen: FC<ProfileDetailsProps> = ({ lockProfile = false }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#fff",
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    backgroundColor: '#fff',
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   modalContent: {
     paddingLeft: 18,
@@ -805,20 +802,20 @@ const styles = StyleSheet.create({
   },
   loaderContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     marginVertical: 20,
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginHorizontal: 30,
     height: 60,
   },
   profileUsername: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 20,
     marginVertical: 40,
   },
@@ -826,24 +823,24 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   profileUname: {
-    fontFamily: "InterSemiBold",
+    fontFamily: 'InterSemiBold',
     fontSize: 20,
-    color: "#000",
+    color: '#000',
   },
   buttonRow: {
-    flexDirection: "row",
-    alignContent: "center",
-    alignItems: "center",
-    alignSelf: "center",
+    flexDirection: 'row',
+    alignContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
   },
   profileStatus: {
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
     fontSize: 12,
-    color: "#000",
+    color: '#000',
   },
   website: {
-    color: "#FF325E",
-    fontFamily: "InterMedium",
+    color: '#FF325E',
+    fontFamily: 'InterMedium',
     fontSize: 12,
   },
   item: {
@@ -851,81 +848,81 @@ const styles = StyleSheet.create({
     paddingRight: 0,
   },
   blahRow: {
-    flexDirection: "row",
-    justifyContent: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
     paddingVertical: 15,
   },
   textContainer: {
     marginHorizontal: 12,
   },
   blahs: {
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
     fontSize: 18,
-    color: "#000",
-    textAlign: "center",
+    color: '#000',
+    textAlign: 'center',
   },
   subtitle: {
-    fontFamily: "InterSemiBold",
+    fontFamily: 'InterSemiBold',
     fontSize: 15,
-    color: "#B3B3B3",
-    textAlign: "center",
+    color: '#B3B3B3',
+    textAlign: 'center',
   },
   eyeButton: {
     marginLeft: 7,
   },
   editProfileContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignContent: "center",
-    alignSelf: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignContent: 'center',
+    alignSelf: 'center',
     marginTop: 40,
   },
   editName: {
-    textAlign: "left",
+    textAlign: 'left',
     paddingTop: 0,
     paddingBottom: 0,
     paddingLeft: 5,
     top: 2,
   },
   editProfile: {
-    flexDirection: "row",
+    flexDirection: 'row',
   },
   fullName: {
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
     fontSize: 18,
-    textAlign: "center",
+    textAlign: 'center',
     paddingTop: 40,
     paddingBottom: 10,
   },
   button: {
-    backgroundColor: "#B3B3B3",
+    backgroundColor: '#B3B3B3',
     borderRadius: 40,
     paddingVertical: 8,
     marginHorizontal: 5,
     marginTop: 10,
-    alignItems: "center",
+    alignItems: 'center',
   },
   followButton: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   unfollowButton: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   messageButton: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   blockButton: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   unffolow: {
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
     fontSize: 18,
-    color: "#FF325E",
+    color: '#FF325E',
   },
   buttonText: {
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
     fontSize: 18,
-    color: "#000",
+    color: '#000',
   },
   buttonDisabled: {
     opacity: 0.7,
@@ -934,54 +931,54 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   btnText: {
-    fontFamily: "InterSemiBold",
+    fontFamily: 'InterSemiBold',
     fontSize: 16,
-    color: "#fff",
-    textAlign: "center",
+    color: '#fff',
+    textAlign: 'center',
     paddingVertical: 8,
   },
   modalContainer: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   modalTitle: {
-    fontFamily: "InterSemiBold",
+    fontFamily: 'InterSemiBold',
     fontSize: 24,
     marginBottom: 16,
-    textAlign: "center",
-    color: "#FF325E",
+    textAlign: 'center',
+    color: '#FF325E',
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
     fontSize: 16,
     marginBottom: 15,
-    color: "#000",
+    color: '#000',
   },
   locationContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingVertical: 12,
     marginBottom: 15,
   },
   locationText: {
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
     fontSize: 16,
-    color: "#000",
+    color: '#000',
   },
   editContainer: {
     padding: 20,
   },
   editTitle: {
-    fontFamily: "InterSemiBold",
+    fontFamily: 'InterSemiBold',
     fontSize: 20,
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: 20,
   },
   skeletonContainer: {
@@ -993,12 +990,12 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: "#E1E1E1",
+    backgroundColor: '#E1E1E1',
     marginBottom: 10,
   },
   contentSkeleton: {
     height: 100,
-    backgroundColor: "#E1E1E1",
+    backgroundColor: '#E1E1E1',
     borderRadius: 8,
   },
 });

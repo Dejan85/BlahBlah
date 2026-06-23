@@ -1,15 +1,13 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { supabase } from "@/utils/supabase";
-import { useRouter } from "expo-router";
-import * as FileSystem from "expo-file-system";
-import { Conversation, Message } from "@/types/chat";
-import { User, RealtimeMessagePayload, RealtimeReactionPayload } from "@/types";
-import { RealtimeChannel } from "@supabase/supabase-js";
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '@/utils/supabase';
+import { useRouter } from 'expo-router';
+import { Conversation, Message } from '@/types/chat';
+import { User } from '@/types';
 
 interface MessageContextType {
   createOrNavigateToChat: (
     currentUserId: string,
-    targetUser: User,
+    targetUser: User
   ) => Promise<void>;
   conversations: Conversation[];
   currentConversation: Conversation | null;
@@ -19,11 +17,11 @@ interface MessageContextType {
     content: string,
     conversationId: string,
     senderId: string,
-    messageType?: "text" | "audio" | "image" | "file",
+    messageType?: 'text' | 'audio' | 'image' | 'file'
   ) => Promise<void>;
   markConversationAsRead: (
     conversationId: string,
-    participantId: string,
+    participantId: string
   ) => Promise<void>;
   loading: boolean;
   error: string | null;
@@ -33,7 +31,7 @@ interface MessageContextType {
   handleReaction: (
     messageId: string,
     reaction: { emoji: string; name: string },
-    userId: string,
+    userId: string
   ) => Promise<void>;
 }
 
@@ -62,15 +60,15 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
     return supabase
       .channel(`messages-${conversationId}`)
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "*",
-          schema: "public",
-          table: "messages",
+          event: '*',
+          schema: 'public',
+          table: 'messages',
           filter: `conversation_id=eq.${conversationId}`,
         },
         (payload) => {
-          if (payload.eventType === "INSERT") {
+          if (payload.eventType === 'INSERT') {
             setMessages((prev) => [
               ...prev,
               {
@@ -82,7 +80,7 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
               },
             ]);
           }
-        },
+        }
       )
       .subscribe();
   };
@@ -90,26 +88,26 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
   const handleReaction = async (
     messageId: string,
     reaction: { emoji: string; name: string },
-    userId: string,
+    userId: string
   ) => {
     try {
       // Check if reaction already exists
       const { data: existingReaction } = await supabase
-        .from("message_reactions")
-        .select("*")
-        .eq("message_id", messageId)
-        .eq("user_id", userId)
-        .eq("reaction_type", reaction.name)
+        .from('message_reactions')
+        .select('*')
+        .eq('message_id', messageId)
+        .eq('user_id', userId)
+        .eq('reaction_type', reaction.name)
         .single();
 
       if (existingReaction) {
         // Remove existing reaction
         const { error: deleteError } = await supabase
-          .from("message_reactions")
+          .from('message_reactions')
           .delete()
-          .eq("message_id", messageId)
-          .eq("user_id", userId)
-          .eq("reaction_type", reaction.name);
+          .eq('message_id', messageId)
+          .eq('user_id', userId)
+          .eq('reaction_type', reaction.name);
 
         if (deleteError) throw deleteError;
 
@@ -133,12 +131,12 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
               };
             }
             return msg;
-          }),
+          })
         );
       } else {
         // Add new reaction
         const { error: insertError } = await supabase
-          .from("message_reactions")
+          .from('message_reactions')
           .insert({
             message_id: messageId,
             user_id: userId,
@@ -153,14 +151,14 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
             if (msg.id === messageId) {
               const existingReactions = msg.reactions || [];
               const existingReactionIndex = existingReactions.findIndex(
-                (r) => r.name === reaction.name,
+                (r) => r.name === reaction.name
               );
 
               if (existingReactionIndex > -1) {
                 const updatedReactions = existingReactions.map((r, index) =>
                   index === existingReactionIndex
                     ? { ...r, count: r.count + 1, users: [...r.users, userId] }
-                    : r,
+                    : r
                 );
                 return { ...msg, reactions: updatedReactions };
               }
@@ -179,18 +177,18 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
               };
             }
             return msg;
-          }),
+          })
         );
       }
     } catch (error) {
-      console.error("Error handling reaction:", error);
+      console.error('Error handling reaction:', error);
       throw error;
     }
   };
 
   // Set current conversation by ID and fetch its messages
   const setCurrentConversationId = async (
-    conversationId: string | null,
+    conversationId: string | null
   ): Promise<void> => {
     try {
       if (!conversationId) {
@@ -211,18 +209,18 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Fetch conversation details
       const { data: convData, error: convError } = await supabase
-        .from("conversations")
-        .select("*")
-        .eq("id", conversationId)
+        .from('conversations')
+        .select('*')
+        .eq('id', conversationId)
         .single();
 
-      if (convError) throw new Error("Error fetching conversation");
+      if (convError) throw new Error('Error fetching conversation');
 
       setCurrentConversation(convData);
 
       // Fetch messages with reactions
       const { data: messageData, error: messageError } = await supabase
-        .from("messages")
+        .from('messages')
         .select(
           `
           *,
@@ -232,12 +230,12 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
             reaction_type,
             reaction_emoji
           )
-        `,
+        `
         )
-        .eq("conversation_id", conversationId)
-        .order("created_at", { ascending: true });
+        .eq('conversation_id', conversationId)
+        .order('created_at', { ascending: true });
 
-      if (messageError) throw new Error("Error fetching messages");
+      if (messageError) throw new Error('Error fetching messages');
 
       const messagesWithReactions: Message[] = messageData.map((msg) => ({
         id: msg.id,
@@ -248,7 +246,7 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
         reactions:
           msg.message_reactions?.reduce((acc: any[], reaction: any) => {
             const existingReaction = acc.find(
-              (r) => r.name === reaction.reaction_type,
+              (r) => r.name === reaction.reaction_type
             );
             if (existingReaction) {
               existingReaction.count += 1;
@@ -267,9 +265,9 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
 
       setMessages(messagesWithReactions);
     } catch (err) {
-      console.error("Error in setCurrentConversationId:", err);
+      console.error('Error in setCurrentConversationId:', err);
       setError(
-        err instanceof Error ? err.message : "Failed to load conversation",
+        err instanceof Error ? err.message : 'Failed to load conversation'
       );
     } finally {
       setLoading(false);
@@ -284,34 +282,34 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Convert base64 to blob
       const formData = new FormData();
-      formData.append("file", {
+      formData.append('file', {
         uri: audioUri,
-        type: "audio/m4a",
+        type: 'audio/m4a',
         name: fileName,
       } as any);
 
       // Upload using fetch with formData
 
-      const { data, error } = await supabase.storage
-        .from("audio-messages")
+      const { error } = await supabase.storage
+        .from('audio-messages')
         .upload(fileName, formData, {
-          contentType: "audio/m4a",
-          cacheControl: "7200",
+          contentType: 'audio/m4a',
+          cacheControl: '7200',
           upsert: true,
         });
 
       if (error) {
-        console.error("Upload error:", error);
+        console.error('Upload error:', error);
         throw error;
       }
 
       const {
         data: { publicUrl },
-      } = supabase.storage.from("audio-messages").getPublicUrl(fileName);
+      } = supabase.storage.from('audio-messages').getPublicUrl(fileName);
 
       return publicUrl;
     } catch (error) {
-      console.error("Error uploading audio:", error);
+      console.error('Error uploading audio:', error);
       throw error;
     }
   };
@@ -324,22 +322,22 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
 
         // Subscribe to conversation changes
         const conversationSubscription = supabase
-          .channel("conversation-changes")
+          .channel('conversation-changes')
           .on(
-            "postgres_changes",
+            'postgres_changes',
             {
-              event: "*",
-              schema: "public",
-              table: "conversations",
+              event: '*',
+              schema: 'public',
+              table: 'conversations',
             },
             async (payload) => {
-              if (payload.eventType === "INSERT") {
+              if (payload.eventType === 'INSERT') {
                 setConversations((prev) => [
                   ...prev,
                   payload.new as Conversation,
                 ]);
               }
-            },
+            }
           )
           .subscribe();
 
@@ -349,8 +347,8 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
           conversationSubscription.unsubscribe();
         };
       } catch (err) {
-        console.error("Error initializing messaging:", err);
-        setError("Failed to initialize messaging");
+        console.error('Error initializing messaging:', err);
+        setError('Failed to initialize messaging');
       } finally {
         setLoading(false);
       }
@@ -362,11 +360,11 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
   // Create or navigate to existing chat
   const createOrNavigateToChat = async (
     currentUserId: string,
-    targetUser: User,
+    targetUser: User
   ) => {
     try {
       if (!initialized) {
-        throw new Error("Messaging system not yet initialized");
+        throw new Error('Messaging system not yet initialized');
       }
 
       setLoading(true);
@@ -379,21 +377,21 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Check for existing conversation
       const { data: existingConv, error: convError } = await supabase
-        .from("conversations")
-        .select("*")
+        .from('conversations')
+        .select('*')
         .or(
           `and(participant1_id.eq.${participant1_id},participant2_id.eq.${participant2_id}),` +
-            `and(participant1_id.eq.${participant2_id},participant2_id.eq.${participant1_id})`,
+            `and(participant1_id.eq.${participant2_id},participant2_id.eq.${participant1_id})`
         )
         .single();
 
       let conversationId: string;
 
       if (convError) {
-        if (convError.code === "PGRST116") {
+        if (convError.code === 'PGRST116') {
           // No conversation exists, create new one
           const { data: newConv, error: createError } = await supabase
-            .from("conversations")
+            .from('conversations')
             .insert({
               participant1_id,
               participant2_id,
@@ -402,12 +400,12 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
             .single();
 
           if (createError || !newConv) {
-            throw new Error("Failed to create conversation");
+            throw new Error('Failed to create conversation');
           }
 
           conversationId = newConv.id;
         } else {
-          throw new Error("Error checking conversation");
+          throw new Error('Error checking conversation');
         }
       } else {
         conversationId = existingConv.id;
@@ -418,17 +416,17 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Navigate to chat room
       router.push({
-        pathname: "/chats/chat-room/[id]",
+        pathname: '/chats/chat-room/[id]',
         params: {
           id: conversationId,
           username: targetUser.username,
-          bio: targetUser.bio || "",
+          bio: targetUser.bio || '',
           image: targetUser.image,
         },
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-      console.error("Error in createOrNavigateToChat:", err);
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error('Error in createOrNavigateToChat:', err);
     } finally {
       setLoading(false);
     }
@@ -439,25 +437,25 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
     content: string,
     conversationId: string,
     senderId: string,
-    messageType: "text" | "audio" | "image" | "file" = "text",
+    messageType: 'text' | 'audio' | 'image' | 'file' = 'text'
   ) => {
     try {
       if (!initialized) {
-        throw new Error("Messaging system not yet initialized");
+        throw new Error('Messaging system not yet initialized');
       }
 
       setError(null);
 
       let messageContent = content;
-      if (messageType === "audio") {
+      if (messageType === 'audio') {
         messageContent = await uploadAudioFile(content);
       }
 
       // Get the conversation to find the recipient
       const { data: conversation, error: convError } = await supabase
-        .from("conversations")
-        .select("*")
-        .eq("id", conversationId)
+        .from('conversations')
+        .select('*')
+        .eq('id', conversationId)
         .single();
 
       if (convError) throw convError;
@@ -470,7 +468,7 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // First send the message
       const { data: newMessage, error: sendError } = await supabase
-        .from("messages")
+        .from('messages')
         .insert({
           conversation_id: conversationId,
           sender_id: senderId,
@@ -482,31 +480,31 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
         .single();
 
       if (sendError) {
-        console.error("Database error:", sendError);
-        throw new Error("Error sending message");
+        console.error('Database error:', sendError);
+        throw new Error('Error sending message');
       }
 
       // Get sender's info for the notification
       const { data: senderProfile, error: profileError } = await supabase
-        .from("profiles")
-        .select("username, avatar_url")
-        .eq("id", senderId)
+        .from('profiles')
+        .select('username, avatar_url')
+        .eq('id', senderId)
         .single();
 
       if (profileError) throw profileError;
 
       // Create notification for the recipient
       const { error: notifError } = await supabase
-        .from("notifications")
+        .from('notifications')
         .insert({
           recipient_id: recipientId,
           sender_id: senderId,
-          type: "MESSAGE",
+          type: 'MESSAGE',
           payload: {
             conversationId,
             messageId: newMessage.id,
             messageContent:
-              messageType === "text" ? messageContent : `Sent a ${messageType}`,
+              messageType === 'text' ? messageContent : `Sent a ${messageType}`,
             senderUsername: senderProfile.username,
             senderAvatar: senderProfile.avatar_url,
           },
@@ -514,59 +512,59 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
         });
 
       if (notifError) {
-        console.error("Error creating notification:", notifError);
+        console.error('Error creating notification:', notifError);
       }
 
       setReplyingTo(null);
     } catch (err) {
-      console.error("Error in sendMessage:", err);
-      setError(err instanceof Error ? err.message : "An error occurred");
+      console.error('Error in sendMessage:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred');
     }
   };
 
   // Mark conversation as read
   const markConversationAsRead = async (
     conversationId: string,
-    participantId: string,
+    participantId: string
   ) => {
     try {
       if (!initialized) {
-        throw new Error("Messaging system not yet initialized");
+        throw new Error('Messaging system not yet initialized');
       }
 
-      const { data: conversationCheck } = await supabase
-        .from("conversations")
-        .select("*")
-        .eq("id", conversationId)
+      await supabase
+        .from('conversations')
+        .select('*')
+        .eq('id', conversationId)
         .single();
 
       const { data: conversation, error: fetchError } = await supabase
-        .from("conversations")
-        .select("*")
-        .eq("id", conversationId)
+        .from('conversations')
+        .select('*')
+        .eq('id', conversationId)
         .single();
 
       if (fetchError || !conversation) {
-        throw new Error("Error fetching conversation");
+        throw new Error('Error fetching conversation');
       }
 
       // Update participant1_last_read_at or participant2_last_read_at, depending on who is reading
       const updatePayload = {
         [participantId === conversation.participant1_id
-          ? "participant1_last_read_at"
-          : "participant2_last_read_at"]: new Date().toISOString(),
+          ? 'participant1_last_read_at'
+          : 'participant2_last_read_at']: new Date().toISOString(),
       };
 
-      const { error: updateError, data: updatedData } = await supabase
-        .from("conversations")
+      const { error: updateError } = await supabase
+        .from('conversations')
         .update(updatePayload)
-        .eq("id", conversationId);
+        .eq('id', conversationId);
 
       if (updateError) {
-        console.error("Update error:", updateError);
+        console.error('Update error:', updateError);
       }
     } catch (err) {
-      console.error("Error in markConversationAsRead:", err);
+      console.error('Error in markConversationAsRead:', err);
     }
   };
 
@@ -595,7 +593,7 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
 export const useMessage = () => {
   const context = useContext(MessageContext);
   if (context === undefined) {
-    throw new Error("useMessage must be used within a MessageProvider");
+    throw new Error('useMessage must be used within a MessageProvider');
   }
   return context;
 };

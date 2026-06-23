@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   View,
@@ -8,11 +8,11 @@ import {
   TouchableOpacity,
   Platform,
   StatusBar,
-} from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { FlashList } from "@shopify/flash-list";
-import { Image as ExpoImage } from "expo-image";
-import { supabase } from "@/utils/supabase";
+} from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { FlashList } from '@shopify/flash-list';
+import { Image as ExpoImage } from 'expo-image';
+import { supabase } from '@/utils/supabase';
 
 // Define base profile type
 interface Profile {
@@ -44,7 +44,7 @@ const ProfileFollowers: React.FC = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from("follows")
+        .from('follows')
         .select(
           `
           id,
@@ -58,12 +58,12 @@ const ProfileFollowers: React.FC = () => {
             bio,
             full_name
           )
-        `,
+        `
         )
-        .eq("followed_id", profileId);
+        .eq('followed_id', profileId);
 
       if (error) {
-        console.error("Error fetching followers:", error);
+        console.error('Error fetching followers:', error);
         return;
       }
 
@@ -74,7 +74,7 @@ const ProfileFollowers: React.FC = () => {
         setFollowers(followerProfiles);
       }
     } catch (error) {
-      console.error("Error in fetchFollowers:", error);
+      console.error('Error in fetchFollowers:', error);
     } finally {
       setLoading(false);
     }
@@ -88,13 +88,13 @@ const ProfileFollowers: React.FC = () => {
 
   const handleUserPress = (follower: Profile) => {
     router.push({
-      pathname: "/profile/profile-details/[id]",
+      pathname: '/profile/profile-details/[id]',
       params: {
         id: follower.id,
-        username: follower.username || "",
-        image: follower.avatar_url || "",
-        bio: follower.bio || "",
-        fullName: follower.full_name || "",
+        username: follower.username || '',
+        image: follower.avatar_url || '',
+        bio: follower.bio || '',
+        fullName: follower.full_name || '',
       },
     });
   };
@@ -105,7 +105,7 @@ const ProfileFollowers: React.FC = () => {
       onPress={() => handleUserPress(item)}
     >
       <ExpoImage
-        source={{ uri: item.avatar_url || "https://via.placeholder.com/150" }}
+        source={{ uri: item.avatar_url || 'https://via.placeholder.com/150' }}
         style={styles.avatar}
         contentFit="cover"
       />
@@ -152,36 +152,36 @@ const ProfileFollowers: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#fff",
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    backgroundColor: '#fff',
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   header: {
     height: 60,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "#ccc",
+    borderBottomColor: '#ccc',
   },
   backText: {
     fontSize: 16,
-    color: "#FF325E",
+    color: '#FF325E',
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   loadingContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   itemContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     padding: 16,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "#eee",
+    borderBottomColor: '#eee',
   },
   avatar: {
     width: 50,
@@ -190,19 +190,19 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     marginLeft: 16,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   username: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   fullName: {
     fontSize: 14,
-    color: "#666",
+    color: '#666',
   },
   bio: {
     fontSize: 12,
-    color: "#999",
+    color: '#999',
   },
 });
 

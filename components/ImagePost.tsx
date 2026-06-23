@@ -1,16 +1,16 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
   Dimensions,
   Platform,
   StatusBar,
-} from "react-native";
-import PagerView from "react-native-pager-view";
-import { Image } from "expo-image"; // Import expo-image
-import { FeedItem } from "@/types";
+} from 'react-native';
+import PagerView from 'react-native-pager-view';
+import { Image } from 'expo-image'; // Import expo-image
+import { FeedItem } from '@/types';
 
-const { width, height } = Dimensions.get("window");
+const { width, height } = Dimensions.get('window');
 
 type ImageCarouselProps = {
   item: FeedItem;
@@ -24,7 +24,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ item }) => {
   };
 
   // Add blurhash placeholder or a loading indicator
-  const placeholder = "L6PZfSi_.AyE_3t7t7R**0o#DgR4";
+  const placeholder = 'L6PZfSi_.AyE_3t7t7R**0o#DgR4';
 
   return (
     <View style={styles.container}>
@@ -42,7 +42,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ item }) => {
               placeholder={placeholder}
               cachePolicy="memory-disk"
               // Add priority loading for first image
-              priority={index === 0 ? "high" : "normal"}
+              priority={index === 0 ? 'high' : 'normal'}
             />
           </View>
         ))}
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   },
   pagerView: {
     height:
-      Platform.OS === "android"
+      Platform.OS === 'android'
         ? height + (StatusBar.currentHeight || 0)
         : height,
     width: width,
@@ -81,17 +81,17 @@ const styles = StyleSheet.create({
   },
   image: {
     flex: 1,
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
   pagination: {
-    position: "absolute",
-    bottom: "35%",
+    position: 'absolute',
+    bottom: '35%',
     left: 0,
     right: 0,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: 5,
     transform: [{ translateY: -10 }],
     zIndex: 1,
@@ -100,14 +100,14 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: "rgba(255, 255, 255, 0.4)",
+    backgroundColor: 'rgba(255, 255, 255, 0.4)',
     marginHorizontal: 2,
   },
   paginationDotActive: {
     width: 16,
     height: 8,
     borderRadius: 8,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
 });
 

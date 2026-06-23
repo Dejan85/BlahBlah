@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo } from "react";
+import React, { useRef, useState, useMemo } from 'react';
 import {
   View,
   TouchableWithoutFeedback,
@@ -6,16 +6,19 @@ import {
   Platform,
   StatusBar,
   Dimensions,
-} from "react-native";
-import { ResizeMode, Video } from "expo-av";
-import { Ionicons } from "@expo/vector-icons";
+} from 'react-native';
+import { ResizeMode, Video } from 'expo-av';
+import { Ionicons } from '@expo/vector-icons';
 
 interface VideoPostProps {
   uri: string;
   isVisible: boolean;
 }
 
-export const VideoPost = React.memo(({ uri, isVisible }: VideoPostProps) => {
+export const VideoPost = React.memo(function VideoPost({
+  uri,
+  isVisible,
+}: VideoPostProps) {
   const [isPaused, setIsPaused] = useState(false);
   const videoRef = useRef<Video>(null);
 
@@ -50,17 +53,17 @@ export const VideoPost = React.memo(({ uri, isVisible }: VideoPostProps) => {
 const styles = StyleSheet.create({
   videoContainer: {
     height:
-      Platform.OS === "android"
-        ? Dimensions.get("window").height + (StatusBar.currentHeight || 0)
-        : Dimensions.get("window").height,
+      Platform.OS === 'android'
+        ? Dimensions.get('window').height + (StatusBar.currentHeight || 0)
+        : Dimensions.get('window').height,
   },
   video: {
     flex: 1,
   },
   playIcon: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.3)",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

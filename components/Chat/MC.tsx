@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,10 +7,10 @@ import {
   Modal,
   StyleSheet,
   Dimensions,
-} from "react-native";
-import type { MessageReaction } from "@/types/chat";
+} from 'react-native';
+import type { MessageReaction } from '@/types/chat';
 
-const SCREEN_WIDTH = Dimensions.get("window").width;
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
 // Constants for animations
 const MENU_HEIGHT = 40;
@@ -18,16 +18,16 @@ const MENU_PADDING = 16;
 const MENU_GAP = 8;
 
 const QUICK_REACTIONS = [
-  { emoji: "❤️", name: "heart" },
-  { emoji: "👍", name: "thumbsup" },
-  { emoji: "😂", name: "laugh" },
+  { emoji: '❤️', name: 'heart' },
+  { emoji: '👍', name: 'thumbsup' },
+  { emoji: '😂', name: 'laugh' },
 ];
 
 const MORE_REACTIONS = [
-  { emoji: "😮", name: "wow" },
-  { emoji: "😢", name: "sad" },
-  { emoji: "😡", name: "angry" },
-  { emoji: "🎉", name: "celebrate" },
+  { emoji: '😮', name: 'wow' },
+  { emoji: '😢', name: 'sad' },
+  { emoji: '😡', name: 'angry' },
+  { emoji: '🎉', name: 'celebrate' },
 ];
 
 interface MenuPosition {
@@ -92,8 +92,6 @@ export const MessageContextMenu: React.FC<MessageContextMenuProps> = ({
 
 export const ReactionMenu: React.FC<ReactionMenuProps> = ({
   onReaction,
-  messageReactions = [],
-  currentUserId,
   position,
   onClose,
   isVisible,
@@ -204,11 +202,11 @@ export const MessageReactions: React.FC<{
 
 const styles = StyleSheet.create({
   contextMenu: {
-    position: "absolute",
-    backgroundColor: "#FFFFFF",
+    position: 'absolute',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: MENU_PADDING,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -222,27 +220,27 @@ const styles = StyleSheet.create({
   },
   menuText: {
     fontSize: 16,
-    color: "#000000",
-    fontFamily: "InterMedium",
+    color: '#000000',
+    fontFamily: 'InterMedium',
   },
   deleteItem: {
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: "#E5E5E5",
+    borderTopColor: '#E5E5E5',
     marginTop: 4,
   },
   deleteText: {
-    color: "#FF325E",
+    color: '#FF325E',
   },
   reactionMenu: {
-    position: "absolute",
-    backgroundColor: "#FFFFFF",
+    position: 'absolute',
+    backgroundColor: '#FFFFFF',
     borderRadius: 20,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 4,
     zIndex: 1000,
     elevation: 5,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -257,72 +255,72 @@ const styles = StyleSheet.create({
   },
   moreButton: {
     padding: 6,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: '#f0f0f0',
     borderRadius: 15,
     marginLeft: 2,
     width: 30,
     height: 30,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   moreButtonText: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 16,
     padding: 20,
-    width: "80%",
+    width: '80%',
     maxWidth: 320,
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontWeight: 'bold',
+    textAlign: 'center',
     marginBottom: 16,
-    color: "#000",
+    color: '#000',
   },
   reactionGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
     gap: 16,
   },
   modalReactionButton: {
     padding: 12,
   },
   reactionsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 4,
     marginTop: 4,
-    maxWidth: "70%",
+    maxWidth: '70%',
   },
   senderReactions: {
-    alignSelf: "flex-end",
+    alignSelf: 'flex-end',
     marginRight: 8,
   },
   receiverReactions: {
-    alignSelf: "flex-start",
+    alignSelf: 'flex-start',
     marginLeft: 8,
   },
   reactionBadge: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: '#f0f0f0',
     borderRadius: 12,
     paddingHorizontal: 8,
     paddingVertical: 4,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   userReactionBadge: {
-    backgroundColor: "#FFE4E9",
+    backgroundColor: '#FFE4E9',
   },
   reactionEmoji: {
     marginRight: 4,
@@ -330,7 +328,7 @@ const styles = StyleSheet.create({
   },
   reactionCount: {
     fontSize: 12,
-    color: "#666",
+    color: '#666',
   },
 });
 

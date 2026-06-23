@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef } from 'react';
 import {
   View,
   TextInput,
@@ -9,10 +9,9 @@ import {
   TextInputProps,
   TextStyle,
   Keyboard,
-  TouchableWithoutFeedback,
-} from "react-native";
-import { KeyboardAvoidingView, Platform } from "react-native";
-import { SvgProps } from "react-native-svg";
+} from 'react-native';
+import { KeyboardAvoidingView, Platform } from 'react-native';
+import { SvgProps } from 'react-native-svg';
 
 type CustomTextInputProps = {
   placeholder?: string;
@@ -28,11 +27,11 @@ type CustomTextInputProps = {
   placeholderTextColor?: string;
   onChangeText?: (text: string) => void;
   secureTextEntry?: boolean;
-  keyboardType?: TextInputProps["keyboardType"];
-  autoCapitalize?: TextInputProps["autoCapitalize"];
+  keyboardType?: TextInputProps['keyboardType'];
+  autoCapitalize?: TextInputProps['autoCapitalize'];
   onSubmitEditing?: () => void;
-  returnKeyType?: TextInputProps["returnKeyType"];
-  selectionColor?: TextInputProps["selectionColor"];
+  returnKeyType?: TextInputProps['returnKeyType'];
+  selectionColor?: TextInputProps['selectionColor'];
   multiLine?: boolean;
   autoFocus?: boolean;
   onBlur?: () => void;
@@ -58,13 +57,13 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
       style,
       styleContainer,
       keyboardType,
-      placeholderTextColor = "#999",
+      placeholderTextColor = '#999',
       onChangeText,
       secureTextEntry = false,
-      autoCapitalize = "sentences",
+      autoCapitalize = 'sentences',
       onSubmitEditing,
-      returnKeyType = "done",
-      selectionColor = "",
+      returnKeyType = 'done',
+      selectionColor = '',
       multiLine = false,
       autoFocus = false,
       onBlur,
@@ -75,7 +74,7 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
       blurOnSubmit,
       maxLength,
     },
-    ref,
+    ref
   ) => {
     const handleSubmitEditing = () => {
       if (!multiLine) {
@@ -91,7 +90,7 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
 
     return (
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={[styles.keyboardContainer, styleContainer]}
         keyboardVerticalOffset={keyboardVerticalOffset}
       >
@@ -136,29 +135,31 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
         </View>
       </KeyboardAvoidingView>
     );
-  },
+  }
 );
+
+CustomTextInput.displayName = 'CustomTextInput';
 
 const styles = StyleSheet.create({
   keyboardContainer: {
-    width: "100%",
+    width: '100%',
   },
   container: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   input: {
     flex: 1,
     minHeight: 40,
-    paddingVertical: Platform.OS === "ios" ? 12 : 8,
+    paddingVertical: Platform.OS === 'ios' ? 12 : 8,
   },
   iconContainer: {
     paddingHorizontal: 12,
   },
   borderLeft: {
     width: 2,
-    height: "50%",
-    backgroundColor: "#EFEFEF",
+    height: '50%',
+    backgroundColor: '#EFEFEF',
     marginHorizontal: 8,
   },
 });

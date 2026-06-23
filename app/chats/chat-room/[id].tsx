@@ -4,11 +4,10 @@ import React, {
   useState,
   useMemo,
   useCallback,
-} from "react";
+} from 'react';
 import {
   View,
   StyleSheet,
-  Animated,
   StatusBar,
   Platform,
   Text,
@@ -22,42 +21,40 @@ import {
   Alert,
   GestureResponderEvent,
   TouchableWithoutFeedback,
-} from "react-native";
-import { FlashList } from "@shopify/flash-list";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+} from 'react-native';
+import { FlashList } from '@shopify/flash-list';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import {
   AddImage,
-  Delete,
-  Gallery,
   ProfileBackButton,
   ProfileOptions,
   RecordAudio,
   SendChat,
   TakePhoto,
-} from "@/assets/images";
-import { useAuth } from "@/context/AuthContext";
-import CustomTextInput from "@/components/CustomTextInput";
-import { MessageType } from "@/types/chat";
-import { useTypingStatus } from "@/hooks/useTypingStatus";
-import { useMessage } from "@/context/MessageContext";
-import { Message } from "@/types/chat";
-import { supabase } from "@/utils/supabase";
+} from '@/assets/images';
+import { useAuth } from '@/context/AuthContext';
+import CustomTextInput from '@/components/CustomTextInput';
+import { MessageType } from '@/types/chat';
+import { useTypingStatus } from '@/hooks/useTypingStatus';
+import { useMessage } from '@/context/MessageContext';
+import { Message } from '@/types/chat';
+import { supabase } from '@/utils/supabase';
 
-import { Audio } from "expo-av";
-import AudioMessage from "@/components/AudioMessage";
-import AudioWaveform from "@/components/AudioWaveForm";
+import { Audio } from 'expo-av';
+import AudioMessage from '@/components/AudioMessage';
+import AudioWaveform from '@/components/AudioWaveForm';
 
-import ProfileOptionsModal from "@/components/ChatAdditionalMedia";
-import MediaSelector from "@/components/MediaSelector";
-import ImageMessage from "@/components/ImageMessage";
-import DocumentMessage from "@/components/DocumentMessage";
-import { TypingIndicator } from "@/components/Chat/TypingIndicator";
-import { usePresence } from "@/hooks/usePresence";
-import { UserPresence } from "@/components/Chat/UserPresence";
-import { MessagetMenu, QuotedMessage } from "@/components/Chat/MessageMenu";
-import ReactionMenu, { MessageReactions } from "@/components/Chat/MR";
-import MessageContextMenu from "@/components/Chat/MC";
+import ProfileOptionsModal from '@/components/ChatAdditionalMedia';
+import MediaSelector from '@/components/MediaSelector';
+import ImageMessage from '@/components/ImageMessage';
+import DocumentMessage from '@/components/DocumentMessage';
+import { TypingIndicator } from '@/components/Chat/TypingIndicator';
+import { usePresence } from '@/hooks/usePresence';
+import { UserPresence } from '@/components/Chat/UserPresence';
+import { QuotedMessage } from '@/components/Chat/MessageMenu';
+import ReactionMenu, { MessageReactions } from '@/components/Chat/MR';
+import MessageContextMenu from '@/components/Chat/MC';
 
 const ChatRoom = () => {
   const {
@@ -89,7 +86,7 @@ const ChatRoom = () => {
   } = useMessage();
 
   // Local state
-  const [inputText, setInputText] = useState("");
+  const [inputText, setInputText] = useState('');
   const [containerHeight, setContainerHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -104,7 +101,7 @@ const ChatRoom = () => {
   const [isProfileModalVisible, setIsProfileModalVisible] = useState(false);
   const [isMediaSelectorVisible, setIsMediaSelectorVisible] = useState(false);
 
-  const { getUserPresence } = usePresence(currentUserId ?? "");
+  const { getUserPresence } = usePresence(currentUserId ?? '');
   const [otherUserId, setOtherUserId] = useState<string | null>(null);
 
   // Get presence for the other user
@@ -131,10 +128,10 @@ const ChatRoom = () => {
     try {
       // Instead of deleting, update the message to mark it as deleted
       const { error } = await supabase
-        .from("messages")
+        .from('messages')
         .update({
           is_deleted: true,
-          text: "Deleted message...",
+          text: 'Deleted message...',
         })
         .match({
           id: contextMenu.selectedMessage.id,
@@ -146,13 +143,13 @@ const ChatRoom = () => {
       // Update the message locally
       const updatedMessages = messages.map((msg) =>
         msg.id === contextMenu.selectedMessage?.id
-          ? { ...msg, text: "Deleted message...", is_deleted: true }
-          : msg,
+          ? { ...msg, text: 'Deleted message...', is_deleted: true }
+          : msg
       );
       setMessages(updatedMessages);
     } catch (error) {
-      console.error("Error deleting message:", error);
-      Alert.alert("Error", "Failed to delete message");
+      console.error('Error deleting message:', error);
+      Alert.alert('Error', 'Failed to delete message');
     }
 
     setContextMenu({ ...contextMenu, isVisible: false });
@@ -162,7 +159,7 @@ const ChatRoom = () => {
   // Add this function to handle long press on messages
   const handleMessageLongPress = (
     message: Message,
-    event: GestureResponderEvent,
+    event: GestureResponderEvent
   ) => {
     const { pageX, pageY } = event.nativeEvent;
     const isSender = message.senderId === currentUserId;
@@ -214,13 +211,13 @@ const ChatRoom = () => {
       if (!conversationId || !currentUserId) return;
 
       const { data: conversation, error } = await supabase
-        .from("conversations")
-        .select("participant1_id, participant2_id")
-        .eq("id", conversationId)
+        .from('conversations')
+        .select('participant1_id, participant2_id')
+        .eq('id', conversationId)
         .single();
 
       if (error) {
-        console.error("Error fetching conversation:", error);
+        console.error('Error fetching conversation:', error);
         return;
       }
 
@@ -265,8 +262,8 @@ const ChatRoom = () => {
   // Add pause/resume recording function
 
   const { isOtherUserTyping, handleTyping } = useTypingStatus(
-    currentUserId ?? "",
-    conversationId ?? "",
+    currentUserId ?? '',
+    conversationId ?? ''
   );
   const listRef = useRef<FlashList<any>>(null);
 
@@ -314,7 +311,7 @@ const ChatRoom = () => {
         handleTyping();
       }
     },
-    [handleTyping],
+    [handleTyping]
   );
 
   const typingIndicator = useMemo(
@@ -325,7 +322,7 @@ const ChatRoom = () => {
         avatar={image} // Pass the user's avatar
       />
     ),
-    [username, isOtherUserTyping, image],
+    [username, isOtherUserTyping, image]
   );
 
   // In your ChatRoom component
@@ -338,10 +335,10 @@ const ChatRoom = () => {
       await handleReaction(
         reactionMenu.selectedMessageId,
         reaction,
-        currentUserId,
+        currentUserId
       );
     } catch (error) {
-      console.error("Error handling reaction:", error);
+      console.error('Error handling reaction:', error);
     } finally {
       setReactionMenu({ ...reactionMenu, isVisible: false });
       setContextMenu({ ...contextMenu, isVisible: false });
@@ -360,7 +357,7 @@ const ChatRoom = () => {
     if (!inputText.trim() || !conversationId || !currentUserId) return;
 
     await sendMessage(inputText.trim(), conversationId, currentUserId);
-    setInputText("");
+    setInputText('');
     scrollToNewMessage.current = true;
   };
 
@@ -374,15 +371,15 @@ const ChatRoom = () => {
         animated,
       });
     } catch (error) {
-      console.error("Error scrolling to bottom:", error);
+      console.error('Error scrolling to bottom:', error);
     }
   };
 
   const startRecording = async () => {
     try {
       const perm = await Audio.requestPermissionsAsync();
-      if (perm.status !== "granted") {
-        console.warn("Permission denied");
+      if (perm.status !== 'granted') {
+        console.warn('Permission denied');
         return;
       }
 
@@ -395,13 +392,13 @@ const ChatRoom = () => {
         ...Audio.RecordingOptionsPresets.HIGH_QUALITY,
         android: {
           ...Audio.RecordingOptionsPresets.HIGH_QUALITY.android,
-          extension: ".m4a",
+          extension: '.m4a',
           outputFormat: Audio.AndroidOutputFormat.MPEG_4,
           audioEncoder: Audio.AndroidAudioEncoder.AAC,
         },
         ios: {
           ...Audio.RecordingOptionsPresets.HIGH_QUALITY.ios,
-          extension: ".m4a",
+          extension: '.m4a',
           outputFormat: Audio.IOSOutputFormat.MPEG4AAC,
           audioQuality: Audio.IOSAudioQuality.MAX,
         },
@@ -414,7 +411,7 @@ const ChatRoom = () => {
       setIsRecording(true);
       startTimer(); // Start the timer
     } catch (err) {
-      console.error("Failed to start recording", err);
+      console.error('Failed to start recording', err);
     }
   };
 
@@ -427,15 +424,15 @@ const ChatRoom = () => {
       const uri = recording.getURI();
 
       if (!uri) {
-        console.error("Failed to get recording URI");
+        console.error('Failed to get recording URI');
         return;
       }
 
       // Check if file exists
 
-      await sendMessage(uri, conversationId, currentUserId, "audio");
+      await sendMessage(uri, conversationId, currentUserId, 'audio');
     } catch (err) {
-      console.error("Failed to stop recording", err);
+      console.error('Failed to stop recording', err);
     } finally {
       setRecording(null);
       setIsRecording(false);
@@ -449,7 +446,7 @@ const ChatRoom = () => {
       resetTimer(); // Reset timer
       await recording.stopAndUnloadAsync();
     } catch (err) {
-      console.error("Failed to cancel recording", err);
+      console.error('Failed to cancel recording', err);
     } finally {
       setRecording(null);
       setIsRecording(false);
@@ -471,8 +468,8 @@ const ChatRoom = () => {
     try {
       await sendMessage(uri, conversationId, currentUserId, type);
     } catch (error) {
-      console.error("Error handling media:", error);
-      Alert.alert("Error", "Failed to send media. Please try again.");
+      console.error('Error handling media:', error);
+      Alert.alert('Error', 'Failed to send media. Please try again.');
     }
   };
 
@@ -495,8 +492,8 @@ const ChatRoom = () => {
   const formatMessageTime = (created_at: string) => {
     const date = new Date(created_at);
     return date.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
+      hour: '2-digit',
+      minute: '2-digit',
     });
   };
 
@@ -530,16 +527,16 @@ const ChatRoom = () => {
     const isSender = item.senderId === currentUserId;
     const isFirstInSequence =
       index === 0 || messages[index - 1]?.senderId !== item.senderId;
-    console.log("Rendering message:", item.id, "Reactions:", item.reactions);
+    console.log('Rendering message:', item.id, 'Reactions:', item.reactions);
 
     const isLastInSequence =
       index === messages.length - 1 ||
       messages[index + 1]?.senderId !== item.senderId;
-    const senderAvatar = image ?? "https://via.placeholder.com/100";
+    const senderAvatar = image ?? 'https://via.placeholder.com/100';
 
     const renderMessageContent = () => {
       switch (item.messageType) {
-        case "image":
+        case 'image':
           return (
             <ImageMessage
               uri={item.text}
@@ -547,7 +544,7 @@ const ChatRoom = () => {
               style={!isSender && !isFirstInSequence && { marginLeft: 40 }}
             />
           );
-        case "file":
+        case 'file':
           return (
             <DocumentMessage
               uri={item.text}
@@ -555,7 +552,7 @@ const ChatRoom = () => {
               style={!isSender && !isFirstInSequence && { marginLeft: 40 }}
             />
           );
-        case "audio":
+        case 'audio':
           return <AudioMessage audioUrl={item.text} isSender={isSender} />;
         default:
           return (
@@ -600,7 +597,7 @@ const ChatRoom = () => {
             <MessageReactions
               reactions={item.reactions || []}
               messageId={item.id}
-              currentUserId={currentUserId ?? ""}
+              currentUserId={currentUserId ?? ''}
               isSender={isSender}
             />
             {/* Timestamp - show on last message in sequence */}
@@ -637,7 +634,7 @@ const ChatRoom = () => {
             style={styles.backButton}
             onPress={() => router.back()}
           >
-            <ProfileBackButton fill={"#000"} />
+            <ProfileBackButton fill={'#000'} />
           </TouchableOpacity>
 
           <View style={styles.headerCenter}>
@@ -733,9 +730,9 @@ const ChatRoom = () => {
                     onPress={() => {
                       // <== Navigate to your camera route
                       router.push({
-                        pathname: "/camera", // Or the exact route name to your Camera
+                        pathname: '/camera', // Or the exact route name to your Camera
                         params: {
-                          from: "chat",
+                          from: 'chat',
                           conversationId: conversationId,
                           // ...any other data you might want, like conversationId, etc.
                         },
@@ -792,7 +789,7 @@ const ChatRoom = () => {
                   style={styles.cancelButton}
                   onPress={cancelRecording}
                 >
-                  <Ionicons name="trash" color={"#fff"} size={16} />
+                  <Ionicons name="trash" color={'#fff'} size={16} />
                 </TouchableOpacity>
 
                 <AudioWaveform
@@ -841,7 +838,7 @@ const ChatRoom = () => {
             messages.find((m) => m.id === reactionMenu.selectedMessageId)
               ?.reactions
           }
-          currentUserId={currentUserId ?? ""}
+          currentUserId={currentUserId ?? ''}
           onClose={() => setReactionMenu({ ...reactionMenu, isVisible: false })}
         />
       </View>
@@ -851,7 +848,7 @@ const ChatRoom = () => {
         username={username}
         avatar={image}
         chatImages={messages
-          .filter((msg) => msg.messageType === "image")
+          .filter((msg) => msg.messageType === 'image')
           .map((msg) => msg.text)}
       />
 
@@ -869,11 +866,11 @@ export default ChatRoom;
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#fff",
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    backgroundColor: '#fff',
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   userReactionBadge: {
-    backgroundColor: "#FFE4E9", // or any color to indicate user's reaction
+    backgroundColor: '#FFE4E9', // or any color to indicate user's reaction
   },
   typingIndicatorContainer: {
     padding: 8,
@@ -881,7 +878,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   myMessage: {
-    justifyContent: "flex-end",
+    justifyContent: 'flex-end',
   },
   waveContainer: {
     height: 14,
@@ -895,26 +892,26 @@ const styles = StyleSheet.create({
     marginRight: -30,
   },
   recordingContainer: {
-    flexDirection: "row",
-    alignContent: "center",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignContent: 'center',
+    alignItems: 'center',
     marginHorizontal: 0,
   },
   cancelButton: {
     padding: 8,
-    backgroundColor: "#FF325E",
+    backgroundColor: '#FF325E',
     borderRadius: 50,
     width: 32,
     height: 32,
-    justifyContent: "center",
-    alignContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
   },
   presenceDotContainer: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 2,
     right: 2,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 10,
     padding: 2,
   },
@@ -924,72 +921,72 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   onlineDot: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: '#4CAF50',
   },
   offlineDot: {
-    backgroundColor: "#6C757D",
+    backgroundColor: '#6C757D',
   },
   otherMessage: {
-    justifyContent: "flex-start",
+    justifyContent: 'flex-start',
   },
   senderTimestamp: {
-    color: "rgba(255, 255, 255, 0.8)",
+    color: 'rgba(255, 255, 255, 0.8)',
   },
   pauseButton: {
     padding: 8,
   },
   wave: {
-    backgroundColor: "#FF325E",
+    backgroundColor: '#FF325E',
     borderWidth: 0,
     flex: 1,
     left: -20,
   },
   onlineStatus: {
-    color: "#4CAF50",
+    color: '#4CAF50',
     fontSize: 12,
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
   },
   offlineStatus: {
-    color: "#6C757D",
+    color: '#6C757D',
     fontSize: 12,
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
   },
   recipientTimestamp: {
-    color: "#6C757D",
+    color: '#6C757D',
     paddingLeft: 45,
     paddingTop: 3,
   },
 
   bubble: {
-    maxWidth: "70%",
+    maxWidth: '70%',
     paddingHorizontal: 15,
     borderRadius: 20,
-    backgroundColor: "#ececec",
+    backgroundColor: '#ececec',
   },
 
   typingBubble: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: '#f0f0f0',
     borderRadius: 16,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "flex-start",
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
   },
   typingText: {
     fontSize: 12,
-    color: "#666",
+    color: '#666',
     marginRight: 8,
   },
   dotContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   dot: {
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: "#666",
+    backgroundColor: '#666',
     marginHorizontal: 2,
   },
   dot1: {
@@ -1003,24 +1000,24 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   typingStatus: {
-    color: "#666",
+    color: '#666',
     fontSize: 12,
-    fontFamily: "InterRegular",
+    fontFamily: 'InterRegular',
   },
   listContainer: {
     flex: 1,
   },
 
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between", // Push back button and gallery button to opposite ends
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between', // Push back button and gallery button to opposite ends
     height: 81,
     paddingHorizontal: 12,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     marginRight: 32,
   },
   backButton: {
@@ -1029,23 +1026,23 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   errorContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 20,
   },
   errorText: {
-    color: "red",
-    textAlign: "center",
+    color: 'red',
+    textAlign: 'center',
   },
   headerCenter: {
     flex: 1, // Allow the center content to take the remaining space
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   avatar: {
     width: 54,
@@ -1055,18 +1052,18 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   username: {
     fontSize: 16,
-    fontFamily: "InterBold",
-    color: "#202020",
+    fontFamily: 'InterBold',
+    color: '#202020',
     marginBottom: 2,
   },
   bio: {
     fontSize: 12,
-    fontFamily: "InterRegular",
-    color: "#6C757D",
+    fontFamily: 'InterRegular',
+    color: '#6C757D',
   },
   galleryButton: {},
   // -------------
@@ -1076,31 +1073,31 @@ const styles = StyleSheet.create({
   messagesList: {
     paddingHorizontal: 16,
     paddingVertical: 15,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     paddingBottom: 20, // Add extra padding at bottom
   },
   messageRow: {
-    flexDirection: "row",
+    flexDirection: 'row',
 
-    alignItems: "center",
+    alignItems: 'center',
   },
   senderContainer: {
-    alignItems: "flex-end",
+    alignItems: 'flex-end',
   },
   recipientContainer: {
-    alignItems: "flex-start",
+    alignItems: 'flex-start',
   },
   messageBubble: {
     borderRadius: 20,
     marginTop: 9,
   },
   senderBubble: {
-    backgroundColor: "#FF325E",
+    backgroundColor: '#FF325E',
     borderRadius: 20,
-    marginLeft: "auto",
+    marginLeft: 'auto',
   },
   recipientBubble: {
-    backgroundColor: "#E5E5E5",
+    backgroundColor: '#E5E5E5',
     borderRadius: 20,
     marginLeft: 40,
   },
@@ -1108,45 +1105,45 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 20,
     padding: 8,
-    fontFamily: "InterRegular",
+    fontFamily: 'InterRegular',
   },
   senderText: {
-    color: "#FFFFFF",
+    color: '#FFFFFF',
   },
   recipientText: {
-    color: "#202020",
+    color: '#202020',
   },
   messageFooter: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
     marginTop: 2,
   },
   timestamp: {
     fontSize: 11,
-    color: "#6C757D",
-    fontFamily: "InterRegular",
+    color: '#6C757D',
+    fontFamily: 'InterRegular',
     marginRight: 4,
   },
 
   seenLabel: {
     fontSize: 11,
-    color: "rgba(255, 255, 255, 0.8)",
-    fontFamily: "InterRegular",
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontFamily: 'InterRegular',
   },
   seenLabelActive: {
-    color: "#40E0D0",
+    color: '#40E0D0',
   },
   // -------------
   // SCROLL BUTTON
   // -------------
   scrollButton: {
-    position: "absolute",
-    left: "50%",
+    position: 'absolute',
+    left: '50%',
     bottom: 100,
     zIndex: 2,
     elevation: 5,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -1156,9 +1153,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#000",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   // -------------
   // INPUT BAR
@@ -1166,39 +1163,39 @@ const styles = StyleSheet.create({
   inputContainer: {
     paddingVertical: 24,
     paddingHorizontal: 17,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   inputWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#E5E5E5",
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E5E5E5',
     borderRadius: 20,
     paddingHorizontal: 16,
-    position: "relative",
+    position: 'relative',
     minHeight: 44,
   },
   input: {
     flex: 1,
     paddingVertical: 12,
     fontSize: 15,
-    fontFamily: "InterRegular",
-    color: "#919191",
+    fontFamily: 'InterRegular',
+    color: '#919191',
     minHeight: 44,
   },
   sendButtonAudio: {
-    position: "absolute",
+    position: 'absolute',
     right: -10,
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 2,
   },
   sendButton: {
-    position: "absolute",
+    position: 'absolute',
     right: 12,
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 4,
   },
   inputWithButtons: {
@@ -1206,35 +1203,35 @@ const styles = StyleSheet.create({
     paddingRight: 80, // Space for right buttons
   },
   leftButton: {
-    position: "absolute",
+    position: 'absolute',
     left: 12,
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
     zIndex: 1,
   },
   rightButtons: {
-    position: "absolute",
+    position: 'absolute',
     right: 12,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
   rightButtonLeft: {
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
     zIndex: 1,
   },
   rightButton: {
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 4,
   },
   rec: {
     paddingLeft: 0,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   timer: {
     paddingRight: 0,
@@ -1243,8 +1240,8 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   reactionTouchable: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   messageContainer: {
     flex: 1,

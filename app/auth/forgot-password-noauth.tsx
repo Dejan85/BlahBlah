@@ -1,33 +1,26 @@
 // app/auth/request-reset-password.tsx
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  Alert,
-  StyleSheet,
-  TextInput,
-  Pressable,
-} from "react-native";
-import { supabase } from "@/utils/supabase";
-import { useRouter } from "expo-router";
-import Header from "@/components/Header";
-import CustomTextInput from "@/components/CustomTextInput";
-import { Envelope } from "@/assets/images";
+import React, { useState } from 'react';
+import { View, Text, Alert, StyleSheet, Pressable } from 'react-native';
+import { supabase } from '@/utils/supabase';
+import { useRouter } from 'expo-router';
+import Header from '@/components/Header';
+import CustomTextInput from '@/components/CustomTextInput';
+import { Envelope } from '@/assets/images';
 
 const RequestResetPasswordScreen = () => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const router = useRouter();
 
   const handleRequestReset = async () => {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "com.supabase://auth/reset-password",
+      redirectTo: 'com.supabase://auth/reset-password',
     });
 
     if (error) {
-      Alert.alert("Error", error.message);
+      Alert.alert('Error', error.message);
     } else {
-      Alert.alert("Success", "Password reset email has been sent!");
-      router.replace("/");
+      Alert.alert('Success', 'Password reset email has been sent!');
+      router.replace('/');
     }
   };
 
@@ -60,39 +53,39 @@ export default RequestResetPasswordScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
     paddingHorizontal: 24,
-    backgroundColor: "#FF325E",
+    backgroundColor: '#FF325E',
   },
   headerText: {
     fontSize: 20,
-    fontFamily: "InterBold",
-    textAlign: "center",
+    fontFamily: 'InterBold',
+    textAlign: 'center',
     marginBottom: 20,
-    color: "#FFF",
+    color: '#FFF',
   },
   inputContainer: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 50,
     marginVertical: 15,
   },
   input: {
     fontSize: 16,
     paddingHorizontal: 10,
-    fontFamily: "InterSemibold",
-    color: "#000",
+    fontFamily: 'InterSemibold',
+    color: '#000',
   },
   resetBtn: {
-    backgroundColor: "#FFF",
+    backgroundColor: '#FFF',
     borderRadius: 40,
     paddingVertical: 14,
     marginTop: 20,
   },
   btnText: {
     fontSize: 18,
-    color: "#111",
+    color: '#111',
 
-    textAlign: "center",
-    fontFamily: "InterBold",
+    textAlign: 'center',
+    fontFamily: 'InterBold',
   },
 });

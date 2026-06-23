@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   View,
@@ -8,12 +8,11 @@ import {
   TouchableOpacity,
   Platform,
   StatusBar,
-} from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { FlashList } from "@shopify/flash-list";
-import { Image as ExpoImage } from "expo-image";
-import { supabase } from "@/utils/supabase";
-import { useAuth } from "@/context/AuthContext";
+} from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { FlashList } from '@shopify/flash-list';
+import { Image as ExpoImage } from 'expo-image';
+import { supabase } from '@/utils/supabase';
 
 interface FollowingProfile {
   id: string;
@@ -32,20 +31,11 @@ interface FollowingRecord {
   following_profile: FollowingProfile;
 }
 
-interface ProfileFollowingParams {
-  id: string; // The profile whose following list we want to display.
-}
-
 const ProfileFollowing: React.FC = () => {
-  const { id, username, bio } = useLocalSearchParams<{
-    id: string;
-    username: string;
-    bio: string;
-  }>();
+  const { id } = useLocalSearchParams<{ id: string }>();
 
   const profileId = id;
   const router = useRouter();
-  const { user: currentUser } = useAuth();
 
   const [following, setFollowing] = useState<FollowingProfile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,7 +44,7 @@ const ProfileFollowing: React.FC = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from("follows")
+        .from('follows')
         .select(
           `
           id,
@@ -68,12 +58,12 @@ const ProfileFollowing: React.FC = () => {
             bio,
             full_name
           )
-          `,
+          `
         )
-        .eq("follower_id", profileId);
+        .eq('follower_id', profileId);
 
       if (error) {
-        console.error("Error fetching following:", error);
+        console.error('Error fetching following:', error);
       } else if (data) {
         const mappedFollowing = (data as unknown as FollowingRecord[])
           .map((record) => record.following_profile)
@@ -81,7 +71,7 @@ const ProfileFollowing: React.FC = () => {
         setFollowing(mappedFollowing);
       }
     } catch (error) {
-      console.error("Error in fetchFollowing:", error);
+      console.error('Error in fetchFollowing:', error);
     } finally {
       setLoading(false);
     }
@@ -95,13 +85,13 @@ const ProfileFollowing: React.FC = () => {
 
   const handleUserPress = (followingUser: FollowingProfile) => {
     router.push({
-      pathname: "/profile/profile-details/[id]",
+      pathname: '/profile/profile-details/[id]',
       params: {
         id: followingUser.id,
-        username: followingUser.username || "",
-        image: followingUser.avatar_url || "",
-        bio: followingUser.bio || "",
-        fullName: followingUser.full_name || "",
+        username: followingUser.username || '',
+        image: followingUser.avatar_url || '',
+        bio: followingUser.bio || '',
+        fullName: followingUser.full_name || '',
       },
     });
   };
@@ -112,7 +102,7 @@ const ProfileFollowing: React.FC = () => {
       onPress={() => handleUserPress(item)}
     >
       <ExpoImage
-        source={{ uri: item.avatar_url || "https://via.placeholder.com/150" }}
+        source={{ uri: item.avatar_url || 'https://via.placeholder.com/150' }}
         style={styles.avatar}
         contentFit="cover"
       />
@@ -159,36 +149,36 @@ const ProfileFollowing: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#fff",
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    backgroundColor: '#fff',
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   header: {
     height: 60,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "#ccc",
+    borderBottomColor: '#ccc',
   },
   backText: {
     fontSize: 16,
-    color: "#FF325E",
+    color: '#FF325E',
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   loadingContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   itemContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     padding: 16,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "#eee",
+    borderBottomColor: '#eee',
   },
   avatar: {
     width: 50,
@@ -197,19 +187,19 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     marginLeft: 16,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   username: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   fullName: {
     fontSize: 14,
-    color: "#666",
+    color: '#666',
   },
   bio: {
     fontSize: 12,
-    color: "#999",
+    color: '#999',
   },
 });
 

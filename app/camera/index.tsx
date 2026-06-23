@@ -4,27 +4,27 @@ import React, {
   useContext,
   useEffect,
   useCallback,
-} from "react";
-import { StyleSheet, Alert } from "react-native";
-import { CameraView, FlashMode, CameraType, Camera } from "expo-camera";
-import { Video } from "expo-av";
-import { AVPlaybackStatus } from "expo-av";
-import { GestureDetector, Gesture } from "react-native-gesture-handler";
+} from 'react';
+import { StyleSheet } from 'react-native';
+import { CameraView, FlashMode, CameraType, Camera } from 'expo-camera';
+import { Video } from 'expo-av';
+import { AVPlaybackStatus } from 'expo-av';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
   useSharedValue,
   withTiming,
   useAnimatedStyle,
-} from "react-native-reanimated";
-import { useLocalSearchParams, useRouter } from "expo-router";
+} from 'react-native-reanimated';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
-import { CameraContext } from "@/context/CameraContext";
-import { CaptureStep } from "@/components/Camera/CaptureStep";
-import { PreviewStep } from "@/components/Camera/PreviewStep";
+import { CameraContext } from '@/context/CameraContext';
+import { CaptureStep } from '@/components/Camera/CaptureStep';
+import { PreviewStep } from '@/components/Camera/PreviewStep';
 
-import * as ImagePicker from "expo-image-picker";
-import * as MediaLibrary from "expo-media-library";
-import { SendStep } from "@/components/Camera/SendStep";
+import * as ImagePicker from 'expo-image-picker';
+import * as MediaLibrary from 'expo-media-library';
+import { SendStep } from '@/components/Camera/SendStep';
 
 const AnimatedView = Animated.createAnimatedComponent(Animated.View);
 
@@ -36,16 +36,14 @@ export default function CameraScreen() {
     setCapturedPhoto,
     video,
     setVideo,
-    isPreviewVisible,
     setIsPreviewVisible,
-    selectedFilter,
   } = useContext(CameraContext);
 
   const [isRecordingActive, setIsRecordingActive] = useState(false);
-  const [cameraMode, setCameraMode] = useState<"video" | "picture">("picture");
-  const [facing, setFacing] = useState<CameraType>("back");
-  const [flashMode, setFlashMode] = useState<FlashMode>("off");
-  const [isFilterMenuVisible, setIsFilterMenuVisible] = useState(false);
+  const [cameraMode, setCameraMode] = useState<'video' | 'picture'>('picture');
+  const [facing, setFacing] = useState<CameraType>('back');
+  const [flashMode, setFlashMode] = useState<FlashMode>('off');
+  const [, setIsFilterMenuVisible] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const { from, conversationId } = useLocalSearchParams<{
@@ -74,12 +72,12 @@ export default function CameraScreen() {
           await MediaLibrary.requestPermissionsAsync();
 
         setHasPermission(
-          cameraStatus === "granted" &&
-            micStatus === "granted" &&
-            mediaStatus === "granted",
+          cameraStatus === 'granted' &&
+            micStatus === 'granted' &&
+            mediaStatus === 'granted'
         );
       } catch (error) {
-        console.error("Error requesting permissions:", error);
+        console.error('Error requesting permissions:', error);
         setHasPermission(false);
       }
     })();
@@ -88,9 +86,9 @@ export default function CameraScreen() {
   // Gesture handler for swipe navigation
 
   const handleNavigateBack = useCallback(() => {
-    if (from === "chat" && conversationId) {
+    if (from === 'chat' && conversationId) {
       router.replace({
-        pathname: "/chats/chat-room/[id]",
+        pathname: '/chats/chat-room/[id]',
         params: { id: conversationId },
       });
     } else {
@@ -100,14 +98,14 @@ export default function CameraScreen() {
 
   const gesture = Gesture.Pan()
     .onUpdate((event) => {
-      "worklet";
-      if (step === "capture" && event.translationX > 0) {
+      'worklet';
+      if (step === 'capture' && event.translationX > 0) {
         translateX.value = event.translationX;
       }
     })
     .onEnd((event) => {
-      "worklet";
-      if (step === "capture" && event.translationX > 100) {
+      'worklet';
+      if (step === 'capture' && event.translationX > 100) {
         runOnJS(handleNavigateBack)();
       }
       translateX.value = withTiming(0);
@@ -144,10 +142,10 @@ export default function CameraScreen() {
         if (recordedVideo?.uri) {
           setVideo({ uri: recordedVideo.uri });
           setIsPreviewVisible(true);
-          setStep("preview");
+          setStep('preview');
         }
       } catch (error) {
-        console.error("Recording failed:", error);
+        console.error('Recording failed:', error);
       } finally {
         setIsRecordingActive(false);
         if (recordingInterval) {
@@ -162,7 +160,7 @@ export default function CameraScreen() {
       cameraRef.current.stopRecording();
       setIsRecordingActive(false);
       setIsPreviewVisible(true);
-      setStep("preview");
+      setStep('preview');
       if (recordingInterval) {
         clearInterval(recordingInterval);
       }
@@ -174,7 +172,7 @@ export default function CameraScreen() {
       const photo = await cameraRef.current.takePictureAsync();
       setCapturedPhoto(photo);
       setIsPreviewVisible(true);
-      setStep("preview");
+      setStep('preview');
     }
   };
 
@@ -189,7 +187,7 @@ export default function CameraScreen() {
     if (!result.canceled && result.assets && result.assets.length > 0) {
       setCapturedPhoto(result.assets[0]);
       setIsPreviewVisible(true);
-      setStep("preview");
+      setStep('preview');
     }
   };
 
@@ -197,16 +195,16 @@ export default function CameraScreen() {
     try {
       if (capturedPhoto?.uri) {
         const asset = await MediaLibrary.createAssetAsync(capturedPhoto.uri);
-        await MediaLibrary.createAlbumAsync("Expo", asset, false);
-        alert("Photo saved to gallery!");
+        await MediaLibrary.createAlbumAsync('Expo', asset, false);
+        alert('Photo saved to gallery!');
       } else if (video?.uri) {
         const asset = await MediaLibrary.createAssetAsync(video.uri);
-        await MediaLibrary.createAlbumAsync("Expo", asset, false);
-        alert("Video saved to gallery!");
+        await MediaLibrary.createAlbumAsync('Expo', asset, false);
+        alert('Video saved to gallery!');
       }
     } catch (error) {
-      console.error("Error saving media:", error);
-      alert("Failed to save media.");
+      console.error('Error saving media:', error);
+      alert('Failed to save media.');
     }
   };
 
@@ -214,7 +212,7 @@ export default function CameraScreen() {
     setCapturedPhoto(null);
     setVideo(null);
     setIsPreviewVisible(false);
-    setStep("capture");
+    setStep('capture');
   };
 
   if (hasPermission === null) {
@@ -228,7 +226,7 @@ export default function CameraScreen() {
   return (
     <GestureDetector gesture={gesture}>
       <AnimatedView style={[styles.container, animatedStyle]}>
-        {step === "capture" && (
+        {step === 'capture' && (
           <CaptureStep
             cameraRef={cameraRef}
             facing={facing}
@@ -238,14 +236,14 @@ export default function CameraScreen() {
             recordingTime={recordingTime}
             toggleCameraMode={() =>
               setCameraMode((current) =>
-                current === "picture" ? "video" : "picture",
+                current === 'picture' ? 'video' : 'picture'
               )
             }
             toggleFlashMode={() =>
-              setFlashMode((current) => (current === "on" ? "off" : "on"))
+              setFlashMode((current) => (current === 'on' ? 'off' : 'on'))
             }
             toggleCameraFacing={() =>
-              setFacing((current) => (current === "back" ? "front" : "back"))
+              setFacing((current) => (current === 'back' ? 'front' : 'back'))
             }
             takePicture={takePicture}
             startRecording={startRecording}
@@ -254,33 +252,33 @@ export default function CameraScreen() {
           />
         )}
 
-        {step === "preview" && (
+        {step === 'preview' && (
           <PreviewStep
             videoRef={videoRef}
             handlePlayPause={handlePlayPause}
             handleDownload={handleDownload}
             setIsFilterMenuVisible={setIsFilterMenuVisible}
             onBack={handleBack}
-            onNext={() => setStep("send")}
+            onNext={() => setStep('send')}
             capturedPhoto={capturedPhoto}
             video={video}
             setStatus={setStatus}
           />
         )}
 
-        {step === "send" && (
+        {step === 'send' && (
           <SendStep
-            onBack={() => setStep("preview")}
+            onBack={() => setStep('preview')}
             onSubmit={(post) => {
-              console.log("Post submitted:", post);
-              setStep("capture");
-              if (from === "chat" && conversationId) {
+              console.log('Post submitted:', post);
+              setStep('capture');
+              if (from === 'chat' && conversationId) {
                 router.replace({
-                  pathname: "/chats/chat-room/[id]",
+                  pathname: '/chats/chat-room/[id]',
                   params: { id: conversationId },
                 });
               } else {
-                router.push("/home");
+                router.push('/home');
               }
             }}
           />
@@ -293,6 +291,6 @@ export default function CameraScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: '#000',
   },
 });

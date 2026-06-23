@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -6,8 +6,8 @@ import {
   TouchableOpacity,
   StyleProp,
   ViewStyle,
-} from "react-native";
-import { Audio } from "expo-av";
+} from 'react-native';
+import { Audio } from 'expo-av';
 
 interface AudioWaveformProps {
   recording: Audio.Recording | null;
@@ -43,7 +43,7 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({
     const totalSeconds = Math.floor(milliseconds / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   useEffect(() => {
@@ -57,13 +57,13 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({
           // Normalize amplitude from [-160, 0] -> [0, 1]
           const normalizedAmplitude = Math.max(
             0,
-            (currentAmplitude + 160) / 160,
+            (currentAmplitude + 160) / 160
           );
           setAmplitudes((prev) =>
-            [...prev, normalizedAmplitude].slice(-BAR_COUNT),
+            [...prev, normalizedAmplitude].slice(-BAR_COUNT)
           );
         } catch (error) {
-          console.error("Error updating meter:", error);
+          console.error('Error updating meter:', error);
         }
       }
     };
@@ -110,7 +110,7 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({
               styles.bar,
               {
                 height: Math.max(2, height),
-                backgroundColor: isPlayed ? "#fff" : "rgba(255, 255, 255, 0.4)",
+                backgroundColor: isPlayed ? '#fff' : 'rgba(255, 255, 255, 0.4)',
               },
             ]}
           />
@@ -132,7 +132,7 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({
             styles.bar,
             {
               height: Math.max(2, barHeight),
-              backgroundColor: "#fff",
+              backgroundColor: '#fff',
             },
           ]}
         />
@@ -167,42 +167,42 @@ const styles = StyleSheet.create({
   container: {
     // Outer container which includes timer, wave bars, and recording dot
 
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     borderWidth: 3,
-    borderColor: "#fff",
+    borderColor: '#fff',
     borderRadius: 40,
     paddingHorizontal: 15,
-    width: "80%",
-    overflow: "hidden",
+    width: '80%',
+    overflow: 'hidden',
     marginHorizontal: 30, // ensures bars won't overflow
   },
   waveformContainer: {
     flex: 1,
     height: 18,
-    justifyContent: "center",
-    overflow: "hidden",
+    justifyContent: 'center',
+    overflow: 'hidden',
     margin: 10,
   },
   waveformContent: {
     // The row container for all bars
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     // You can add some horizontal padding if you want
   },
   timerText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 14,
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
     paddingRight: 20,
     minWidth: 45,
   },
   barTouchable: {
     // Touchable area for each bar (for seeking)
-    height: "100%",
-    justifyContent: "center",
+    height: '100%',
+    justifyContent: 'center',
   },
   bar: {
     width: 2,
@@ -213,13 +213,13 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     width: 24,
     height: 24,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   recordingDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: "#FF325E",
+    backgroundColor: '#FF325E',
   },
 });

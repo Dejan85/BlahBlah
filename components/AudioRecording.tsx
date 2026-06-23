@@ -1,8 +1,7 @@
 // AudioRecorder.tsx
-import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { Audio } from "expo-av";
-import { supabase } from "@/utils/supabase";
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Audio } from 'expo-av';
 
 interface AudioRecorderProps {
   onRecordingComplete: (audioUrl: string) => void;
@@ -20,7 +19,7 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
     (async () => {
       const { granted } = await Audio.requestPermissionsAsync();
       if (!granted) {
-        alert("Permission to access microphone is required!");
+        alert('Permission to access microphone is required!');
         onClose();
       }
     })();
@@ -33,11 +32,11 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
         playsInSilentModeIOS: true,
       });
       const { recording } = await Audio.Recording.createAsync(
-        Audio.RecordingOptionsPresets.HIGH_QUALITY,
+        Audio.RecordingOptionsPresets.HIGH_QUALITY
       );
       setRecording(recording);
     } catch (err) {
-      console.error("Failed to start recording", err);
+      console.error('Failed to start recording', err);
     }
   };
 
@@ -45,7 +44,7 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
     try {
       await recording?.stopAndUnloadAsync();
       const uri = recording?.getURI();
-      console.log("Audio file stored at", uri);
+      console.log('Audio file stored at', uri);
 
       // Optional: upload to Supabase Storage
       // e.g.:
@@ -56,7 +55,7 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
         onRecordingComplete(uri); // or pass the Supabase URL
       }
     } catch (err) {
-      console.error("Failed to stop recording", err);
+      console.error('Failed to stop recording', err);
     }
   };
 
@@ -75,11 +74,11 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
   return (
     <View style={styles.recorderContainer}>
       <Text style={styles.recorderText}>
-        {recording ? "Recording..." : "Press to Record"}
+        {recording ? 'Recording...' : 'Press to Record'}
       </Text>
       <TouchableOpacity style={styles.recordButton} onPress={handleRecordPress}>
         <Text style={styles.recordButtonText}>
-          {recording ? "Stop" : "Start"}
+          {recording ? 'Stop' : 'Start'}
         </Text>
       </TouchableOpacity>
 
@@ -92,7 +91,7 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
 
 const styles = StyleSheet.create({
   recorderContainer: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     padding: 16,
   },
   recorderText: {
@@ -100,20 +99,20 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   recordButton: {
-    backgroundColor: "red",
+    backgroundColor: 'red',
     padding: 12,
     borderRadius: 8,
     marginBottom: 12,
   },
   recordButtonText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
   },
   closeButton: {
-    alignSelf: "flex-end",
+    alignSelf: 'flex-end',
     padding: 8,
   },
   closeButtonText: {
-    color: "#555",
+    color: '#555',
   },
 });

@@ -1,26 +1,25 @@
-import React, { useEffect, useState } from "react";
-import { useAuth } from "@/context/AuthContext";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import {
   StyleSheet,
   SafeAreaView,
   StatusBar,
   ActivityIndicator,
   View,
-  Text,
-} from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import CustomText from "@/components/CustomText";
-import { LogoWhite } from "@/assets/images";
-import AuthProviders from "@/components/AuthProviders";
-import WelcomeBack from "@/components/WelcomeBack";
-import { supabase } from "@/utils/supabase";
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import CustomText from '@/components/CustomText';
+import { LogoWhite } from '@/assets/images';
+import AuthProviders from '@/components/AuthProviders';
+import WelcomeBack from '@/components/WelcomeBack';
+import { supabase } from '@/utils/supabase';
 
 export default function Index() {
   const { user } = useAuth();
   const router = useRouter();
   const { verified } = useLocalSearchParams<{ verified: string }>();
-  const [isFirstLaunch, setIsFirstLaunch] = useState<boolean | null>(null);
+  const [, setIsFirstLaunch] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
 
@@ -29,32 +28,32 @@ export default function Index() {
 
     const checkAppState = async () => {
       try {
-        const hasLaunched = await AsyncStorage.getItem("hasLaunched");
-        const lastLoggedInUser = await AsyncStorage.getItem("lastLoggedInUser");
+        const hasLaunched = await AsyncStorage.getItem('hasLaunched');
+        const lastLoggedInUser = await AsyncStorage.getItem('lastLoggedInUser');
 
         if (isMounted) {
           setIsFirstLaunch(!hasLaunched);
 
           if (!hasLaunched) {
-            await AsyncStorage.setItem("hasLaunched", "true");
+            await AsyncStorage.setItem('hasLaunched', 'true');
           }
 
           // Check if user needs to complete profile
           if (user) {
             const { data: profile } = await supabase
-              .from("profiles")
-              .select("birthday, username,onboarding_completed")
-              .eq("id", user.id)
+              .from('profiles')
+              .select('birthday, username,onboarding_completed')
+              .eq('id', user.id)
               .single();
 
             // First time user flow
             if (!profile?.birthday) {
-              router.replace("/auth/sign-up/birthday");
+              router.replace('/auth/sign-up/birthday');
               return;
             }
 
             if (!profile?.username) {
-              router.replace("/auth/sign-up/username");
+              router.replace('/auth/sign-up/username');
               return;
             }
 
@@ -65,8 +64,8 @@ export default function Index() {
             }
 
             // Store current user id for next login
-            await AsyncStorage.setItem("lastLoggedInUser", user.id);
-            router.replace("/home");
+            await AsyncStorage.setItem('lastLoggedInUser', user.id);
+            router.replace('/home');
             setShowWelcomeBack(true);
             return;
           }
@@ -74,7 +73,7 @@ export default function Index() {
           setIsLoading(false);
         }
       } catch (error) {
-        console.error("App state check error:", error);
+        console.error('App state check error:', error);
         setIsLoading(false);
       }
     };
@@ -119,21 +118,21 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FF325E",
+    backgroundColor: '#FF325E',
   },
   header: {
-    alignContent: "center",
-    alignItems: "center",
+    alignContent: 'center',
+    alignItems: 'center',
     marginTop: 50,
   },
   loadingContainer: {
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerText: {
-    textAlign: "center",
-    fontFamily: "InterBold",
-    color: "#FFFFFF",
+    textAlign: 'center',
+    fontFamily: 'InterBold',
+    color: '#FFFFFF',
     fontSize: 28,
     top: -10,
   },

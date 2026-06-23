@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,18 +8,17 @@ import {
   Platform,
   StatusBar,
   TouchableWithoutFeedback,
-  GestureResponderEvent,
   Keyboard,
   Alert,
-} from "react-native";
-import { AVPlaybackStatus, Audio } from "expo-av";
-import { Delete, Play, ProfileBackButton, Record, Send } from "@/assets/images";
-import { useRouter } from "expo-router";
-import { Entypo, Ionicons } from "@expo/vector-icons";
-import CustomTextInput from "@/components/CustomTextInput";
-import AudioWaveform from "@/components/AudioWaveForm";
-import { supabase } from "@/utils";
-import { useAuth } from "@/context/AuthContext";
+} from 'react-native';
+import { AVPlaybackStatus, Audio } from 'expo-av';
+import { Delete, Play, ProfileBackButton, Send } from '@/assets/images';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import CustomTextInput from '@/components/CustomTextInput';
+import AudioWaveform from '@/components/AudioWaveForm';
+import { supabase } from '@/utils';
+import { useAuth } from '@/context/AuthContext';
 
 interface RecordingLine {
   sound: Audio.Sound;
@@ -37,38 +36,38 @@ export default function Blahs() {
   const [isHolding, setIsHolding] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [recordingTimer, setRecordingTimer] = useState(0);
-  const [text, setText] = useState("");
+  const [text, setText] = useState('');
   const holdTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [isRecording, setIsRecording] = useState(false);
+  const [isRecording] = useState(false);
 
   const { user } = useAuth();
-  const sendBlah = async (content: string, type: "text" | "audio" = "text") => {
+  const sendBlah = async (content: string, type: 'text' | 'audio' = 'text') => {
     if (!user?.id) {
-      Alert.alert("Error", "You must be logged in to send Blahs");
+      Alert.alert('Error', 'You must be logged in to send Blahs');
       return;
     }
 
     try {
       const { data: followers, error: followersError } = await supabase
-        .from("follows")
-        .select("follower_id")
-        .eq("followed_id", user.id)
-        .eq("receive_blahs", true);
+        .from('follows')
+        .select('follower_id')
+        .eq('followed_id', user.id)
+        .eq('receive_blahs', true);
 
       if (followersError) throw followersError;
 
       if (!followers || followers.length === 0) {
         Alert.alert(
-          "No recipients",
-          "You don't have any followers who can receive Blahs",
+          'No recipients',
+          "You don't have any followers who can receive Blahs"
         );
         return;
       }
 
       const { data: blah, error: blahError } = await supabase
-        .from("blahs")
+        .from('blahs')
         .insert({
           sender_id: user.id,
           content,
@@ -83,22 +82,22 @@ export default function Blahs() {
       const messages = await Promise.all(
         followers.map(async (follower) => {
           const { data: existingConv, error: convError } = await supabase
-            .from("conversations")
-            .select("id")
+            .from('conversations')
+            .select('id')
             .or(
               `and(participant1_id.eq.${user.id},participant2_id.eq.${follower.follower_id}),` +
-                `and(participant1_id.eq.${follower.follower_id},participant2_id.eq.${user.id})`,
+                `and(participant1_id.eq.${follower.follower_id},participant2_id.eq.${user.id})`
             )
             .single();
 
-          if (convError && convError.code !== "PGRST116") {
+          if (convError && convError.code !== 'PGRST116') {
             throw convError;
           }
 
           let conversationId;
           if (!existingConv) {
             const { data: newConv, error: createError } = await supabase
-              .from("conversations")
+              .from('conversations')
               .insert({
                 participant1_id: user.id,
                 participant2_id: follower.follower_id,
@@ -120,38 +119,38 @@ export default function Blahs() {
             is_deleted: false,
             blah_id: blah.id,
           };
-        }),
+        })
       );
 
       const { error: messagesError } = await supabase
-        .from("messages")
+        .from('messages')
         .insert(messages);
 
       if (messagesError) throw messagesError;
 
-      Alert.alert("Success", "Your Blah has been sent to your followers!");
+      Alert.alert('Success', 'Your Blah has been sent to your followers!');
       router.back();
     } catch (error) {
-      console.error("Error sending Blah:", error);
-      Alert.alert("Error", "Failed to send Blah. Please try again.");
+      console.error('Error sending Blah:', error);
+      Alert.alert('Error', 'Failed to send Blah. Please try again.');
     }
   };
 
   // Modify the text message send button
   const handleSendTextMessage = async () => {
     if (!finishedMessage.trim()) return;
-    await sendBlah(finishedMessage, "text");
+    await sendBlah(finishedMessage, 'text');
   };
 
   // Modify the audio message send button
   const handleSendAudioMessage = async (recordingLine: RecordingLine) => {
     if (!recordingLine.file) return;
-    await sendBlah(recordingLine.file, "audio");
+    await sendBlah(recordingLine.file, 'audio');
   };
 
   useEffect(() => {
     if (error && text.trim()) {
-      setError("");
+      setError('');
     }
   }, [text]);
 
@@ -166,7 +165,7 @@ export default function Blahs() {
             }
             await recordingLine.sound.unloadAsync();
           } catch (error) {
-            console.error("Error cleaning up recording on unmount:", error);
+            console.error('Error cleaning up recording on unmount:', error);
           }
         });
       }
@@ -181,7 +180,7 @@ export default function Blahs() {
     }
   }
 
-  function handlePressIn(event: GestureResponderEvent) {
+  function handlePressIn() {
     // Only allow press if we're not recording, typing, or have existing recordings
     if (recording || isTyping || recordings.length > 0) return;
     setIsTyping(false);
@@ -191,7 +190,7 @@ export default function Blahs() {
     }, 500);
   }
 
-  function handlePressOut(event: GestureResponderEvent) {
+  function handlePressOut() {
     // Only handle press out if we're not in a restricted state
     if (recordings.length > 0 || isTyping) return;
     if (holdTimeoutRef.current) clearTimeout(holdTimeoutRef.current);
@@ -218,7 +217,7 @@ export default function Blahs() {
 
       setIsHolding(false); // Reset holding state
     } catch (error) {
-      console.error("Error cleaning up recording:", error);
+      console.error('Error cleaning up recording:', error);
     }
   };
 
@@ -240,12 +239,12 @@ export default function Blahs() {
   async function startRecording() {
     try {
       const perm = await Audio.requestPermissionsAsync();
-      if (perm.status !== "granted") {
-        console.warn("Permission denied");
+      if (perm.status !== 'granted') {
+        console.warn('Permission denied');
         return;
       }
       if (recording) {
-        console.warn("Recording already in progress");
+        console.warn('Recording already in progress');
         return;
       }
 
@@ -255,11 +254,11 @@ export default function Blahs() {
       });
 
       const { recording: newRecording } = await Audio.Recording.createAsync(
-        Audio.RecordingOptionsPresets.HIGH_QUALITY,
+        Audio.RecordingOptionsPresets.HIGH_QUALITY
       );
       setRecording(newRecording);
     } catch (err) {
-      console.error("Failed to start recording", err);
+      console.error('Failed to start recording', err);
     }
   }
 
@@ -277,61 +276,61 @@ export default function Blahs() {
         };
 
         sound.setOnPlaybackStatusUpdate((status) =>
-          handlePlaybackStatusUpdate(status, sound),
+          handlePlaybackStatusUpdate(status, sound)
         );
 
         setRecordings([newRecording]);
       } else {
-        console.error("Failed to load playback status");
+        console.error('Failed to load playback status');
       }
     } catch (err) {
-      console.error("Failed to stop recording", err);
+      console.error('Failed to stop recording', err);
     } finally {
       setRecording(null);
       setIsHolding(false); // Reset holding state when recording stops
     }
   }
 
-  const [finishedMessage, setFinishedMessage] = useState("");
+  const [finishedMessage, setFinishedMessage] = useState('');
 
   const handleDonePress = () => {
     if (!text.trim()) {
-      setError("Message cannot be empty");
+      setError('Message cannot be empty');
       return;
     }
     Keyboard.dismiss();
     setIsTyping(false);
     setFinishedMessage(text.trim());
-    setError("");
+    setError('');
   };
 
   const handleBlur = () => {
     if (!text.trim()) {
-      setError("Message cannot be empty");
+      setError('Message cannot be empty');
       // Keep typing mode active if message is empty
       setIsTyping(true);
       return;
     }
     setIsTyping(false);
     setFinishedMessage(text.trim());
-    setError("");
+    setError('');
   };
 
   // Clear message function
   const clearMessage = () => {
-    setFinishedMessage("");
-    setText("");
+    setFinishedMessage('');
+    setText('');
   };
 
   function getDurationFormatted(milliseconds: number): string {
     const minutes = Math.floor(milliseconds / 1000 / 60);
     const seconds = Math.round((milliseconds / 1000) % 60);
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   }
 
   async function handlePlaybackStatusUpdate(
     status: AVPlaybackStatus,
-    sound: Audio.Sound,
+    sound: Audio.Sound
   ) {
     if (status.isLoaded) {
       setPlaybackPosition(status.positionMillis ?? 0);
@@ -395,7 +394,7 @@ export default function Blahs() {
             style={styles.button}
             onPress={() => handleSendAudioMessage(recordingLine)}
           >
-            <Send fill={"#FF325E"} />
+            <Send fill={'#FF325E'} />
           </TouchableOpacity>
         </View>
       </>
@@ -409,7 +408,7 @@ export default function Blahs() {
         await recordingLine.sound.setPositionAsync(position);
         setPlaybackPosition(position);
       } catch (error) {
-        console.error("Error seeking:", error);
+        console.error('Error seeking:', error);
       }
     }
   };
@@ -428,13 +427,13 @@ export default function Blahs() {
           }}
           style={styles.backButton}
         >
-          <ProfileBackButton fill={"#fff"} />
+          <ProfileBackButton fill={'#fff'} />
         </TouchableOpacity>
         <View
           style={[
             styles.container,
             // Add pointerEvents prop to prevent interactions when recording exists
-            recordings.length > 0 ? { pointerEvents: "box-none" } : {},
+            recordings.length > 0 ? { pointerEvents: 'box-none' } : {},
           ]}
         >
           {!finishedMessage &&
@@ -442,10 +441,10 @@ export default function Blahs() {
             !recording &&
             !recordings.length && (
               <Text style={styles.initialText}>
-                BlahBlah...{"\n"}Tap to type a{" "}
-                <Text style={{ color: "#FF325E" }}>message</Text>
-                {"\n"}or hold to record a{" "}
-                <Text style={{ color: "#FF325E" }}>voice message</Text>
+                BlahBlah...{'\n'}Tap to type a{' '}
+                <Text style={{ color: '#FF325E' }}>message</Text>
+                {'\n'}or hold to record a{' '}
+                <Text style={{ color: '#FF325E' }}>voice message</Text>
               </Text>
             )}
           {finishedMessage && !isTyping && (
@@ -462,7 +461,7 @@ export default function Blahs() {
                   style={styles.button}
                   onPress={handleSendTextMessage}
                 >
-                  <Send fill={"#FF325E"} />
+                  <Send fill={'#FF325E'} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -474,7 +473,7 @@ export default function Blahs() {
                   textStyle={styles.textInput}
                   value={text}
                   onChangeText={setText}
-                  selectionColor={"#fff"}
+                  selectionColor={'#fff'}
                   multiLine={false}
                   autoFocus={true}
                   onBlur={handleBlur}
@@ -504,85 +503,85 @@ export default function Blahs() {
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: "green",
+    backgroundColor: 'green',
     flex: 1,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   backButton: {
     padding: 30,
   },
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   initialText: {
     fontSize: 18,
-    color: "#fff",
-    textAlign: "center",
+    color: '#fff',
+    textAlign: 'center',
     paddingHorizontal: 60,
   },
   button: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     marginHorizontal: 60,
   },
   sliderContainer: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   slider: {
-    width: "100%",
+    width: '100%',
     height: 50,
   },
   recordingRow: {
-    justifyContent: "center",
-    alignContent: "center",
-    alignSelf: "center",
-    alignItems: "center",
-    width: "100%",
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignSelf: 'center',
+    alignItems: 'center',
+    width: '100%',
     marginVertical: 30,
   },
   textInput: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 18,
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
   },
   inputContainer: {
-    alignContent: "center",
-    alignItems: "center",
-    alignSelf: "center",
+    alignContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
 
     paddingHorizontal: 50,
   },
   timerText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 20,
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
   },
   timerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
     marginTop: 5,
   },
   buttonRow: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
     margin: 10,
   },
   messageContainer: {
-    width: "80%",
-    alignItems: "center",
-    justifyContent: "center",
+    width: '80%',
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 20,
   },
   messageText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 18,
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: 20,
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
   },
 });

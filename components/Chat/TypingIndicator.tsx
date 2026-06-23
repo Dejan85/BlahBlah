@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from "react";
-import { View, Text, StyleSheet, Animated, Image } from "react-native";
+import React, { useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Animated, Image } from 'react-native';
 
 interface TypingIndicatorProps {
   username: string;
@@ -43,7 +43,7 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({
               duration: 400,
               useNativeDriver: true,
             }),
-          ]),
+          ])
         );
 
         Animated.loop(Animated.parallel(animations)).start();
@@ -110,18 +110,18 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   typingBubble: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: '#f0f0f0',
     borderRadius: 16,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "flex-start",
-    maxWidth: "80%",
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    maxWidth: '80%',
   },
   contentContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     flex: 1,
   },
   avatar: {
@@ -132,20 +132,20 @@ const styles = StyleSheet.create({
   },
   typingText: {
     fontSize: 13,
-    color: "#666",
-    fontFamily: "InterMedium",
+    color: '#666',
+    fontFamily: 'InterMedium',
     marginRight: 8,
   },
   dotContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginLeft: 4,
   },
   dot: {
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: "#666",
+    backgroundColor: '#666',
     marginHorizontal: 2,
   },
 });

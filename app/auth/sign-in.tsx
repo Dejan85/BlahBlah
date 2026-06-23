@@ -5,28 +5,28 @@ import {
   TextInput,
   View,
   ActivityIndicator,
-} from "react-native";
-import React, { useRef, useState } from "react";
-import { useRouter } from "expo-router";
-import { useAuth } from "@/context/AuthContext";
-import { Lock, Envelope, ShowPassword } from "@/assets/images";
-import CustomTextInput from "@/components/CustomTextInput";
-import GoogleLogin from "@/components/GoogleSignIn";
-import LoginWithProviders from "@/components/FacebookSignIn";
-import { useForm, Controller } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import TwitterLogin from "@/components/TwitterLogin";
+} from 'react-native';
+import React, { useRef, useState } from 'react';
+import { useRouter } from 'expo-router';
+import { useAuth } from '@/context/AuthContext';
+import { Lock, Envelope, ShowPassword } from '@/assets/images';
+import CustomTextInput from '@/components/CustomTextInput';
+import GoogleLogin from '@/components/GoogleSignIn';
+import LoginWithProviders from '@/components/FacebookSignIn';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import TwitterLogin from '@/components/TwitterLogin';
 
 const schema = yup.object({
   email: yup
     .string()
-    .required("Email is required")
-    .email("Please enter a valid email"),
+    .required('Email is required')
+    .email('Please enter a valid email'),
   password: yup
     .string()
-    .required("Password is required")
-    .min(6, "Password must be at least 6 characters"),
+    .required('Password is required')
+    .min(6, 'Password must be at least 6 characters'),
 });
 
 type FormData = {
@@ -48,10 +48,10 @@ const SignIn = () => {
     formState: { errors },
   } = useForm<FormData>({
     resolver: yupResolver(schema),
-    mode: "onChange",
+    mode: 'onChange',
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
   });
 
@@ -64,7 +64,7 @@ const SignIn = () => {
       setIsLoading(true);
       await signIn(data.email, data.password);
     } catch (error) {
-      console.error("Login error:", error);
+      console.error('Login error:', error);
     } finally {
       setIsLoading(false);
     }
@@ -137,7 +137,7 @@ const SignIn = () => {
 
       <Text
         style={styles.forgotPassword}
-        onPress={() => router.push("/auth/forgot-password-noauth")}
+        onPress={() => router.push('/auth/forgot-password-noauth')}
       >
         Forgot Password?
       </Text>
@@ -174,47 +174,47 @@ export default SignIn;
 
 const styles = StyleSheet.create({
   input: {
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
     fontSize: 14,
-    color: "#000000",
+    color: '#000000',
     paddingVertical: 14,
     flex: 1,
     paddingLeft: 12,
   },
   inputContainer: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 50,
-    justifyContent: "center",
+    justifyContent: 'center',
     marginVertical: 24,
   },
   inputError: {
-    borderColor: "#fff",
+    borderColor: '#fff',
     borderWidth: 1,
   },
   errorText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 12,
     marginTop: -20,
     marginBottom: 10,
     marginLeft: 15,
-    fontFamily: "InterRegular",
+    fontFamily: 'InterRegular',
   },
   forgotPassword: {
-    fontFamily: "InterMedium",
-    color: "#fff",
+    fontFamily: 'InterMedium',
+    color: '#fff',
     fontSize: 14,
-    textAlign: "right",
+    textAlign: 'right',
   },
   btnText: {
-    fontFamily: "InterMedium",
-    color: "#000",
+    fontFamily: 'InterMedium',
+    color: '#000',
     fontSize: 18,
-    textAlign: "center",
+    textAlign: 'center',
     paddingVertical: 18,
   },
   loginBtn: {
     marginTop: 30,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 50,
   },
   buttonDisabled: {
@@ -222,12 +222,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 14,
-    textAlign: "center",
-    fontFamily: "InterMedium",
-    color: "#fff",
+    textAlign: 'center',
+    fontFamily: 'InterMedium',
+    color: '#fff',
     paddingVertical: 10,
   },
   buttonRow: {
-    flexDirection: "row",
+    flexDirection: 'row',
   },
 });

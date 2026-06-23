@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
   FlatList,
   RefreshControl,
@@ -6,14 +6,13 @@ import {
   StyleSheet,
   Dimensions,
   Platform,
-} from "react-native";
-import { FeedItem } from "@/types";
-import Post from "./Post";
-import { usePost, Post as PostType } from "@/context/PostContext";
-import { supabase } from "@/utils";
-import { ImagePrefetchOptions } from "expo-image";
+} from 'react-native';
+import { FeedItem } from '@/types';
+import Post from './Post';
+import { Post as PostType } from '@/context/PostContext';
+import { supabase } from '@/utils';
 // Dummy data
-import { Image } from "expo-image";
+import { Image } from 'expo-image';
 
 interface PostListProps {
   onRefresh?: () => Promise<void>;
@@ -23,8 +22,7 @@ const PostFeed: React.FC<PostListProps> = ({ onRefresh }) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [refreshing, setRefreshing] = useState(false);
   const [posts, setPosts] = useState<PostType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { getProfilePosts } = usePost();
+  const [, setLoading] = useState(true);
 
   const listRef = useRef<FlatList<FeedItem> | null>(null);
   const fetchFollowingPosts = async () => {
@@ -35,14 +33,14 @@ const PostFeed: React.FC<PostListProps> = ({ onRefresh }) => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      if (!user) throw new Error('Not authenticated');
 
       // Get IDs of users you're following using your follows table structure
       const { data: followingData, error: followingError } = await supabase
-        .from("follows")
-        .select("followed_id")
-        .eq("follower_id", user.id)
-        .eq("receive_blahs", true); // Only get follows where receive_blahs is true
+        .from('follows')
+        .select('followed_id')
+        .eq('follower_id', user.id)
+        .eq('receive_blahs', true); // Only get follows where receive_blahs is true
 
       if (followingError) throw followingError;
 
@@ -57,7 +55,7 @@ const PostFeed: React.FC<PostListProps> = ({ onRefresh }) => {
 
       // Fetch posts from followed users
       const { data: postsData, error: postsError } = await supabase
-        .from("posts")
+        .from('posts')
         .select(
           `
           *,
@@ -67,16 +65,16 @@ const PostFeed: React.FC<PostListProps> = ({ onRefresh }) => {
             avatar_url,
             full_name
           )
-        `,
+        `
         )
-        .in("profile_id", followedIds)
-        .order("created_at", { ascending: false });
+        .in('profile_id', followedIds)
+        .order('created_at', { ascending: false });
 
       if (postsError) throw postsError;
 
       setPosts(postsData || []);
     } catch (error) {
-      console.error("Error fetching posts:", error);
+      console.error('Error fetching posts:', error);
     } finally {
       setLoading(false);
     }
@@ -100,7 +98,7 @@ const PostFeed: React.FC<PostListProps> = ({ onRefresh }) => {
     type: post.media_type,
     uri: post.main_media_url,
     images:
-      post.media_type === "image"
+      post.media_type === 'image'
         ? [post.main_media_url, ...post.additional_media]
         : undefined,
     user: post.profile
@@ -119,7 +117,7 @@ const PostFeed: React.FC<PostListProps> = ({ onRefresh }) => {
   const preloadImages = async (posts: FeedItem[], currentIndex: number) => {
     const nextPosts = posts.slice(currentIndex, currentIndex + 3);
     const imagePromises = nextPosts.flatMap(
-      (post) => post.images?.map((imageUrl) => Image.prefetch(imageUrl)) ?? [],
+      (post) => post.images?.map((imageUrl) => Image.prefetch(imageUrl)) ?? []
     );
     await Promise.all(imagePromises);
   };
@@ -152,7 +150,7 @@ const PostFeed: React.FC<PostListProps> = ({ onRefresh }) => {
     ({ item, index }: { item: FeedItem; index: number }) => (
       <Post item={item} index={index} isVisible={currentIndex === index} />
     ),
-    [currentIndex],
+    [currentIndex]
   );
 
   return (
@@ -200,8 +198,8 @@ const styles = StyleSheet.create({
   flatList: {
     flex: 1,
     height:
-      Platform.OS === "android"
-        ? Dimensions.get("window").height + (StatusBar.currentHeight || 0)
-        : Dimensions.get("window").height,
+      Platform.OS === 'android'
+        ? Dimensions.get('window').height + (StatusBar.currentHeight || 0)
+        : Dimensions.get('window').height,
   },
 });

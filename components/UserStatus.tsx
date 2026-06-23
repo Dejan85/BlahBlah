@@ -1,8 +1,8 @@
 // components/UserStatus.tsx
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { supabase } from "@/utils/supabase";
-import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { supabase } from '@/utils/supabase';
+import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
 interface UserStatusProps {
   userId?: string;
@@ -22,32 +22,32 @@ export const UserStatus = ({ userId }: UserStatusProps) => {
 
     channel
       .on<OnlineUser>(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "*",
-          schema: "public",
-          table: "online_users",
+          event: '*',
+          schema: 'public',
+          table: 'online_users',
           filter: `id=eq.${userId}`,
         },
         (payload: RealtimePostgresChangesPayload<OnlineUser>) => {
           const newData = payload.new as OnlineUser;
           if (newData) {
-            setIsOnline(newData.status === "online");
+            setIsOnline(newData.status === 'online');
             setLastSeen(newData.last_seen);
           }
-        },
+        }
       )
       .subscribe();
 
     const getInitialStatus = async () => {
       const { data } = await supabase
-        .from("online_users")
-        .select("status, last_seen")
-        .eq("id", userId)
+        .from('online_users')
+        .select('status, last_seen')
+        .eq('id', userId)
         .single();
 
       if (data) {
-        setIsOnline(data.status === "online");
+        setIsOnline(data.status === 'online');
         setLastSeen(data.last_seen);
       }
     };
@@ -61,7 +61,7 @@ export const UserStatus = ({ userId }: UserStatusProps) => {
 
   const formatLastSeen = (timestamp: string) => {
     const date = new Date(timestamp);
-    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
   };
 
   return (
@@ -71,10 +71,10 @@ export const UserStatus = ({ userId }: UserStatusProps) => {
       />
       <Text style={styles.statusText}>
         {isOnline
-          ? "Online"
+          ? 'Online'
           : lastSeen
             ? `Last seen ${formatLastSeen(lastSeen)}`
-            : "Offline"}
+            : 'Offline'}
       </Text>
     </View>
   );
@@ -82,8 +82,8 @@ export const UserStatus = ({ userId }: UserStatusProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   statusDot: {
     width: 8,
@@ -92,13 +92,13 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   online: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: '#4CAF50',
   },
   offline: {
-    backgroundColor: "#9E9E9E",
+    backgroundColor: '#9E9E9E',
   },
   statusText: {
     fontSize: 12,
-    color: "#666",
+    color: '#666',
   },
 });

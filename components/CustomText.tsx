@@ -1,24 +1,24 @@
-import React from "react";
+import React from 'react';
 import {
   Text as RNText,
   TextProps as RNTextProps,
   StyleSheet,
   StyleProp,
   TextStyle,
-} from "react-native";
+} from 'react-native';
 
 interface TextProps extends RNTextProps {
-  variant?: "h1" | "h2" | "h3" | "body" | "caption" | "label";
-  weight?: "regular" | "medium" | "semibold" | "bold";
+  variant?: 'h1' | 'h2' | 'h3' | 'body' | 'caption' | 'label';
+  weight?: 'regular' | 'medium' | 'semibold' | 'bold';
   color?: string;
-  align?: "auto" | "left" | "right" | "center" | "justify";
+  align?: 'auto' | 'left' | 'right' | 'center' | 'justify';
   style?: StyleProp<TextStyle>;
   children: React.ReactNode;
 }
 
 const Text: React.FC<TextProps> = ({
-  variant = "body",
-  weight = "regular",
+  variant = 'body',
+  weight = 'regular',
   color,
   align,
   style,
@@ -66,16 +66,16 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   } as TextStyle,
   regular: {
-    fontFamily: "InterRegular",
+    fontFamily: 'InterRegular',
   } as TextStyle,
   medium: {
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
   } as TextStyle,
   semibold: {
-    fontFamily: "InterSemiBold",
+    fontFamily: 'InterSemiBold',
   } as TextStyle,
   bold: {
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
   } as TextStyle,
 });
 

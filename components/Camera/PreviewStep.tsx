@@ -1,5 +1,5 @@
 // PreviewStep.tsx
-import React, { useContext, useState } from "react";
+import React, { useContext, useState } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -8,33 +8,26 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   Dimensions,
-} from "react-native";
-import { Video, ResizeMode, AVPlaybackStatus } from "expo-av";
-import { AntDesign } from "@expo/vector-icons";
-import {
-  Back,
-  Download,
-  Filter,
-  FullScreen,
-  Send,
-  SendChat,
-} from "@/assets/images";
+} from 'react-native';
+import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
+import { AntDesign } from '@expo/vector-icons';
+import { Back, Download, Filter, FullScreen, SendChat } from '@/assets/images';
 import {
   Canvas,
   Image as SkiaImage,
   ColorMatrix,
   useImage,
-} from "@shopify/react-native-skia";
-import { CameraContext } from "@/context/CameraContext";
-import { getFilterMatrixByName } from "@/types/filter";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useAuth } from "@/context/AuthContext";
-import { useMessage } from "@/context/MessageContext";
-import { FilterCarousel } from "./FilterMenu";
+} from '@shopify/react-native-skia';
+import { CameraContext } from '@/context/CameraContext';
+import { getFilterMatrixByName } from '@/types/filter';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useAuth } from '@/context/AuthContext';
+import { useMessage } from '@/context/MessageContext';
+import { FilterCarousel } from './FilterMenu';
 
-import ResizablePhoto from "../ResizePhoto";
+import ResizablePhoto from '../ResizePhoto';
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 interface PreviewStepProps {
   videoRef: React.RefObject<Video>;
@@ -80,7 +73,6 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
   handlePlayPause,
   handleDownload,
 
-  onBack,
   onNext,
   capturedPhoto,
   video,
@@ -98,18 +90,14 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
   const [isFilterMenuVisible, setIsFilterMenuVisible] = useState(false);
   const [isResizeModalVisible, setIsResizeModalVisible] = useState(false);
 
-  // Add this handler
-  const handleResizePress = () => {
-    setIsResizeModalVisible(true);
-  };
   const { from, conversationId } = useLocalSearchParams<{
     from?: string;
     conversationId?: string;
   }>();
 
   const handleBack = () => {
-    setSelectedFilter("Normal"); // Reset filter when going back
-    setStep("capture");
+    setSelectedFilter('Normal'); // Reset filter when going back
+    setStep('capture');
   };
 
   const handleFilterToggle = () => {
@@ -131,7 +119,7 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
   const handleSendToChat = async () => {
     try {
       if (!conversationId || !user?.id) {
-        console.warn("Missing conversationId or userId");
+        console.warn('Missing conversationId or userId');
         return;
       }
 
@@ -141,21 +129,21 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
       const mediaUri = isPhoto ? capturedPhoto.uri : video?.uri;
 
       if (!mediaUri) {
-        console.warn("No media found to send");
+        console.warn('No media found to send');
         return;
       }
 
-      const messageType = isPhoto ? "image" : "file"; // or "video" if you add that
+      const messageType = isPhoto ? 'image' : 'file'; // or "video" if you add that
 
       // Actually send the message using the context
       await sendMessage(mediaUri, conversationId, user.id, messageType);
       setCapturedPhoto(null);
       setVideo(null);
-      setStep("capture");
+      setStep('capture');
       // Then go back to chat screen
       router.back();
     } catch (error) {
-      console.error("Failed to send to chat:", error);
+      console.error('Failed to send to chat:', error);
     }
   };
 
@@ -163,7 +151,7 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
     <View style={styles.previewContainer}>
       {capturedPhoto &&
         !video &&
-        (filterMatrix && selectedFilter !== "Normal" ? (
+        (filterMatrix && selectedFilter !== 'Normal' ? (
           <FilteredImage uri={capturedPhoto.uri} filterMatrix={filterMatrix} />
         ) : (
           <Image source={{ uri: capturedPhoto.uri }} style={styles.preview} />
@@ -212,7 +200,7 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
         <Download />
       </TouchableOpacity>
 
-      {from === "chat" ? (
+      {from === 'chat' ? (
         <TouchableOpacity style={styles.nextButton} onPress={handleSendToChat}>
           <SendChat fill="#fff" />
         </TouchableOpacity>
@@ -258,82 +246,82 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
 const styles = StyleSheet.create({
   previewContainer: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor: 'black',
   },
   sendButton: {},
   preview: {
     flex: 1,
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
   fullScreenMedia: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
   previewButtonContainer: {
-    position: "absolute",
+    position: 'absolute',
     top: 54,
     left: 30,
     borderRadius: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#000",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000',
     opacity: 0.5,
     width: 40,
     height: 40,
   },
   filterButton: {
-    position: "absolute",
+    position: 'absolute',
     top: 50,
     right: 130,
-    backgroundColor: "#000",
+    backgroundColor: '#000',
     opacity: 0.5,
     borderRadius: 40,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     width: 40,
     height: 40,
   },
   fullScreenButton: {
-    position: "absolute",
+    position: 'absolute',
     top: 50,
     right: 80,
-    backgroundColor: "#000",
+    backgroundColor: '#000',
     opacity: 0.5,
     borderRadius: 40,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     width: 40,
     height: 40,
   },
   downloadButton: {
-    position: "absolute",
+    position: 'absolute',
     top: 50,
     right: 30,
-    backgroundColor: "#000",
+    backgroundColor: '#000',
     opacity: 0.5,
     borderRadius: 40,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     width: 40,
     height: 40,
   },
   nextButton: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 45,
-    backgroundColor: "#FF325E",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#FF325E',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 40,
-    alignSelf: "center",
+    alignSelf: 'center',
     right: 38,
-    flexDirection: "row",
+    flexDirection: 'row',
   },
   nextText: {
-    color: "#fff",
-    textAlign: "center",
+    color: '#fff',
+    textAlign: 'center',
     fontSize: 20,
-    fontFamily: "InterBold",
+    fontFamily: 'InterBold',
     paddingLeft: 18,
     paddingVertical: 6,
   },

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,10 +6,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Platform,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { EditPencil } from "@/assets/images";
+} from 'react-native';
+import { EditPencil } from '@/assets/images';
 
 interface CommentSectionProps {
   value: string;
@@ -17,41 +15,37 @@ interface CommentSectionProps {
   onSubmit?: () => void;
 }
 
-export const CommentSection = ({
-  value,
-  onChange,
-  onSubmit,
-}: CommentSectionProps) => {
+export const CommentSection = ({ value, onChange }: CommentSectionProps) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [highlightedText, setHighlightedText] = useState("");
+  const [highlightedText, setHighlightedText] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
 
   const formatText = useCallback((text: string) => {
-    const words = text.split(" ");
+    const words = text.split(' ');
     return words.map((word, index) => {
-      if (word.startsWith("@")) {
+      if (word.startsWith('@')) {
         return (
           <Text key={index} style={styles.mention}>
-            {word}{" "}
+            {word}{' '}
           </Text>
         );
-      } else if (word.startsWith("#")) {
+      } else if (word.startsWith('#')) {
         return (
           <Text key={index} style={styles.hashtag}>
-            {word}{" "}
+            {word}{' '}
           </Text>
         );
       }
-      return word + " ";
+      return word + ' ';
     });
   }, []);
 
   const handleTextChange = (text: string) => {
-    const lastWord = text.split(" ").pop() || "";
-    if (lastWord.startsWith("@") || lastWord.startsWith("#")) {
+    const lastWord = text.split(' ').pop() || '';
+    if (lastWord.startsWith('@') || lastWord.startsWith('#')) {
       setHighlightedText(lastWord);
     } else {
-      setHighlightedText("");
+      setHighlightedText('');
     }
     onChange(text);
   };
@@ -113,12 +107,12 @@ export const CommentSection = ({
       {highlightedText && (
         <View style={styles.suggestionsContainer}>
           <Text style={styles.suggestionsTitle}>
-            {highlightedText.startsWith("@")
-              ? "Mention someone:"
-              : "Trending hashtags:"}
+            {highlightedText.startsWith('@')
+              ? 'Mention someone:'
+              : 'Trending hashtags:'}
           </Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {highlightedText.startsWith("@") ? (
+            {highlightedText.startsWith('@') ? (
               <View style={styles.suggestionChips}>
                 <TouchableOpacity style={styles.suggestionChip}>
                   <Text style={styles.suggestionText}>@user1</Text>
@@ -147,109 +141,109 @@ export const CommentSection = ({
 const styles = StyleSheet.create({
   container: {
     padding: 15,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   inputContainer: {
-    flexDirection: "row",
-    alignItems: "flex-start",
+    flexDirection: 'row',
+    alignItems: 'flex-start',
     borderRadius: 12,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: '#f8f8f8',
     padding: 12,
     minHeight: 100,
   },
   inputContainerFocused: {
     borderWidth: 1,
-    borderColor: "#FF325E",
-    backgroundColor: "#fff",
+    borderColor: '#FF325E',
+    backgroundColor: '#fff',
   },
   input: {
     flex: 1,
     fontSize: 16,
     lineHeight: 24,
-    color: "#000",
+    color: '#000',
     paddingRight: 30,
-    fontFamily: "InterRegular",
+    fontFamily: 'InterRegular',
   },
   editIcon: {
-    position: "absolute",
+    position: 'absolute',
     top: 12,
     right: 12,
   },
   characterCount: {
-    textAlign: "right",
-    color: "#666",
+    textAlign: 'right',
+    color: '#666',
     fontSize: 12,
     marginTop: 4,
-    fontFamily: "InterRegular",
+    fontFamily: 'InterRegular',
   },
   previewContainer: {
     marginTop: 15,
     padding: 12,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: '#f8f8f8',
     borderRadius: 12,
   },
   previewTitle: {
     fontSize: 14,
-    color: "#666",
+    color: '#666',
     marginBottom: 8,
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
   },
   previewContent: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     padding: 10,
     borderRadius: 8,
   },
   previewText: {
     fontSize: 14,
     lineHeight: 20,
-    color: "#000",
-    fontFamily: "InterRegular",
+    color: '#000',
+    fontFamily: 'InterRegular',
   },
   mention: {
-    color: "#FF325E",
-    fontFamily: "InterSemiBold",
+    color: '#FF325E',
+    fontFamily: 'InterSemiBold',
   },
   hashtag: {
-    color: "#0095F6",
-    fontFamily: "InterSemiBold",
+    color: '#0095F6',
+    fontFamily: 'InterSemiBold',
   },
   seeMoreButton: {
     marginTop: 4,
   },
   seeMoreText: {
-    color: "#666",
+    color: '#666',
     fontSize: 14,
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
   },
   suggestionsContainer: {
     marginTop: 10,
     padding: 12,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: '#f8f8f8',
     borderRadius: 12,
   },
   suggestionsTitle: {
     fontSize: 14,
-    color: "#666",
+    color: '#666',
     marginBottom: 8,
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
   },
   suggestionChips: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   suggestionChip: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 6,
     marginRight: 8,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: '#ddd',
   },
   suggestionText: {
-    color: "#000",
+    color: '#000',
     fontSize: 14,
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
   },
 });

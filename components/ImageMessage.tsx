@@ -1,8 +1,8 @@
 // components/ImageMessage.tsx
-import React, { useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { Image } from "expo-image";
-import ImageViewer from "@/components/Chat/ImageViewer";
+import React, { useState } from 'react';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+import { Image } from 'expo-image';
+import ImageViewer from '@/components/Chat/ImageViewer';
 
 interface ImageMessageProps {
   uri: string;
@@ -43,21 +43,21 @@ const styles = StyleSheet.create({
   container: {
     maxWidth: 240,
     borderRadius: 12,
-    overflow: "hidden",
+    overflow: 'hidden',
     margin: 2,
   },
   senderContainer: {
-    alignSelf: "flex-end",
+    alignSelf: 'flex-end',
     marginLeft: 50,
   },
   receiverContainer: {
-    alignSelf: "flex-start",
+    alignSelf: 'flex-start',
     marginRight: 50,
   },
   image: {
     width: 240,
     height: 320,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: '#f0f0f0',
   },
 });
 

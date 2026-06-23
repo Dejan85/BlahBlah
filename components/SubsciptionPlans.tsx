@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-type PlanType = "monthly" | "yearly" | "onetime";
+type PlanType = 'monthly' | 'yearly' | 'onetime';
 
 interface PlanProps {
   onSelectPlan: (plan: PlanType) => void;
@@ -12,7 +12,7 @@ interface PlanProps {
 
 const SubscriptionPlans: React.FC<PlanProps> = ({
   onSelectPlan,
-  selectedPlan = "monthly",
+  selectedPlan = 'monthly',
   isBlahs = false,
   isPremium = true,
 }) => {
@@ -30,9 +30,9 @@ const SubscriptionPlans: React.FC<PlanProps> = ({
           <TouchableOpacity
             style={[
               styles.planContainer,
-              selected === "monthly" && styles.selectedPlan,
+              selected === 'monthly' && styles.selectedPlan,
             ]}
-            onPress={() => handleSelection("monthly")}
+            onPress={() => handleSelection('monthly')}
             activeOpacity={0.7}
           >
             <View style={styles.checkboxContainer}>
@@ -42,10 +42,10 @@ const SubscriptionPlans: React.FC<PlanProps> = ({
               <View
                 style={[
                   styles.checkbox,
-                  selected === "monthly" && styles.checkboxSelected,
+                  selected === 'monthly' && styles.checkboxSelected,
                 ]}
               >
-                {selected === "monthly" && (
+                {selected === 'monthly' && (
                   <View style={styles.checkboxInner} />
                 )}
               </View>
@@ -55,25 +55,25 @@ const SubscriptionPlans: React.FC<PlanProps> = ({
           <TouchableOpacity
             style={[
               styles.planContainer,
-              selected === "yearly" && styles.selectedPlan,
+              selected === 'yearly' && styles.selectedPlan,
             ]}
-            onPress={() => handleSelection("yearly")}
+            onPress={() => handleSelection('yearly')}
             activeOpacity={0.7}
           >
             <View style={styles.checkboxContainer}>
               <View style={styles.planInfo}>
                 <Text style={styles.planTitle}>
-                  Yearly Plan €29.94/year{" "}
+                  Yearly Plan €29.94/year{' '}
                   <Text style={styles.discountText}>50% off</Text>
                 </Text>
               </View>
               <View
                 style={[
                   styles.checkbox,
-                  selected === "yearly" && styles.checkboxSelected,
+                  selected === 'yearly' && styles.checkboxSelected,
                 ]}
               >
-                {selected === "yearly" && <View style={styles.checkboxInner} />}
+                {selected === 'yearly' && <View style={styles.checkboxInner} />}
               </View>
             </View>
           </TouchableOpacity>
@@ -84,9 +84,9 @@ const SubscriptionPlans: React.FC<PlanProps> = ({
         <TouchableOpacity
           style={[
             styles.planContainer,
-            selected === "onetime" && styles.selectedPlan,
+            selected === 'onetime' && styles.selectedPlan,
           ]}
-          onPress={() => handleSelection("onetime")}
+          onPress={() => handleSelection('onetime')}
           activeOpacity={0.7}
         >
           <View style={styles.checkboxContainer}>
@@ -98,10 +98,10 @@ const SubscriptionPlans: React.FC<PlanProps> = ({
             <View
               style={[
                 styles.checkbox,
-                selected === "onetime" && styles.checkboxSelected,
+                selected === 'onetime' && styles.checkboxSelected,
               ]}
             >
-              {selected === "onetime" && <View style={styles.checkboxInner} />}
+              {selected === 'onetime' && <View style={styles.checkboxInner} />}
             </View>
           </View>
         </TouchableOpacity>
@@ -119,8 +119,8 @@ const styles = StyleSheet.create({
   planContainer: {},
   selectedPlan: {},
   checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 12,
   },
   checkbox: {
@@ -128,46 +128,46 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#111",
-    justifyContent: "center",
-    alignItems: "center",
+    borderColor: '#111',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   checkboxSelected: {
-    borderColor: "#111",
-    backgroundColor: "#fff",
+    borderColor: '#111',
+    backgroundColor: '#fff',
   },
   checkboxInner: {
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: "#111",
+    backgroundColor: '#111',
   },
   planInfo: {
     flex: 1,
-    flexDirection: "row",
+    flexDirection: 'row',
   },
   planTitle: {
     fontSize: 15,
-    fontFamily: "InterMedium",
-    color: "#111",
+    fontFamily: 'InterMedium',
+    color: '#111',
   },
   planPrice: {
     fontSize: 14,
-    color: "#666666",
+    color: '#666666',
   },
   discountBadge: {
-    position: "absolute",
+    position: 'absolute',
     right: 0,
     top: 0,
-    backgroundColor: "#FF3B30",
+    backgroundColor: '#FF3B30',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
   },
   discountText: {
-    color: "#FF325E",
+    color: '#FF325E',
     fontSize: 15,
-    fontFamily: "InterMedium",
+    fontFamily: 'InterMedium',
   },
 });
 

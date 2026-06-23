@@ -1,12 +1,12 @@
-import React from "react";
-import { View, StyleSheet, Text, Animated } from "react-native";
-import { useFocusEffect } from "expo-router";
+import React from 'react';
+import { View, StyleSheet, Text, Animated } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 
 interface WelcomeBackProps {
   username?: string;
 }
 
-const WelcomeBack: React.FC<WelcomeBackProps> = ({ username }) => {
+const WelcomeBack: React.FC<WelcomeBackProps> = () => {
   const opacity = React.useRef(new Animated.Value(0)).current;
 
   useFocusEffect(
@@ -28,7 +28,7 @@ const WelcomeBack: React.FC<WelcomeBackProps> = ({ username }) => {
       return () => {
         opacity.setValue(0);
       };
-    }, []),
+    }, [])
   );
 
   return (
@@ -40,22 +40,22 @@ const WelcomeBack: React.FC<WelcomeBackProps> = ({ username }) => {
 
 const styles = StyleSheet.create({
   container: {
-    position: "absolute",
-    top: "50%",
+    position: 'absolute',
+    top: '50%',
     left: 0,
     right: 0,
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     padding: 20,
     borderRadius: 10,
     margin: 20,
     paddingVertical: 20,
   },
   welcomeText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 24,
-    fontFamily: "InterBold",
-    textAlign: "center",
+    fontFamily: 'InterBold',
+    textAlign: 'center',
   },
 });
 

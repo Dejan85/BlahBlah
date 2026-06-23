@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/utils/supabase";
+import { useState, useEffect } from 'react';
+import { supabase } from '@/utils/supabase';
 import {
   StyleSheet,
   View,
@@ -9,8 +9,8 @@ import {
   ActivityIndicator,
   StyleProp,
   ViewStyle,
-} from "react-native";
-import * as ImagePicker from "expo-image-picker";
+} from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 
 interface Props {
   size: number;
@@ -36,16 +36,16 @@ export default function Avatar({ url, size = 150, onUpload, style }: Props) {
   }, [url]);
 
   function isExternalUrl(url: string): boolean {
-    return url.startsWith("http://") || url.startsWith("https://");
+    return url.startsWith('http://') || url.startsWith('https://');
   }
 
   function getPublicUrlImage(path: string) {
-    const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+    const { data } = supabase.storage.from('avatars').getPublicUrl(path);
 
     if (data) {
       setAvatarUrl(data.publicUrl);
     } else {
-      console.log("Error fetching public URL");
+      console.log('Error fetching public URL');
       setAvatarUrl(null);
     }
   }
@@ -55,10 +55,10 @@ export default function Avatar({ url, size = 150, onUpload, style }: Props) {
       setUploading(true);
       const { status } =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
+      if (status !== 'granted') {
         Alert.alert(
-          "Permission needed",
-          "Please grant permission to access your photos",
+          'Permission needed',
+          'Please grant permission to access your photos'
         );
         return;
       }
@@ -73,31 +73,31 @@ export default function Avatar({ url, size = 150, onUpload, style }: Props) {
       });
 
       if (result.canceled || !result.assets || result.assets.length === 0) {
-        console.log("User cancelled image picker.");
+        console.log('User cancelled image picker.');
         return;
       }
 
       const image = result.assets[0];
       if (!image.uri) {
-        throw new Error("No image uri!");
+        throw new Error('No image uri!');
       }
 
       if (image.fileSize && image.fileSize > 5 * 1024 * 1024) {
-        Alert.alert("Image too large", "Please select an image under 5MB");
+        Alert.alert('Image too large', 'Please select an image under 5MB');
         return;
       }
 
       const arraybuffer = await fetch(image.uri).then((res) =>
-        res.arrayBuffer(),
+        res.arrayBuffer()
       );
 
-      const fileExt = image.uri?.split(".").pop()?.toLowerCase() ?? "jpeg";
+      const fileExt = image.uri?.split('.').pop()?.toLowerCase() ?? 'jpeg';
       const path = `${Date.now()}.${fileExt}`;
       const { data, error: uploadError } = await supabase.storage
-        .from("avatars")
+        .from('avatars')
         .upload(path, arraybuffer, {
-          contentType: image.mimeType ?? "image/jpeg",
-          cacheControl: "2592000",
+          contentType: image.mimeType ?? 'image/jpeg',
+          cacheControl: '2592000',
           upsert: true,
         });
 
@@ -107,7 +107,7 @@ export default function Avatar({ url, size = 150, onUpload, style }: Props) {
 
       if (onUpload && data) {
         const publicUrl = supabase.storage
-          .from("avatars")
+          .from('avatars')
           .getPublicUrl(data.path);
         if (publicUrl.data) {
           onUpload(publicUrl.data.publicUrl);
@@ -115,9 +115,9 @@ export default function Avatar({ url, size = 150, onUpload, style }: Props) {
       }
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert("Upload failed", error.message);
+        Alert.alert('Upload failed', error.message);
       } else {
-        Alert.alert("Upload failed", "An unexpected error occurred");
+        Alert.alert('Upload failed', 'An unexpected error occurred');
       }
     } finally {
       setUploading(false);
@@ -145,7 +145,7 @@ export default function Avatar({ url, size = 150, onUpload, style }: Props) {
       {onUpload && (
         <View style={styles.uploadButtonContainer}>
           <Button
-            title={uploading ? "Uploading..." : "Change Photo"}
+            title={uploading ? 'Uploading...' : 'Change Photo'}
             onPress={uploadAvatar}
             disabled={uploading}
             color="#FF325E"
@@ -159,28 +159,28 @@ export default function Avatar({ url, size = 150, onUpload, style }: Props) {
 const styles = StyleSheet.create({
   avatar: {
     borderRadius: 30,
-    overflow: "hidden",
-    maxWidth: "100%",
-    backgroundColor: "#F0F0F0",
+    overflow: 'hidden',
+    maxWidth: '100%',
+    backgroundColor: '#F0F0F0',
   },
   image: {
-    objectFit: "cover",
+    objectFit: 'cover',
     paddingTop: 0,
   },
   noImage: {
-    backgroundColor: "#F0F0F0",
+    backgroundColor: '#F0F0F0',
     borderWidth: 1,
-    borderStyle: "solid",
-    borderColor: "#E0E0E0",
+    borderStyle: 'solid',
+    borderColor: '#E0E0E0',
     borderRadius: 30,
   },
   loadingContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#F0F0F0",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F0F0F0',
   },
   uploadButtonContainer: {
     marginTop: 8,
-    alignItems: "center",
+    alignItems: 'center',
   },
 });

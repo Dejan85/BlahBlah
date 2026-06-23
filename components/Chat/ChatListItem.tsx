@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { Image as ExpoImage } from "expo-image";
-import { supabase } from "@/utils/supabase";
-import type { User } from "@/types";
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Image as ExpoImage } from 'expo-image';
+import { supabase } from '@/utils/supabase';
+import type { User } from '@/types';
 
 interface ChatListItemProps {
   item: User & {
@@ -34,11 +34,11 @@ const TYPING_ANIMATION_DELAY = 300; // 300ms for smooth transition
 const ChatListItem: React.FC<ChatListItemProps> = React.memo(
   ({ item, currentUserId, onPress }) => {
     const [isTyping, setIsTyping] = useState(false);
-    const [typingText, setTypingText] = useState("");
+    const [typingText, setTypingText] = useState('');
 
     // Memoize the typing animation function
     const animateTypingText = useCallback(() => {
-      const dots = ["", ".", "..", "..."];
+      const dots = ['', '.', '..', '...'];
       let index = 0;
 
       const intervalId = setInterval(() => {
@@ -69,8 +69,8 @@ const ChatListItem: React.FC<ChatListItemProps> = React.memo(
       const channel = supabase
         .channel(`typing-${item.id}`)
         .on(
-          "broadcast",
-          { event: "typing" },
+          'broadcast',
+          { event: 'typing' },
           ({ payload }: { payload: TypingPayload }) => {
             if (payload.userId !== currentUserId) {
               // Clear existing timeouts
@@ -90,7 +90,7 @@ const ChatListItem: React.FC<ChatListItemProps> = React.memo(
                 }, TYPING_TIMEOUT);
               }
             }
-          },
+          }
         )
         .subscribe();
 
@@ -154,18 +154,18 @@ const ChatListItem: React.FC<ChatListItemProps> = React.memo(
         </View>
       </TouchableOpacity>
     );
-  },
+  }
 );
 
 // Add display name for debugging purposes
-ChatListItem.displayName = "ChatListItem";
+ChatListItem.displayName = 'ChatListItem';
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
+    flexDirection: 'row',
     padding: 16,
-    alignItems: "center",
-    backgroundColor: "#fff",
+    alignItems: 'center',
+    backgroundColor: '#fff',
   },
   avatar: {
     width: 50,
@@ -175,43 +175,43 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   username: {
     fontSize: 16,
-    fontFamily: "InterSemiBold",
+    fontFamily: 'InterSemiBold',
     marginBottom: 4,
-    color: "#000",
+    color: '#000',
   },
   messagePreview: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   lastMessage: {
     flex: 1,
     fontSize: 14,
-    fontFamily: "InterRegular",
+    fontFamily: 'InterRegular',
   },
   messageSeen: {
-    color: "#B3B3B3",
+    color: '#B3B3B3',
   },
   messageUnseen: {
-    color: "#B3B3B3",
+    color: '#B3B3B3',
   },
   timeAgo: {
     fontSize: 12,
-    color: "#B3B3B3",
+    color: '#B3B3B3',
     marginLeft: 8,
   },
   typingContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   typingText: {
     fontSize: 14,
-    color: "#FF325E",
-    fontFamily: "InterRegular",
+    color: '#FF325E',
+    fontFamily: 'InterRegular',
     marginRight: 4,
   },
 });

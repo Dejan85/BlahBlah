@@ -20,14 +20,11 @@
         "NSLocationWhenInUseUsageDescription": "This app needs access to location when open to find nearby users.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "This app needs access to location when open and in the background to find nearby users.",
         "NSLocationAlwaysUsageDescription": "This app needs access to location when in the background to find nearby users.",
-        "UIBackgroundModes": [
-          "location",
-          "fetch"
-        ]
+        "UIBackgroundModes": ["location", "fetch"]
       }
     },
     "android": {
-        "jsEngine": "hermes",
+      "jsEngine": "hermes",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/foreground.png",
         "backgroundColor": "#FF325E",
@@ -45,10 +42,7 @@
               "scheme": "blahblah"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ],
       "permissions": [

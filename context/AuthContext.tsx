@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { Session, User } from "@supabase/supabase-js";
-import { supabase } from "@/utils/supabase";
-import { Alert, AppState } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Session, User } from '@supabase/supabase-js';
+import { supabase } from '@/utils/supabase';
+import { Alert, AppState } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface AuthContextType {
   session: Session | null;
@@ -57,7 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           subscription.unsubscribe();
         };
       } catch (error) {
-        console.error("Auth initialization error:", error);
+        console.error('Auth initialization error:', error);
       } finally {
         setInitialized(true);
       }
@@ -68,8 +68,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Handle app state changes for session refresh
   useEffect(() => {
-    const subscription = AppState.addEventListener("change", (state) => {
-      if (state === "active") {
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
         supabase.auth.startAutoRefresh();
       } else {
         supabase.auth.stopAutoRefresh();
@@ -88,7 +88,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       password,
     });
     if (error) {
-      Alert.alert("Error", error.message);
+      Alert.alert('Error', error.message);
     }
     setLoading(false);
   };
@@ -100,7 +100,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         email,
         password,
         options: {
-          emailRedirectTo: "blahblah://",
+          emailRedirectTo: 'blahblah://',
           data: {
             isNewSignUp: true,
           },
@@ -108,19 +108,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       });
 
       if (error) {
-        Alert.alert("Error", error.message);
+        Alert.alert('Error', error.message);
         throw error;
       }
 
       if (!data.session) {
         // Remove the Alert and just update the step
-        await AsyncStorage.setItem("signUpStep", "3");
+        await AsyncStorage.setItem('signUpStep', '3');
       }
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert("Error", error.message);
+        Alert.alert('Error', error.message);
       } else {
-        Alert.alert("Error", "An unexpected error occurred");
+        Alert.alert('Error', 'An unexpected error occurred');
       }
       throw error;
     } finally {
@@ -132,7 +132,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setLoading(true);
     const { error } = await supabase.auth.signOut();
     if (error) {
-      Alert.alert("Error", error.message);
+      Alert.alert('Error', error.message);
     }
     setLoading(false);
   };
@@ -142,19 +142,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setLoading(true);
 
       if (!user) {
-        throw new Error("No user logged in");
+        throw new Error('No user logged in');
       }
 
       // Update profile
-      const { error: updateError } = await supabase.from("profiles").upsert(
+      const { error: updateError } = await supabase.from('profiles').upsert(
         {
           id: user.id,
           full_name,
           updated_at: new Date().toISOString(),
         },
         {
-          onConflict: "id",
-        },
+          onConflict: 'id',
+        }
       );
 
       if (updateError) throw updateError;
@@ -167,9 +167,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       if (metadataError) throw metadataError;
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert("Error", error.message);
+        Alert.alert('Error', error.message);
       } else {
-        Alert.alert("Error", "An unexpected error occurred");
+        Alert.alert('Error', 'An unexpected error occurred');
       }
       throw error;
     } finally {
@@ -182,30 +182,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setLoading(true);
 
       if (!user) {
-        throw new Error("No user logged in");
+        throw new Error('No user logged in');
       }
 
       // Validate username format
       const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
       if (!usernameRegex.test(username)) {
         throw new Error(
-          "Username must be 3-20 characters long and can only contain letters, numbers, and underscores",
+          'Username must be 3-20 characters long and can only contain letters, numbers, and underscores'
         );
       }
 
       // Check if username already exists
       const { data: existingUsers, error: checkError } = await supabase
-        .from("profiles")
-        .select("username")
-        .eq("username", username)
-        .neq("id", user.id);
+        .from('profiles')
+        .select('username')
+        .eq('username', username)
+        .neq('id', user.id);
 
       if (checkError) {
-        throw new Error("Error checking username availability");
+        throw new Error('Error checking username availability');
       }
 
       if (existingUsers && existingUsers.length > 0) {
-        throw new Error("Username already taken");
+        throw new Error('Username already taken');
       }
 
       // Update profile
@@ -216,9 +216,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       };
 
       const { error: updateError } = await supabase
-        .from("profiles")
+        .from('profiles')
         .upsert(updates, {
-          onConflict: "id",
+          onConflict: 'id',
           ignoreDuplicates: false,
         });
 
@@ -236,9 +236,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert("Error", error.message);
+        Alert.alert('Error', error.message);
       } else {
-        Alert.alert("Error", "An unexpected error occurred");
+        Alert.alert('Error', 'An unexpected error occurred');
       }
       throw error;
     } finally {
@@ -251,13 +251,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setLoading(true);
 
       if (!user) {
-        throw new Error("No user logged in");
+        throw new Error('No user logged in');
       }
 
       // Get the public URL
       const {
         data: { publicUrl },
-      } = supabase.storage.from("avatars").getPublicUrl(filePath);
+      } = supabase.storage.from('avatars').getPublicUrl(filePath);
 
       // Update profile
       const updates: Profile = {
@@ -267,9 +267,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       };
 
       const { error: updateError } = await supabase
-        .from("profiles")
+        .from('profiles')
         .upsert(updates, {
-          onConflict: "id",
+          onConflict: 'id',
           ignoreDuplicates: false,
         });
 
@@ -289,9 +289,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       return publicUrl;
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert("Error", error.message);
+        Alert.alert('Error', error.message);
       } else {
-        Alert.alert("Error", "An unexpected error occurred");
+        Alert.alert('Error', 'An unexpected error occurred');
       }
       throw error;
     } finally {
@@ -327,7 +327,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };

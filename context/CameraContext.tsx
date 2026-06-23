@@ -1,6 +1,6 @@
-import React, { createContext, useState, ReactNode } from "react";
+import React, { createContext, useState, ReactNode } from 'react';
 
-type CameraFlowStep = "capture" | "preview" | "filter" | "send";
+type CameraFlowStep = 'capture' | 'preview' | 'filter' | 'send';
 
 interface CameraContextProps {
   step: CameraFlowStep;
@@ -20,7 +20,7 @@ interface CameraContextProps {
 }
 
 export const CameraContext = createContext<CameraContextProps>({
-  step: "capture",
+  step: 'capture',
   setStep: () => {},
   capturedPhoto: null,
   setCapturedPhoto: () => {},
@@ -28,18 +28,18 @@ export const CameraContext = createContext<CameraContextProps>({
   setVideo: () => {},
   isPreviewVisible: false,
   setIsPreviewVisible: () => {},
-  selectedFilter: "",
+  selectedFilter: '',
   setSelectedFilter: () => {},
 });
 
 export const CameraProvider = ({ children }: { children: ReactNode }) => {
-  const [step, setStep] = useState<CameraFlowStep>("capture");
+  const [step, setStep] = useState<CameraFlowStep>('capture');
   const [capturedPhoto, setCapturedPhoto] = useState<any>(null);
   const [video, setVideo] = useState<{ uri: string } | null>(null);
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
 
   // for filters
-  const [selectedFilter, setSelectedFilter] = useState<string>("Normal");
+  const [selectedFilter, setSelectedFilter] = useState<string>('Normal');
 
   return (
     <CameraContext.Provider

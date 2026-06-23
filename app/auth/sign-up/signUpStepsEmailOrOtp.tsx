@@ -1,28 +1,28 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, View, Pressable } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
-import SignUpSteps from "./signUpSteps"; // Import your email signup screen
-import SignUpWithPhone from "./signUpWithOtp";
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, Pressable } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
+import SignUpSteps from './signUpSteps'; // Import your email signup screen
+import SignUpWithPhone from './signUpWithOtp';
 const SignUpStepsEmailOrOtp = () => {
-  const [activeTab, setActiveTab] = useState<"email" | "phone">("email");
+  const [activeTab, setActiveTab] = useState<'email' | 'phone'>('email');
 
   return (
     <View style={styles.container}>
       {/* Tab Icons */}
       <View style={styles.tabs}>
         <Pressable
-          style={[styles.tab, activeTab === "email" && styles.activeTab]}
-          onPress={() => setActiveTab("email")}
+          style={[styles.tab, activeTab === 'email' && styles.activeTab]}
+          onPress={() => setActiveTab('email')}
         >
           <FontAwesome
             name="envelope"
             size={30}
-            color={activeTab === "email" ? "#fff" : "#B3B3B3"}
+            color={activeTab === 'email' ? '#fff' : '#B3B3B3'}
           />
           <Text
             style={[
               styles.tabText,
-              activeTab === "email" && styles.activeTabText,
+              activeTab === 'email' && styles.activeTabText,
             ]}
           >
             Email
@@ -30,18 +30,18 @@ const SignUpStepsEmailOrOtp = () => {
         </Pressable>
 
         <Pressable
-          style={[styles.tab, activeTab === "phone" && styles.activeTab]}
-          onPress={() => setActiveTab("phone")}
+          style={[styles.tab, activeTab === 'phone' && styles.activeTab]}
+          onPress={() => setActiveTab('phone')}
         >
           <FontAwesome
             name="phone"
             size={30}
-            color={activeTab === "phone" ? "#fff" : "#B3B3B3"}
+            color={activeTab === 'phone' ? '#fff' : '#B3B3B3'}
           />
           <Text
             style={[
               styles.tabText,
-              activeTab === "phone" && styles.activeTabText,
+              activeTab === 'phone' && styles.activeTabText,
             ]}
           >
             Phone
@@ -51,7 +51,7 @@ const SignUpStepsEmailOrOtp = () => {
 
       {/* Render Content Based on Active Tab */}
       <View style={styles.content}>
-        {activeTab === "email" ? <SignUpSteps /> : <SignUpWithPhone />}
+        {activeTab === 'email' ? <SignUpSteps /> : <SignUpWithPhone />}
       </View>
     </View>
   );
@@ -65,24 +65,24 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   tabs: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingVertical: 10,
   },
   tab: {
-    alignItems: "center",
+    alignItems: 'center',
     marginHorizontal: 20,
   },
   activeTab: {},
   tabText: {
     fontSize: 14,
-    color: "#B3B3B3",
-    fontFamily: "InterMedium",
+    color: '#B3B3B3',
+    fontFamily: 'InterMedium',
     marginTop: 5,
   },
   activeTabText: {
-    color: "#fff",
+    color: '#fff',
   },
   content: {
     flex: 1,

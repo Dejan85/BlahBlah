@@ -1,21 +1,14 @@
-import React, { useRef, useState, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  StatusBar,
-  Animated,
-  Text,
-  Platform,
-} from "react-native";
-import SearchComponent from "@/components/SearchComponent";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Header from "@/components/Header";
-import { useRouter } from "expo-router";
-import { User } from "@/types";
-import { runOnJS } from "react-native-reanimated";
-import UserListComponent from "@/components/UserListComponent";
-import { supabase } from "@/utils/supabase";
-import { useAuth } from "@/context/AuthContext";
+import React, { useRef, useState, useEffect } from 'react';
+import { View, StyleSheet, StatusBar, Animated, Text } from 'react-native';
+import SearchComponent from '@/components/SearchComponent';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Header from '@/components/Header';
+import { useRouter } from 'expo-router';
+import { User } from '@/types';
+import { runOnJS } from 'react-native-reanimated';
+import UserListComponent from '@/components/UserListComponent';
+import { supabase } from '@/utils/supabase';
+import { useAuth } from '@/context/AuthContext';
 
 const SEARCH_HEIGHT = 60;
 const SWIPE_THRESHOLD = 50;
@@ -37,18 +30,18 @@ interface FriendshipRecord {
 }
 
 type Friend = User & {
-  requestStatus: "friend";
+  requestStatus: 'friend';
 };
 
 const FriendsList: React.FC = () => {
   const searchAnimation = useRef(new Animated.Value(0)).current;
   const searchOpacity = useRef(new Animated.Value(1)).current;
   const lastScrollPosition = useRef(0);
-  const scrollDirection = useRef("");
+  const scrollDirection = useRef('');
   const isSearchHidden = useRef(false);
 
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [friends, setFriends] = useState<Friend[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -65,15 +58,15 @@ const FriendsList: React.FC = () => {
 
     // Check if conversation already exists
     const { data: existingConv, error: convError } = await supabase
-      .from("conversations")
-      .select("*")
+      .from('conversations')
+      .select('*')
       .or(
-        `and(participant1_id.eq.${participant1_id},participant2_id.eq.${participant2_id}),and(participant1_id.eq.${participant2_id},participant2_id.eq.${participant1_id})`,
+        `and(participant1_id.eq.${participant1_id},participant2_id.eq.${participant2_id}),and(participant1_id.eq.${participant2_id},participant2_id.eq.${participant1_id})`
       )
       .single();
 
-    if (convError && convError.code !== "PGRST116") {
-      console.error("Error checking conversation:", convError);
+    if (convError && convError.code !== 'PGRST116') {
+      console.error('Error checking conversation:', convError);
       return;
     }
 
@@ -82,7 +75,7 @@ const FriendsList: React.FC = () => {
     // If no conversation, create one
     if (!conversationId) {
       const { data: newConv, error: newConvError } = await supabase
-        .from("conversations")
+        .from('conversations')
         .insert({
           participant1_id,
           participant2_id,
@@ -91,7 +84,7 @@ const FriendsList: React.FC = () => {
         .single();
 
       if (newConvError) {
-        console.error("Error creating conversation:", newConvError);
+        console.error('Error creating conversation:', newConvError);
         return;
       }
 
@@ -100,7 +93,7 @@ const FriendsList: React.FC = () => {
 
     // Navigate to chat-room
     router.push({
-      pathname: "/chats/chat-room/[id]",
+      pathname: '/chats/chat-room/[id]',
       params: {
         id: conversationId,
         username: user.username,
@@ -117,7 +110,7 @@ const FriendsList: React.FC = () => {
       setIsLoading(true);
 
       const { data: friendships, error: friendsError } = await supabase
-        .from("friends")
+        .from('friends')
         .select(
           `
           id,
@@ -131,12 +124,12 @@ const FriendsList: React.FC = () => {
             bio,
             full_name
           )
-        `,
+        `
         )
-        .eq("user_id", currentUserId);
+        .eq('user_id', currentUserId);
 
       if (friendsError) {
-        console.error("Error fetching friends:", friendsError);
+        console.error('Error fetching friends:', friendsError);
         return;
       }
 
@@ -155,19 +148,19 @@ const FriendsList: React.FC = () => {
 
         transformedFriends.push({
           id: friendship.friend_profile.id,
-          username: friendship.friend_profile.username || "",
+          username: friendship.friend_profile.username || '',
           image:
             friendship.friend_profile.avatar_url ||
-            "https://via.placeholder.com/150",
-          bio: friendship.friend_profile.bio || "",
-          full_name: friendship.friend_profile.full_name || "", // Add this field
-          requestStatus: "friend",
+            'https://via.placeholder.com/150',
+          bio: friendship.friend_profile.bio || '',
+          full_name: friendship.friend_profile.full_name || '', // Add this field
+          requestStatus: 'friend',
         });
       });
 
       setFriends(transformedFriends);
     } catch (error) {
-      console.error("Error in fetchFriends:", error);
+      console.error('Error in fetchFriends:', error);
     } finally {
       setIsLoading(false);
     }
@@ -177,16 +170,16 @@ const FriendsList: React.FC = () => {
     fetchFriends();
 
     const friendsChannel = supabase
-      .channel("friends-changes")
+      .channel('friends-changes')
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "*",
-          schema: "public",
-          table: "friends",
+          event: '*',
+          schema: 'public',
+          table: 'friends',
           filter: `user_id=eq.${currentUserId} OR friend_id=eq.${currentUserId}`,
         },
-        () => fetchFriends(),
+        () => fetchFriends()
       )
       .subscribe();
 
@@ -204,7 +197,7 @@ const FriendsList: React.FC = () => {
 
     if (isScrollingDown && hasScrolledEnough && !isSearchHidden.current) {
       isSearchHidden.current = true;
-      scrollDirection.current = "down";
+      scrollDirection.current = 'down';
 
       Animated.sequence([
         Animated.timing(searchAnimation, {
@@ -227,7 +220,7 @@ const FriendsList: React.FC = () => {
       ]).start();
     } else if (isScrollingUp && hasScrolledEnough && isSearchHidden.current) {
       isSearchHidden.current = false;
-      scrollDirection.current = "up";
+      scrollDirection.current = 'up';
 
       Animated.sequence([
         Animated.parallel([
@@ -262,30 +255,30 @@ const FriendsList: React.FC = () => {
       .runOnJS(true)
       .activeOffsetX([-10, 10])
       .onEnd((event) => {
-        "worklet";
+        'worklet';
         if (event.velocityX > SWIPE_THRESHOLD) {
           runOnJS(handleBack)();
         }
       }),
-    Gesture.Native(),
+    Gesture.Native()
   );
 
   const handleUserPress = (user: User) => {
     router.push({
-      pathname: "/profile/profile-details/[id]",
+      pathname: '/profile/profile-details/[id]',
       params: {
         id: user.id,
         username: user.username,
         bio: user.bio,
         image: user.image,
-        lockProfile: user.requestStatus === "friend" ? "false" : "true",
-        fullName: user.full_name || "", // Add this field
+        lockProfile: user.requestStatus === 'friend' ? 'false' : 'true',
+        fullName: user.full_name || '', // Add this field
       },
     });
   };
 
   const filteredFriends = friends.filter((friend) =>
-    friend.username?.toLowerCase().includes(searchQuery.toLowerCase()),
+    friend.username?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -343,10 +336,10 @@ const FriendsList: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
   },
   searchWrapper: {
-    position: "absolute",
+    position: 'absolute',
     top: 20,
     left: 0,
     right: 0,
@@ -354,8 +347,8 @@ const styles = StyleSheet.create({
   },
   centerContent: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
