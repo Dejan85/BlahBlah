@@ -118,26 +118,14 @@ Aplikacija je obimna — ~298 fajlova, ~70 komponenti.
 
 ## 6. 🎯 Redosled rada (roadmap)
 
-1. **Faza 0 — Da app proradi**
-   - Sredi dependencije (jedan package manager, instaliraj `firebase`)
-   - Popravi 3 blokera iz sekcije 3
-   - Verifikuj: `npx expo start` pokreće app
-2. **Faza 1 — Čist kod**
-   - Očisti sve TS greške → `npx tsc --noEmit` prolazi
-   - Ukloni mrtav/duplikat kod, sredi tipfeler u folderu
-3. **Faza 2 — Backup baze**
-   - `supabase db pull` → commit migracija + RLS politika
-4. **Faza 3 — Polish**
-   - README, ime paketa · ~~ukloni log curenje ključeva~~ ✅ (T1.2)
-5. **Faza 4 — Novi feature-i** → vidi **`FEATURES.md`** (produktni spec sa Figme + status). Najveći gap-ovi (signature mehanike koje NE postoje):
-   > ⚙️ **Sve Faza-4 mehanike idu kroz `lib/` sloj (čiste funkcije + `*.test.ts`)** — vidi `ARCHITECTURE.md` §2.5. Tako su testabilne `npm test`-om bez pokretanja app-a.
-   1. Blah Score sistem (formula, real-time, formatiranje) — temelj
-   2. Streak + Blah Recovery (24/26h prozori, reset, recovery + plaćanje)
-   3. Chat Hours tajmer (24h po konverzaciji)
-   4. Randomizovane presence poruke po vremenskim zonama
-   5. Premium pogodnosti zavisne od skora (Who viewed profile, Score Boost +10%, Ad-free)
-   6. Stories 24h expiry + "lock 3 posts" premium gating
-   7. Kompletiranje notifikacija (svi tipovi + deep-link)
+> ⚠️ **Jedini izvor redosleda rada je [`TASKS.md`](TASKS.md)** (task-po-task, ~51 task kroz 5 faza). Ovde se NE duplira lista da se ne bi raspadala — vidi TASKS.md za aktuelno stanje i sledeći task.
+
+Faze ukratko (detalji u TASKS.md):
+- **Faza 0** — da app proradi (✅ ZAVRŠENA)
+- **Faza 1** — čist kod / temelj (TS, mrtav kod, lint, README, ime paketa)
+- **Faza 2** — backup baze (migracije + RLS + TS tipovi)
+- **Faza 3** — signature mehanike (Blah Score → streak → recovery → ephemeral → premium) — najveći blok, sve kroz `lib/` + testovi (`ARCHITECTURE.md` §2.5)
+- **Faza 4** — polish (auth, push, settings, legal, multi-account)
 
 ---
 

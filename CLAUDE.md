@@ -36,7 +36,8 @@ Social media app (Expo / React Native), hibrid Snapchat + Instagram. Backend: **
    - §2.5 procena ako se završenost promenila.
    - Proveri da nijedna tvrdnja u §1–§5 nije zastarela (npr. brojevi grešaka, "ne build-uje", mrtve reference na fajlove).
 4. **FEATURES.md / SCREENS.md** — ako je task dotakao mehaniku/ekran, ažuriraj status tamo.
-5. **commit + push.** Jedan task = jedan atomski commit (mapira na TASKS.md); spoj više taskova samo kad su nerazdvojivi. Ne ostavljaj završen task nekomitovan.
+5. **Grep-sweep (obavezno, mehanička provera pre commit-a):** pregrepuj CEO `docs/` za (a) ID taska, (b) imena fajlova/feature-a koje si dirao, (c) ključne reči problema koji je task rešio. Potvrdi da NIJEDNA zaostala referenca ne stoji kao otvoren TODO / zastarela tvrdnja. Ovaj korak hvata propuste koje vizuelni pregled promaši.
+6. **commit + push.** Jedan task = jedan atomski commit (mapira na TASKS.md); spoj više taskova samo kad su nerazdvojivi. Ne ostavljaj završen task nekomitovan.
 
 ## Komande
 
