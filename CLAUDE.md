@@ -31,6 +31,7 @@ Social media app (Expo / React Native), hibrid Snapchat + Instagram. Backend: **
 1. `npx tsc --noEmit` prolazi.
 2. **TASKS.md** — čekiraj `[x]` + kratka beleška šta je urađeno; ako je faza gotova, označi je.
 3. **PROJECT_STATUS.md — ažuriraj SVE pogođene sekcije, ne samo dnevnik:**
+   - **Header (vrh fajla): „Poslednje ažuriranje" datum + „Stanje" linija (§1)** — uvek osveži; ovo se lako zaboravi i zaostane više taskova.
    - §8 dnevnik: dodaj red (šta, kako, watch-itemi).
    - §3 Blokeri / §4 Problemi / §5 Rizici: precrtaj/označi rešeno, dodaj novonastalo.
    - §2.5 procena ako se završenost promenila.
