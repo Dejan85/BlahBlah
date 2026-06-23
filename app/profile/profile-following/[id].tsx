@@ -75,7 +75,7 @@ const ProfileFollowing: React.FC = () => {
       if (error) {
         console.error("Error fetching following:", error);
       } else if (data) {
-        const mappedFollowing = (data as FollowingRecord[])
+        const mappedFollowing = (data as unknown as FollowingRecord[])
           .map((record) => record.following_profile)
           .filter(Boolean);
         setFollowing(mappedFollowing);

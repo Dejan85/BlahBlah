@@ -69,7 +69,7 @@ const ProfileFollowers: React.FC = () => {
 
       if (data) {
         // Safely type and transform the data
-        const typedData = data as DatabaseFollow[];
+        const typedData = data as unknown as DatabaseFollow[];
         const followerProfiles = typedData.map((record) => record.profiles);
         setFollowers(followerProfiles);
       }

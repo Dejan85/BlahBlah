@@ -48,26 +48,33 @@ const Index = () => {
       if (data) {
         // Transform the data with proper type checking
         const formattedNotifications: Notification[] = data
-          .filter((notification) => notification.sender) // Filter out notifications with missing sender data
+          // Supabase types a to-one join as an array; normalize to a single sender object
           .map((notification) => ({
+            notification,
+            sender: Array.isArray(notification.sender)
+              ? notification.sender[0]
+              : notification.sender,
+          }))
+          .filter(({ sender }) => sender) // Filter out notifications with missing sender data
+          .map(({ notification, sender }) => ({
             id: notification.id,
             type: notification.type as "FOLLOW_REQUEST" | "MESSAGE",
             sender: {
-              username: notification.sender.username,
-              avatar_url: notification.sender.avatar_url,
-              full_name: notification.sender.full_name,
+              username: sender.username,
+              avatar_url: sender.avatar_url,
+              full_name: sender.full_name,
             },
-            username: notification.sender.username, // Add these fields to match your Notification interface
-            avatar_url: notification.sender.avatar_url,
+            username: sender.username, // Add these fields to match your Notification interface
+            avatar_url: sender.avatar_url,
             created_at: notification.created_at,
             is_read: notification.is_read,
             payload: {
               ...notification.payload,
               conversationId: notification.payload?.conversationId,
               sender: {
-                username: notification.sender.username,
-                avatar_url: notification.sender.avatar_url,
-                full_name: notification.sender.full_name,
+                username: sender.username,
+                avatar_url: sender.avatar_url,
+                full_name: sender.full_name,
               },
             },
           }));

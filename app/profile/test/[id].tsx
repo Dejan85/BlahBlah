@@ -180,7 +180,7 @@ const ProfileScreen: FC<ProfileDetailsProps> = ({ lockProfile = false }) => {
       if (profileResponse.error) throw profileResponse.error;
 
       // If location is enabled, request permission and update coordinates
-      let currentLocation = null;
+      let currentLocation: Location.LocationObject | null = null;
       if (profileResponse.data?.location_enabled) {
         try {
           const { status } = await Location.requestForegroundPermissionsAsync();

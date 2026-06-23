@@ -200,7 +200,7 @@ const ProfileScreen = () => {
       }
 
       // Get current location if enabled
-      let currentLocation = null;
+      let currentLocation: Location.LocationObject | null = null;
       if (profileResponse.data?.location_enabled) {
         try {
           const { status } = await Location.requestForegroundPermissionsAsync();

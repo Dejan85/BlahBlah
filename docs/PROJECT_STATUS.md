@@ -90,14 +90,14 @@ Aplikacija je obimna — ~298 fajlova, ~70 komponenti.
 
 ## 4. 🟠 Problemi sa kodom
 
-- [ ] **17 TypeScript grešaka** (`npx tsc --noEmit` ne prolazi) — *T1.1; broj potvrđen posle SDK-51 poravnanja*:
-  - [ ] `app/notifications/index.tsx` — Supabase join vraća niz, kod pristupa kao objektu (8 grešaka)
-  - [ ] `app/profile/index.tsx:203` i `app/profile/test/[id].tsx:183` — `currentLocation` implicitno `any`
-  - [ ] `components/Acounts.tsx:6` — `Push` nema default export
-  - [ ] `app/profile/profile-followers/[id].tsx` i `profile-following/[id].tsx` — pogrešni type cast-ovi
+- [x] ~~**17 TypeScript grešaka**~~ ✅ **REŠENO (T1.1)** — `npx tsc --noEmit` prolazi čisto:
+  - [x] `app/notifications/index.tsx` — join niz → normalizacija na objekat (8 grešaka)
+  - [x] `app/profile/index.tsx` i `app/profile/test/[id].tsx` — `currentLocation: Location.LocationObject | null`
+  - [x] ~~`components/Acounts.tsx`~~ — mrtav Supabase starter (nigde se ne importuje), **obrisan**
+  - [x] `app/profile/profile-followers/[id].tsx` i `profile-following/[id].tsx` — `as unknown as` cast
 - [ ] **Mrtav / duplikat kod**:
   - [ ] `MessageContext` ima i `handleReaction` i neiskorišćen `handleMessageReaction`
-  - [ ] `app/profile/test/[id].tsx` izgleda kao duplikat profila — proveriti i obrisati
+  - [ ] `app/profile/test/[id].tsx` izgleda kao duplikat profila — proveriti i obrisati (T1.3)
   - [ ] folder `app/freind-requests/` ima **tipfeler** u imenu (→ `friend-requests`)
 - [ ] **`package.json` ime je još `"test"`** — preimenovati u `blahblah`
 - [ ] **README** je default Expo template — zameniti pravim opisom
@@ -144,7 +144,7 @@ Aplikacija je obimna — ~298 fajlova, ~70 komponenti.
 ## 7. 📝 Komande za proveru
 
 ```bash
-# Type check (trenutno NE prolazi — vidi sekciju 4)
+# Type check (✅ prolazi čisto od T1.1)
 npx tsc --noEmit
 
 # Pokretanje
@@ -172,4 +172,5 @@ npm run format
 - **2026-06-23** — Dodat **`TASKS.md`** — task-po-task redosled rada (~51 task kroz 5 faza). Glavni radni tracker odsad.
 - **2026-06-23** — ✅ **T0.1 + T0.2 + T0.4 gotovi.** Izabran npm (obrisan yarn.lock). Uklonjen firebase JS SDK (mrtav kod) — `package.json`, `utils/firebase.ts`, `_layout.tsx` import, `utils/index.ts` re-export. `npm install` prošao, firebase nestao iz node_modules, TS greške 18→17. Commitovano (2e8ce61, 4d6d21c) + push na origin/develop.
 - **2026-06-23** — ✅ **T0.3 gotov.** Popravljen plist case-mismatch u `app.json`. Ostaje T0.5 (pokretanje app-a) za kraj Faze 0.
+- **2026-06-23** — ✅ **T1.1 gotov.** Svih 17 TS grešaka rešeno, `tsc --noEmit` prolazi čisto. (1) Supabase to-one join je tipovan kao niz a vraća objekat: u `notifications/index.tsx` normalizacija (`Array.isArray ? [0] : x`), u followers/following `as unknown as` cast. (2) `currentLocation` tipovan `Location.LocationObject | null` (profile/index + profile/test). (3) `components/Acounts.tsx` — mrtav Supabase starter (`<Push />` ne postoji, nigde se ne importuje) **obrisan**. **Watch-item:** pravi tip-fix za join-ove dolazi u T2.2 (`supabase gen types`) — sad su pragmatični cast-ovi. Fix u `profile/test/[id].tsx` je privremen — fajl se briše u T1.3.
 - **2026-06-23** — ✅ **T0.5 gotov → FAZA 0 ZAVRŠENA.** App build-ovan i pokrenut na realnom uređaju (Galaxy S24), diže se **bez crash-a** do login ekrana (Phone/Google/Facebook/Twitter). Tok: (1) native build prvo pukao na `react-native-gesture-handler:compileDebugKotlin` (`ViewManagerWithGeneratedInterface`) — uzrok: paketi odlutali od SDK 51. (2) `npx expo install --fix` poravnao 7 paketa (RN 0.75→0.74.5, gesture-handler 2.32→2.16, reanimated 3.16→3.10, skia 1.12→1.2.3, screens, pager-view, image-picker) → rebuild prošao (10min). (3) Telefon nije mogao na Metro preko WiFi → `adb reverse tcp:8081`. (4) App visio na splash-u jer je **Supabase projekat bio pauziran** (DNS `unknown host`) → korisnik reaktivirao, login ekran se učitao. **Watch-itemi za Fazu 1:** `@gorhom/bottom-sheet@5` traži reanimated ≥3.16 a sad je 3.10 (bottom-sheet rizik); potvrđeno curenje ključeva u logu (`utils/supabase.ts` → T1.2); TS greške ponovo proveriti posle promene verzija (T1.1).
