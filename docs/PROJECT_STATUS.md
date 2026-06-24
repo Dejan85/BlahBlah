@@ -20,6 +20,7 @@ Stanje: **Faza 0 i Faza 1 ZAVRŠENE** (T1.1–T1.9 gotovi); **Faza 2 u toku — 
 
 ### Supabase tabele koje kod koristi
 `profiles` · `posts` · `conversations` · `messages` · `message_reactions` · `notifications` · `follow_requests` · `follows`
+> ⚠️ Kod na par mesta gađa i `friends`/`friend_requests` koje **ne postoje** u šemi (T2.2 nalaz) → vidi §4.
 
 ---
 
