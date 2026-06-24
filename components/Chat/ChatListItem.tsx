@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Image as ExpoImage } from 'expo-image';
 import { supabase } from '@/utils/supabase';
+import { formatChatHours } from '@/lib/chatHours';
 import type { User } from '@/types';
 
 interface ChatListItemProps {
@@ -152,6 +153,16 @@ const ChatListItem: React.FC<ChatListItemProps> = React.memo(
           <Text style={styles.username}>{item.username}</Text>
           {messagePreview}
         </View>
+        {!!item.chatHours && item.chatHours > 0 && (
+          <Text
+            style={[
+              styles.chatHours,
+              item.chatHoursAtRisk && styles.chatHoursAtRisk,
+            ]}
+          >
+            {formatChatHours(item.chatHours)}
+          </Text>
+        )}
       </TouchableOpacity>
     );
   }
@@ -213,6 +224,15 @@ const styles = StyleSheet.create({
     color: '#FF325E',
     fontFamily: 'InterRegular',
     marginRight: 4,
+  },
+  chatHours: {
+    fontSize: 14,
+    fontFamily: 'InterBold',
+    color: '#FF325E',
+    marginLeft: 8,
+  },
+  chatHoursAtRisk: {
+    color: '#FF9500',
   },
 });
 

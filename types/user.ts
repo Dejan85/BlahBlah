@@ -17,6 +17,10 @@ export type User = {
   isTyping?: boolean;
   shouldShowMessageOnly?: boolean;
   distance?: number;
+  /** Vidljiv Chat Hours brojač (ceo broj sati) — Chat 5.0. 0/undefined = ne prikazuje se. */
+  chatHours?: number;
+  /** Chat Hours serija ističe za ≤3h (peščani sat / urgency u listi). */
+  chatHoursAtRisk?: boolean;
 };
 
 export interface NearbyUserData {

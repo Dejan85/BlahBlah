@@ -194,7 +194,7 @@ Status: `PremiumModal` / `SubsciptionPlans` + RevenueCat postoje (🟡); pogodno
 
 **Add Contact (dno):** "Add [Name] from Contacts" — predlozi iz sinhronizovanih kontakata; **Add** dugme dodaje (npr. "Add ZIZI +").
 
-Status: lista/search/typing/pin/swipe postoje (`app/chats/index.tsx`, `SwipeableChatItem`, `ChatListItem`); 🟡 Chat Hours brojač — **logika gotova** (`lib/chatHours.ts`, T3.10: `chatHours`/`formatChatHours` → „83h"), **prikaz ostaje T3.11**; 🟡 kontakti (`InviteUser`, expo-contacts).
+Status: lista/search/typing/pin/swipe postoje (`app/chats/index.tsx`, `SwipeableChatItem`, `ChatListItem`); ✅ Chat Hours brojač — **logika** (`lib/chatHours.ts`, T3.10) **+ prikaz** (T3.11: `ChatListItem` „83h" desno, at-risk narandžast; stanje izvedeno iz `messages` fold-om `registerMessage` u `app/chats/index.tsx`, bez nove DB kolone); 🟡 kontakti (`InviteUser`, expo-contacts).
 
 ### Chat 5.1 — Chat room — ✅/🟡
 **Header:** Ime + **last seen** ("Gone exploring 7m ago"), klik → profil. Back (gore-levo). **3-tačke meni** (gore-desno) → opcije (Chat 5.8).

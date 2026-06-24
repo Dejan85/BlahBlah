@@ -1,3 +1,5 @@
+import type { ChatHoursState } from '@/lib/chatHours';
+
 export interface Conversation {
   id: string;
   username: string;
@@ -12,6 +14,8 @@ export interface EnhancedConversation extends Conversation {
   unreadCount?: number;
   isPinned?: boolean;
   isMuted?: boolean;
+  /** Chat Hours serija (T3.10 lib/chatHours) — derivira vidljiv „83h" brojač. */
+  chatHoursState?: ChatHoursState;
 }
 
 interface DBMessage {

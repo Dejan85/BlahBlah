@@ -26,6 +26,13 @@ import {
   DBConversation,
   Conversation,
 } from '@/types/conversations';
+import {
+  EMPTY_CHAT_HOURS,
+  registerMessage,
+  chatHours as computeChatHours,
+  getChatHoursStatus,
+  type ChatHoursState,
+} from '@/lib/chatHours';
 
 const SEARCH_HEIGHT = 60;
 const SWIPE_THRESHOLD = 50;
@@ -93,8 +100,28 @@ const Chats: React.FC = () => {
 
         const lastMsg = sortedMessages[0];
 
+        // Chat Hours serija (T3.10): fold registerMessage preko SVIH poruka
+        // hronološki — pošiljalac 'me' ako je trenutni korisnik, inače 'them'.
+        const chatHoursState = (conv.messages || [])
+          .slice()
+          .sort(
+            (a, b) =>
+              new Date(a.created_at).getTime() -
+              new Date(b.created_at).getTime()
+          )
+          .reduce<ChatHoursState>(
+            (state, msg) =>
+              registerMessage(
+                state,
+                msg.sender_id === currentUserId ? 'me' : 'them',
+                new Date(msg.created_at).getTime()
+              ),
+            EMPTY_CHAT_HOURS
+          );
+
         return {
           id: conv.id,
+          chatHoursState,
           username: isP1
             ? (conv.participant2?.username ?? 'Unknown')
             : (conv.participant1?.username ?? 'Unknown'),
@@ -144,17 +171,26 @@ const Chats: React.FC = () => {
           // Update conversations with the new message
           setConversations((prev) =>
             prev.map((conv) => {
-              if (
-                conv.id === conversationId &&
-                newMessage.sender_id !== currentUserId
-              ) {
+              if (conv.id !== conversationId) return conv;
+
+              // Produži/obnovi Chat Hours seriju (T3.10) za SVAKU poruku — i moju
+              // i tuđu (obostranost drži streak živim).
+              const chatHoursState = registerMessage(
+                conv.chatHoursState ?? EMPTY_CHAT_HOURS,
+                newMessage.sender_id === currentUserId ? 'me' : 'them',
+                new Date(newMessage.created_at).getTime()
+              );
+
+              // Preview/timestamp se menja samo na primljenu poruku (kao i ranije).
+              if (newMessage.sender_id !== currentUserId) {
                 return {
                   ...conv,
+                  chatHoursState,
                   lastMessage: newMessage.text,
                   lastMessageTime: newMessage.created_at,
                 };
               }
-              return conv;
+              return { ...conv, chatHoursState };
             })
           );
         }
@@ -422,6 +458,13 @@ const Chats: React.FC = () => {
             lastMessage: conv.lastMessage,
             isPinned: conv.isPinned,
             isMuted: conv.isMuted,
+            chatHours: conv.chatHoursState
+              ? computeChatHours(conv.chatHoursState, Date.now())
+              : 0,
+            chatHoursAtRisk: conv.chatHoursState
+              ? getChatHoursStatus(conv.chatHoursState, Date.now()) ===
+                'at-risk'
+              : false,
           }))}
           onItemPress={handleUserPress}
           onScroll={handleScroll}
