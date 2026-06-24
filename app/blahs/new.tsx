@@ -15,6 +15,7 @@ import CustomTextInput from '@/components/CustomTextInput';
 import AudioWaveform from '@/components/AudioWaveForm';
 import { supabase } from '@/utils/supabase';
 import { useAuth } from '@/context/AuthContext';
+import { registerBlah, type StreakState } from '@/lib/streak';
 
 interface BlahBroadcastProps {
   onSend?: () => void;
@@ -257,6 +258,43 @@ export default function BlahBroadcast({ onSend }: BlahBroadcastProps) {
         .insert(messages);
 
       if (messagesError) throw messagesError;
+
+      // Streak + brojač poslatih Blah-ova (denormalizacija na slanje, T3.6).
+      // Logika u lib/streak.ts: registerBlah računa novi streak (kalendarski dan,
+      // tz-aware); DB samo skladišti. blahs_sent ulazi u Blah Score formulu.
+      // Sopstveni try/catch: Blah je već poslat — promašaj ovde ga ne sme oboriti.
+      // Race (dva uređaja, prvi Blah istog dana) je redak i benignan → samo log;
+      // serverski pg_cron sweep + on-read reset svejedno drže streak konzistentnim.
+      try {
+        const tzOffsetMinutes = -new Date().getTimezoneOffset(); // CET → +60
+        const { data: prof } = await supabase
+          .from('profiles')
+          .select('streak_day, last_blah_at, blahs_sent')
+          .eq('id', user.id)
+          .single();
+
+        const prev: StreakState = {
+          day: prof?.streak_day ?? 0,
+          lastBlahAt: prof?.last_blah_at
+            ? new Date(prof.last_blah_at).getTime()
+            : null,
+        };
+        const next = registerBlah(prev, Date.now(), tzOffsetMinutes);
+
+        await supabase
+          .from('profiles')
+          .update({
+            streak_day: next.day,
+            last_blah_at: next.lastBlahAt
+              ? new Date(next.lastBlahAt).toISOString()
+              : null,
+            streak_tz_offset: tzOffsetMinutes,
+            blahs_sent: (prof?.blahs_sent ?? 0) + 1,
+          })
+          .eq('id', user.id);
+      } catch (streakErr) {
+        console.error('Error updating streak/blahs_sent:', streakErr);
+      }
 
       setText('');
       onSend?.();

@@ -118,6 +118,24 @@ export function currentStreakDay(
   return getStreakStatus(state, now, tzOffsetMinutes) === 'lost' ? 0 : state.day;
 }
 
+/**
+ * Da li je streak PAO ('lost') u trenutku `now` — protekao bar jedan ceo
+ * kalendarski dan bez Blah-a. Za on-read lazy reset (upiši streak_day=0).
+ *
+ * ⚠️ KANONSKA GRANICA RESETA. Server-ski pg_cron sweep
+ * (`supabase/migrations/...streak_columns_and_reset_job.sql`,
+ * `reset_lapsed_streaks()`) je VERAN PORT ove granice u SQL —
+ * `dayKey(now) - dayKey(last) >= 2`. `streak.test.ts` ima "pinning" test koji
+ * zakuje tačno ovu granicu; ako se ona promeni, mora se uskladiti i SQL sweep.
+ */
+export function isStreakLost(
+  state: StreakState,
+  now: number,
+  tzOffsetMinutes = 0,
+): boolean {
+  return getStreakStatus(state, now, tzOffsetMinutes) === 'lost';
+}
+
 // ── Rolling deadline za Bunny upozorenje (Home 2.0 / Blahs) ──────────────────
 export const STREAK_DEADLINE_MS = DAY_MS; // 24h od poslednjeg poslatog Blah-a
 export const BUNNY_WARNING_MS = 3 * 60 * 60 * 1000; // poslednja 3h pre 24h

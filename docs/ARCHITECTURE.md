@@ -34,7 +34,7 @@ constants/             # Colors, Dimensions
 assets/                # images (.svg + .png), fonts (Inter)
 ```
 
-> ℹ️ `lib/` postoji (od T1.6); čiste funkcije do sada: `formatCount.ts` (T3.1, "10k"/"10.1k"), `blahScore.ts` (T3.2, Blah Score formula), `streak.ts` (T3.5, kalendarski streak + reset + bonus dani 8/20/28/48 + bunny rolling deadline); ostale mehanike Faze 3 dolaze redom. Pravilo u §2.5.
+> ℹ️ `lib/` postoji (od T1.6); čiste funkcije do sada: `formatCount.ts` (T3.1, "10k"/"10.1k"), `blahScore.ts` (T3.2, Blah Score formula), `streak.ts` (T3.5/T3.6, kalendarski streak + reset + bonus dani 8/20/28/48 + bunny rolling deadline + `isStreakLost` granica koju serverski pg_cron sweep mirror-uje); ostale mehanike Faze 3 dolaze redom. Pravilo u §2.5.
 
 ---
 
@@ -149,6 +149,8 @@ AuthProvider → FriendRequestProvider → MessageProvider → CameraProvider �
 
 ### Poznate tabele
 Pun spisak iz šeme (T2.1, `public`): `blahs` · `blocks` · `comment_likes` · `comment_replies` · `comments` · `conversations` · `follow_requests` · `follows` · `message_reactions` · `messages` · `notifications` · `post_likes` · `posts` · `profiles` · `reply_likes` · `typing_status` · `user_presence`.
+
+> ⏰ **Background job (pg_cron, T3.6):** `reset_lapsed_streaks()` zakazan `cron.schedule('reset-lapsed-streaks','0 * * * *')` — hourly nulira pale streak-ove (tz-aware, atomski). `pg_cron`/`pg_net` enable-ovani. SQL je u `supabase/migrations/20260624170500_streak_columns_and_reset_job.sql`; logika ostaje u `lib/streak.ts` (SQL = veran port granice, zakovan pinning testom). Prvi cron job u projektu.
 
 > ✅ Šema baze + RLS politike **jesu u repou** od T2.1: `supabase/migrations/20260624145146_remote_schema.sql` (schema-only snapshot, 17 tabela / 53 RLS politike). Generisan lokalnim `pg_dump`-om (Docker nije instaliran). Tajne stoje u gitignorovanom `supabase/.env.local`. Snapshot je za verzionisanje, ne za replay (vidi `TASKS.md` T2.1 caveat). ✅ TS tipovi iz šeme generisani u T2.2 → `types/database.types.ts`, izloženi kroz `@/types` (`Database`, `Tables<'x'>`); regeneracija: `npm run gen:types`. ✅ Storage bucket-i + storage RLS (`storage` šema, van public dump-a) dokumentovani u T2.3 → `supabase/storage_buckets_and_policies.sql`.
 

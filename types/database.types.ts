@@ -617,10 +617,13 @@ export type Database = {
           expo_push_token: string | null
           full_name: string | null
           id: string
+          last_blah_at: string | null
           latitude: number | null
           location_enabled: boolean | null
           longitude: number | null
           onboarding_completed: boolean | null
+          streak_day: number
+          streak_tz_offset: number
           updated_at: string | null
           username: string | null
           website_url: string | null
@@ -634,10 +637,13 @@ export type Database = {
           expo_push_token?: string | null
           full_name?: string | null
           id: string
+          last_blah_at?: string | null
           latitude?: number | null
           location_enabled?: boolean | null
           longitude?: number | null
           onboarding_completed?: boolean | null
+          streak_day?: number
+          streak_tz_offset?: number
           updated_at?: string | null
           username?: string | null
           website_url?: string | null
@@ -651,10 +657,13 @@ export type Database = {
           expo_push_token?: string | null
           full_name?: string | null
           id?: string
+          last_blah_at?: string | null
           latitude?: number | null
           location_enabled?: boolean | null
           longitude?: number | null
           onboarding_completed?: boolean | null
+          streak_day?: number
+          streak_tz_offset?: number
           updated_at?: string | null
           username?: string | null
           website_url?: string | null
@@ -767,6 +776,7 @@ export type Database = {
         Args: { blocked: string; blocker: string }
         Returns: boolean
       }
+      reset_lapsed_streaks: { Args: never; Returns: number }
     }
     Enums: {
       [_ in never]: never

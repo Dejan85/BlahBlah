@@ -33,6 +33,11 @@ import PremiumModal from '@/components/PremiumModal';
 import { usePost } from '@/context/PostContext';
 import GridPosts from '@/components/GridPost';
 import { calculateBlahScore } from '@/lib/blahScore';
+import {
+  currentStreakDay,
+  isStreakLost,
+  type StreakState,
+} from '@/lib/streak';
 import { formatCount } from '@/lib/formatCount';
 
 const { height: windowHeight } = Dimensions.get('window');
@@ -163,7 +168,7 @@ const ProfileScreen = () => {
           supabase
             .from('profiles')
             .select(
-              'username, full_name, avatar_url, bio, website_url, location_enabled, latitude, longitude, blah_score, blahs_sent'
+              'username, full_name, avatar_url, bio, website_url, location_enabled, latitude, longitude, blah_score, blahs_sent, streak_day, last_blah_at, streak_tz_offset'
             )
             .eq('id', user.id)
             .single(),
@@ -206,13 +211,33 @@ const ProfileScreen = () => {
         }
       }
 
-      // Blah Score: logika u lib/ (T3.2). streakDay = 0 dok streak nije
-      // implementiran (T3.6) → trenutno samo base (Blahs×4 + Followers×0.8).
+      // Streak (T3.6): rekonstruiši stanje iz DB i izvedi tekući dan preko lib/.
+      // currentStreakDay → 0 ako je pao; to je vrednost koja ide u Blah Score.
+      const streakState: StreakState = {
+        day: profileResponse.data.streak_day ?? 0,
+        lastBlahAt: profileResponse.data.last_blah_at
+          ? new Date(profileResponse.data.last_blah_at).getTime()
+          : null,
+      };
+      const tz = profileResponse.data.streak_tz_offset ?? 0;
+      const now = Date.now();
+      const streakDay = currentStreakDay(streakState, now, tz);
+
+      // On-read lazy reset (backup serverskom pg_cron sweep-u): ako je streak pao
+      // a DB ga još drži > 0, nuliraj odmah da prikaz/skor budu tačni bez čekanja crona.
+      if (isStreakLost(streakState, now, tz) && streakState.day > 0) {
+        await supabase
+          .from('profiles')
+          .update({ streak_day: 0 })
+          .eq('id', user.id);
+      }
+
+      // Blah Score: logika u lib/ (T3.2) — sad sa pravim streak danom (bonus 8/20/28/48).
       const followersCount = followersResponse.count || 0;
       const blahScore = calculateBlahScore(
         profileResponse.data.blahs_sent ?? 0,
         followersCount,
-        0
+        streakDay
       );
 
       // DB samo skladišti keširani skor (T3.3) — app ga računa i upisuje.

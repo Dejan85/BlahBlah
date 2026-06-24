@@ -23,18 +23,19 @@ Spec formula: **Blah Score = (Blahs Sent × 4) + (Followers × 0.8) + Streak Bon
 - ✅ Formula u `lib/blahScore.ts` — `calculateBlahScore(blahsSent, followers, streakDay)` + test (T3.2). Primer: 8. dan, 10 blahs, 10 followers = 68 (40+8+20).
 - ✅ DB storage (T3.3): `profiles.blah_score` + `profiles.blahs_sent` (`integer NOT NULL DEFAULT 0`, migracija `20260624162117_blah_score_columns.sql`). Skor se samo SKLADIŠTI; app ga računa+upisuje (T3.4).
 - ✅ UI prikaz (T3.4): svoj profil (`app/profile/index.tsx`) obračunava skor preko `lib/blahScore`, upisuje u `blah_score` (samo kad se promeni) i prikazuje `formatCount(skor)`; **crveni Blahs stat = aktivan Blah Score (MyProfile 8.9)** kad je skor > 0.
-- ✅ Streak Bonus (Blahs × 2 na danima 8 / 20 / 28 / 48) — bonus dani su single source u `lib/streak.ts` (`STREAK_BONUS_DAYS`/`isStreakBonusDay`, T3.5), `lib/blahScore.ts` ih uvozi. ⏳ Neaktivan u UI dok streak ne proradi u bazi (T3.6): profil za sad šalje `streakDay=0`.
-- ❌ Real-time update skora posle slanja Blah-a (sad se računa na fetch profila; live increment kad se poveže slanje Blah-a)
+- ✅ Streak Bonus (Blahs × 2 na danima 8 / 20 / 28 / 48) — bonus dani su single source u `lib/streak.ts` (`STREAK_BONUS_DAYS`/`isStreakBonusDay`, T3.5), `lib/blahScore.ts` ih uvozi. ✅ **Aktivan u UI (T3.6):** profil čita pravi dan preko `currentStreakDay(state, now, tz)` iz streak DB.
+- 🟡 Real-time update skora posle slanja Blah-a — ✅ slanje Blah-a sad inkrementira `blahs_sent` + upisuje streak (T3.6) → skor raste; ⏳ prikaz se osvežava tek na sledeći fetch profila, ne live u istoj sesiji.
 - ✅ Zaokruživanje na ceo broj (256.8 → 257) — `Math.round` u `lib/blahScore.ts`
 - ✅ Formatiranje velikih brojeva (10.000 → "10k", "10.1k"...) — `lib/formatCount.ts` + test (T3.1); uvezano u UI (T3.4: profil + `PostActions.tsx`, inline `formatNumber` zamenjen).
-- ❌ "Prvi Blah u 24h se računa" logika
+- ✅ "Prvi Blah u 24h se računa" logika — `registerBlah` (lib/streak.ts): isti kalendarski dan = bez promene (samo prvi Blah dana broji), uzastopni dan = +1.
 
-### A3. Daily Activity & Streaks — 🟡 Delimično (logika gotova; DB + UI ostaje)
-- ✅ Streak obračun (`lib/streak.ts`, T3.5): `registerBlah` (kalendarski dan, timezone-aware) — uzastopni dan +1, isti dan bez promene, preskočen dan reset; `getStreakStatus` (`none/active/at-risk/lost`), `currentStreakDay` (0 kad pao) + test.
+### A3. Daily Activity & Streaks — 🟡 Delimično (logika + DB + reset gotovi; UI badge + recovery ostaje)
+- ✅ Streak obračun (`lib/streak.ts`, T3.5): `registerBlah` (kalendarski dan, timezone-aware) — uzastopni dan +1, isti dan bez promene, preskočen dan reset; `getStreakStatus` (`none/active/at-risk/lost`), `currentStreakDay` (0 kad pao), `isStreakLost` (T3.6) + test.
 - ✅ Bunny rolling deadline (Home 2.0): `isBunnyActive`/`msUntilDeadline` — ≤3h pre 24h od poslednjeg Blah-a.
 - ✅ Reset pravilo (protekne ceo dan bez Blah-a → streak pada / skor bez bonusa) — u `lib/streak.ts`.
-- ❌ Streak DB kolone + background reset job (T3.6) — bez ovoga streak se ne čuva ni resetuje serverski.
-- ❌ Uvezivanje pravog `streakDay` u Blah Score na profilu (sad `streakDay=0`) — čeka T3.6.
+- ✅ **Streak DB kolone + background reset job (T3.6):** `profiles.streak_day`/`last_blah_at`/`streak_tz_offset` (migracija live); **pg_cron sweep `reset_lapsed_streaks()` (hourly, atomski, tz-aware)** nulira pale streak-ove serverski + on-read lazy reset backup. SQL sweep = veran port granice iz `lib/streak.ts`, zakovan pinning testom (anti-drift).
+- ✅ **Uvezivanje pravog `streakDay` u Blah Score na profilu (T3.6)** — `app/profile/index.tsx` koristi `currentStreakDay(state, now, tz)`; slanje Blah-a (`app/blahs/new.tsx`) upisuje streak preko `registerBlah` + inkrementira `blahs_sent`.
+- ❌ Streak UI badge/brojač na profilu (vizuelni prikaz tekućeg dana) — DB sad ima podatak; sam prikaz dolazi sa profil polish-om.
 - ❌ Blah+ recovery (reset izuzetak) — A4 / T3.7.
 
 ### A4. Blah Recovery — ❌ Nije implementirano

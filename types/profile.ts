@@ -10,6 +10,9 @@ export interface Profile {
   longitude?: number;
   blah_score?: number;
   blahs_sent?: number;
+  streak_day?: number;
+  last_blah_at?: string | null;
+  streak_tz_offset?: number;
 }
 
 export interface ProfileState {

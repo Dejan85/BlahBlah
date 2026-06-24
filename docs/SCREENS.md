@@ -371,7 +371,7 @@ Bottom sheet:
 
 ### MyProfile 8.9 — Profil sa aktivnim Blah Score — 🟡
 - **Blahs stat u CRVENOM** (10.9k crveno) = aktivan/istaknut Blah Score. + Edit profile + eye badge 8.
-- Status: 🟡 (T3.4) — Blahs stat se prikazuje `formatCount`-om i postaje **crven (`#FF325E`) kad je skor > 0** (`app/profile/index.tsx`). Skor se obračunava preko `lib/blahScore` i kešira u `profiles.blah_score`. Streak bonus dani neaktivni dok streak ne proradi (T3.6).
+- Status: 🟡 (T3.4/T3.6) — Blahs stat se prikazuje `formatCount`-om i postaje **crven (`#FF325E`) kad je skor > 0** (`app/profile/index.tsx`). Skor se obračunava preko `lib/blahScore` i kešira u `profiles.blah_score`. Streak bonus dani (8/20/28/48) **aktivni** od T3.6 — profil čita pravi `currentStreakDay`.
 
 ---
 

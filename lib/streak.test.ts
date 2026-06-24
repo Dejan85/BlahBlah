@@ -2,6 +2,7 @@ import {
   registerBlah,
   getStreakStatus,
   currentStreakDay,
+  isStreakLost,
   isStreakBonusDay,
   isBunnyActive,
   msUntilDeadline,
@@ -161,6 +162,44 @@ describe('currentStreakDay', () => {
     expect(isStreakBonusDay(currentStreakDay({ day: 8, lastBlahAt: NOON }, NOON + 3 * HOUR))).toBe(
       true,
     );
+  });
+});
+
+describe('isStreakLost', () => {
+  it('živ streak (active/at-risk) → false', () => {
+    expect(isStreakLost({ day: 7, lastBlahAt: NOON }, NOON + 5 * HOUR)).toBe(false);
+    expect(isStreakLost({ day: 7, lastBlahAt: NOON }, NOON + DAY)).toBe(false); // at-risk
+  });
+
+  it('protekao ceo dan → true', () => {
+    expect(isStreakLost({ day: 7, lastBlahAt: NOON }, NOON + 2 * DAY)).toBe(true);
+  });
+
+  it('nema streak-a → false (nema šta da padne)', () => {
+    expect(isStreakLost(EMPTY_STREAK, NOON + 10 * DAY)).toBe(false);
+  });
+});
+
+// ⚠️ PINNING: zakuje tačno granicu reseta koju serverski pg_cron sweep
+// (reset_lapsed_streaks() u migraciji) portuje u SQL. Ako ovaj test pukne,
+// granica se promenila → MORA se uskladiti i SQL sweep, inače lib i baza
+// nuliraju streak na različitim mestima (drift).
+describe('PINNING: SQL sweep granica == isStreakLost', () => {
+  // Mirror lib dayKey() i SQL-a: floor((epoch_sekunde + tz*60) / 86400).
+  const sqlDay = (ms: number, tz: number) => Math.floor((ms / 1000 + tz * 60) / 86400);
+  // Mirror SQL WHERE: nowDay - lastDay >= 2 (uz iste guard-ove kao lib).
+  const sqlWouldReset = (s: StreakState, now: number, tz: number) =>
+    s.day > 0 && s.lastBlahAt != null && sqlDay(now, tz) - sqlDay(s.lastBlahAt, tz) >= 2;
+
+  it('SQL formula i isStreakLost daju identičan ishod oko granice (UTC i CET)', () => {
+    const last = Date.UTC(2026, 5, 24, 23, 30, 0); // 23:30 UTC = dan B u CET
+    for (const tz of [0, 60, -300, 330]) {
+      for (let h = 0; h <= 80; h++) {
+        const now = last + h * HOUR;
+        const state: StreakState = { day: 5, lastBlahAt: last };
+        expect(sqlWouldReset(state, now, tz)).toBe(isStreakLost(state, now, tz));
+      }
+    }
   });
 });
 
