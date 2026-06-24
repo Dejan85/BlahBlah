@@ -6,6 +6,8 @@ import {
   msUntilStreakLost,
   msUntilOfferExpires,
   isRecoveryUrgent,
+  applyRecovery,
+  formatRecoveryCountdown,
   RECOVERY_GRACE_MS,
   RECOVERY_OFFER_MS,
   RECOVERY_URGENCY_MS,
@@ -135,5 +137,54 @@ describe('isRecoveryUrgent', () => {
 
   it('false kad nema Blah-a', () => {
     expect(isRecoveryUrgent(null, LAST)).toBe(false);
+  });
+});
+
+describe('applyRecovery', () => {
+  it('vraća streak na restoredDay i postavlja nov anchor (now → nov 26h ciklus)', () => {
+    const now = OFFER_END - HOUR; // unutar recoverable prozora
+    expect(applyRecovery(7, now)).toEqual({ streakDay: 7, lastBlahAt: now });
+  });
+
+  it('nov anchor znači da je status odmah ponovo safe (kreće nov ciklus)', () => {
+    const now = LOST + HOUR;
+    const { lastBlahAt } = applyRecovery(5, now);
+    expect(getRecoveryStatus(lastBlahAt, now)).toBe('safe');
+    expect(msUntilStreakLost(lastBlahAt, now)).toBe(RECOVERY_GRACE_MS);
+  });
+
+  it('restoredDay je uvek ≥1 i ceo broj (recovery podrazumeva postojeći streak)', () => {
+    expect(applyRecovery(0, LAST).streakDay).toBe(1);
+    expect(applyRecovery(-3, LAST).streakDay).toBe(1);
+    expect(applyRecovery(7.9, LAST).streakDay).toBe(7);
+  });
+
+  it('bezbedan default na nevažeći ulaz (ne baca)', () => {
+    expect(applyRecovery(NaN, LAST)).toEqual({
+      streakDay: 1,
+      lastBlahAt: LAST,
+    });
+    expect(applyRecovery(5, NaN)).toEqual({ streakDay: 5, lastBlahAt: 0 });
+  });
+});
+
+describe('formatRecoveryCountdown', () => {
+  it('sati + minuti dok ima sati', () => {
+    expect(formatRecoveryCountdown(13 * HOUR)).toBe('In 13h offer expire');
+    expect(formatRecoveryCountdown(12 * HOUR + 30 * 60_000)).toBe(
+      'In 12h 30m offer expire'
+    );
+    expect(formatRecoveryCountdown(HOUR)).toBe('In 1h offer expire');
+  });
+
+  it('samo minuti kad je ispod sata', () => {
+    expect(formatRecoveryCountdown(45 * 60_000)).toBe('In 45m offer expire');
+    expect(formatRecoveryCountdown(60_000)).toBe('In 1m offer expire');
+  });
+
+  it('istekla ponuda / nevažeće → "Offer expired"', () => {
+    expect(formatRecoveryCountdown(0)).toBe('Offer expired');
+    expect(formatRecoveryCountdown(-1)).toBe('Offer expired');
+    expect(formatRecoveryCountdown(NaN)).toBe('Offer expired');
   });
 });

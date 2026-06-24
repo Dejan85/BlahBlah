@@ -29,21 +29,22 @@ Spec formula: **Blah Score = (Blahs Sent × 4) + (Followers × 0.8) + Streak Bon
 - ✅ Formatiranje velikih brojeva (10.000 → "10k", "10.1k"...) — `lib/formatCount.ts` + test (T3.1); uvezano u UI (T3.4: profil + `PostActions.tsx`, inline `formatNumber` zamenjen).
 - ✅ "Prvi Blah u 24h se računa" logika — `registerBlah` (lib/streak.ts): isti kalendarski dan = bez promene (samo prvi Blah dana broji), uzastopni dan = +1.
 
-### A3. Daily Activity & Streaks — 🟡 Delimično (logika + DB + reset gotovi; UI badge + recovery popup/plaćanje ostaje)
+### A3. Daily Activity & Streaks — 🟡 Delimično (logika + DB + reset + recovery popup/plaćanje gotovi; streak UI badge ostaje)
 - ✅ Streak obračun (`lib/streak.ts`, T3.5): `registerBlah` (kalendarski dan, timezone-aware) — uzastopni dan +1, isti dan bez promene, preskočen dan reset; `getStreakStatus` (`none/active/at-risk/lost`), `currentStreakDay` (0 kad pao), `isStreakLost` (T3.6) + test.
 - ✅ Bunny rolling deadline (Home 2.0): `isBunnyActive`/`msUntilDeadline` — ≤3h pre 24h od poslednjeg Blah-a.
 - ✅ Reset pravilo (protekne ceo dan bez Blah-a → streak pada / skor bez bonusa) — u `lib/streak.ts`.
 - ✅ **Streak DB kolone + background reset job (T3.6):** `profiles.streak_day`/`last_blah_at`/`streak_tz_offset` (migracija live); **pg_cron sweep `reset_lapsed_streaks()` (hourly, atomski, tz-aware)** nulira pale streak-ove serverski + on-read lazy reset backup. SQL sweep = veran port granice iz `lib/streak.ts`, zakovan pinning testom (anti-drift).
 - ✅ **Uvezivanje pravog `streakDay` u Blah Score na profilu (T3.6)** — `app/profile/index.tsx` koristi `currentStreakDay(state, now, tz)`; slanje Blah-a (`app/blahs/new.tsx`) upisuje streak preko `registerBlah` + inkrementira `blahs_sent`.
 - ❌ Streak UI badge/brojač na profilu (vizuelni prikaz tekućeg dana) — DB sad ima podatak; sam prikaz dolazi sa profil polish-om.
-- 🟡 Blah+ recovery (reset izuzetak) — vremenski prozori ✅ (`lib/blahRecovery.ts`, T3.7); popup + plaćanje T3.8. Vidi A4.
+- ✅ Blah+ recovery (reset izuzetak) — vremenski prozori (`lib/blahRecovery.ts`, T3.7) + popup/plaćanje (T3.8). Vidi A4.
 
-### A4. Blah Recovery — 🟡 Delimično (logika prozora gotova; popup + plaćanje + notif ostaju)
+### A4. Blah Recovery — 🟡 Delimično (logika + popup + plaćanje gotovi; pravi RevenueCat + notif + urgency animacija ostaju)
 Spec: 26h prozor; kad istekne → notifikacija "Blah Streak Lost"; ekran za recovery sa plaćanjem; live countdown; nakon plaćanja kreće nov 26h ciklus.
-- ✅ **26h/13h vremenski prozori (`lib/blahRecovery.ts`, T3.7):** rolling model (anchor = poslednji Blah, odvojen od kalendarskog `streak.ts`): `safe` (0–26h) → `recoverable` (26h–39h, ponuda 13h) → `expired`. `getRecoveryStatus`, `msUntilStreakLost` (26h countdown), `msUntilOfferExpires` ("In 13h offer expire" countdown), `isRecoveryUrgent` (3h pre pada), konstante (€1.99) + test (72/72).
+- ✅ **26h/13h vremenski prozori (`lib/blahRecovery.ts`, T3.7):** rolling model (anchor = poslednji Blah, odvojen od kalendarskog `streak.ts`): `safe` (0–26h) → `recoverable` (26h–39h, ponuda 13h) → `expired`. `getRecoveryStatus`, `msUntilStreakLost` (26h countdown), `msUntilOfferExpires` ("In 13h offer expire" countdown), `isRecoveryUrgent` (3h pre pada), konstante (€1.99) + test.
+- ✅ **Recovery popup + plaćanje (`MyProfile 8.8`, T3.8):** profil auto-otvara popup kad je `recoverable` (live 13h countdown preko `formatRecoveryCountdown`); na Continue → `purchaseRecovery()` → `applyRecovery` (streak vraćen + nov 26h ciklus) → upis `streak_day`/`last_blah_at`. **Plaćanje = stubbed RevenueCat boundary** (`services/recoveryPurchase.ts`, €1.99 jednokratno; `RECOVERY_PURCHASE_STUBBED` prekidač) — pravi `Purchases.purchasePackage` tok dokumentovan, čeka konfigurisane store proizvode. On-read streak reset gejtovan da NE nulira streak dok je ponuda živa.
 - ❌ "Blah Streak Lost" notifikacija (vidi D6) — T3.9
-- ❌ Recovery popup + plaćanje (`MyProfile 8.8`) — **cena €1.99 jednokratno**, prozor ponude **~13h** ("In 13h offer expire") — T3.8 (RevenueCat); logika prozora ✅ spremna
-- ❌ Urgency bunny animacija u poslednja 3h — UI (logika `isRecoveryUrgent` ✅ spremna) — T3.8
+- ⏳ Pravi RevenueCat (flip stub-a kad budu API ključevi + store proizvod) — T3.8 ostavio čist swap
+- ❌ Urgency bunny animacija u poslednja 3h — UI (logika `isRecoveryUrgent` ✅ spremna; animacija dolazi sa streak UI badge-om)
 - ℹ️ Dostupno i iz Settings → "Blah Recovery / Buy recovery"
 
 ### A5. Chat Hours (Conversations Timer) — ❌ Nije implementirano
@@ -114,7 +115,7 @@ Spec: svaka notifikacija vodi na konkretan ekran.
 ### Cene (paywall = `Camera 4.6`, vidi `SCREENS.md`)
 - Monthly: **€4.99/mo** auto-renewal
 - Yearly: **€29.94/yr** (50% off, default selektovano) auto-renewal
-- Status: 🟡 RevenueCat (`react-native-purchases`) + `PremiumModal` / `SubsciptionPlans` postoje; konfiguracija proizvoda/paywall ❓
+- Status: 🟡 RevenueCat (`react-native-purchases`) + `PremiumModal` / `SubsciptionPlans` postoje; konfiguracija proizvoda/paywall ❓. Recovery one-time (€1.99) je već dobio IO granicu (`services/recoveryPurchase.ts`, stubbed — T3.8); pretplate (mo/yr) još nemaju.
 - ➕ Paywall lista još uključuje **Exclusive Customization** (*Coming soon: Profile themes*)
 
 ---

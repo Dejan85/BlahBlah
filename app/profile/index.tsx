@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react';
 import {
   SafeAreaView,
   Text,
@@ -33,12 +39,15 @@ import PremiumModal from '@/components/PremiumModal';
 import { usePost } from '@/context/PostContext';
 import GridPosts from '@/components/GridPost';
 import { calculateBlahScore } from '@/lib/blahScore';
-import {
-  currentStreakDay,
-  isStreakLost,
-  type StreakState,
-} from '@/lib/streak';
+import { currentStreakDay, type StreakState } from '@/lib/streak';
 import { formatCount } from '@/lib/formatCount';
+import {
+  getRecoveryStatus,
+  msUntilOfferExpires,
+  formatRecoveryCountdown,
+  applyRecovery,
+} from '@/lib/blahRecovery';
+import { purchaseRecovery } from '@/services/recoveryPurchase';
 
 const { height: windowHeight } = Dimensions.get('window');
 
@@ -80,6 +89,19 @@ const ProfileScreen = () => {
   });
   const [editForm, setEditForm] = useState<EditFormState>(initialEditForm);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
+
+  // Blah Recovery (T3.8): kad streak padne ali je ponuda još živa ('recoverable'),
+  // čuvamo poslednji Blah + dan za vraćanje i prikazujemo popup (MyProfile 8.8).
+  const [recovery, setRecovery] = useState<{
+    lastBlahAt: number | null;
+    restoredDay: number;
+  }>({ lastBlahAt: null, restoredDay: 0 });
+  const [showRecoveryModal, setShowRecoveryModal] = useState(false);
+  const [recoveryProcessing, setRecoveryProcessing] = useState(false);
+  const [nowTick, setNowTick] = useState(() => Date.now());
+  // Auto-otvori popup samo jednom po mount-u (da se ne otvara na svaki refetch).
+  const recoveryPromptShownRef = useRef(false);
+
   const [, setPosts] = useState<GridPost[]>([]);
   const [, setLoadingPosts] = useState(true);
   const { getUserPosts } = usePost(); // Import from PostContext
@@ -223,13 +245,33 @@ const ProfileScreen = () => {
       const now = Date.now();
       const streakDay = currentStreakDay(streakState, now, tz);
 
-      // On-read lazy reset (backup serverskom pg_cron sweep-u): ako je streak pao
-      // a DB ga još drži > 0, nuliraj odmah da prikaz/skor budu tačni bez čekanja crona.
-      if (isStreakLost(streakState, now, tz) && streakState.day > 0) {
+      // Blah Recovery (T3.8): rolling 26h/39h prozor (lib/blahRecovery), nezavisno od
+      // kalendarskog brojanja u streak.ts. Status određuje i popup i (anti-drift) reset.
+      const recoveryStatus = getRecoveryStatus(streakState.lastBlahAt, now);
+
+      // On-read lazy reset (backup pg_cron sweep-u) — SADA gejtovan recovery-jem:
+      // dok je ponuda ŽIVA ('recoverable') NE nuliramo streak_day (čuvamo ga da ga
+      // recovery može vratiti); nuliramo tek kad ponuda istekne ('expired').
+      if (recoveryStatus === 'expired' && streakState.day > 0) {
         await supabase
           .from('profiles')
           .update({ streak_day: 0 })
           .eq('id', user.id);
+      }
+
+      // Streak pao ali ponuda živa → zapamti dan za vraćanje i otvori popup (jednom).
+      if (recoveryStatus === 'recoverable' && streakState.day > 0) {
+        setRecovery({
+          lastBlahAt: streakState.lastBlahAt,
+          restoredDay: streakState.day,
+        });
+        if (!recoveryPromptShownRef.current) {
+          recoveryPromptShownRef.current = true;
+          setNowTick(now);
+          setShowRecoveryModal(true);
+        }
+      } else {
+        setRecovery({ lastBlahAt: streakState.lastBlahAt, restoredDay: 0 });
       }
 
       // Blah Score: logika u lib/ (T3.2) — sad sa pravim streak danom (bonus 8/20/28/48).
@@ -369,9 +411,58 @@ const ProfileScreen = () => {
     }
   }, [user, editForm]);
 
+  // Live odbrojavanje ponude dok je recovery popup otvoren (minut po minut).
+  useEffect(() => {
+    if (!showRecoveryModal) return;
+    const id = setInterval(() => setNowTick(Date.now()), 60_000);
+    return () => clearInterval(id);
+  }, [showRecoveryModal]);
+
+  const handleRecoveryPurchase = useCallback(async () => {
+    if (!user || recovery.restoredDay <= 0) {
+      setShowRecoveryModal(false);
+      return;
+    }
+    try {
+      setRecoveryProcessing(true);
+      const result = await purchaseRecovery();
+      if (!result.success) {
+        if (!result.cancelled) {
+          Alert.alert('Blah Recovery', result.error ?? 'Plaćanje nije uspelo.');
+        }
+        return;
+      }
+      // Uspeh: vrati streak na sačuvani dan + nov 26h ciklus (lib/blahRecovery).
+      const restored = applyRecovery(recovery.restoredDay, Date.now());
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          streak_day: restored.streakDay,
+          last_blah_at: new Date(restored.lastBlahAt).toISOString(),
+        })
+        .eq('id', user.id);
+      if (error) throw error;
+      setShowRecoveryModal(false);
+      recoveryPromptShownRef.current = false;
+      setRecovery({ lastBlahAt: restored.lastBlahAt, restoredDay: 0 });
+      await fetchProfileData(); // osveži skor sa vraćenim streak danom
+    } catch (e) {
+      Alert.alert(
+        'Blah Recovery',
+        e instanceof Error ? e.message : 'Greška pri recovery-ju.'
+      );
+    } finally {
+      setRecoveryProcessing(false);
+    }
+  }, [user, recovery.restoredDay, fetchProfileData]);
+
   if (state.loading) {
     return <ProfileSkeleton />;
   }
+
+  const recoveryOfferLabel = formatRecoveryCountdown(
+    msUntilOfferExpires(recovery.lastBlahAt, nowTick)
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -422,10 +513,7 @@ const ProfileScreen = () => {
           <View style={styles.textContainer}>
             {/* MyProfile 8.9: aktivan Blah Score → Blahs stat u crvenom */}
             <Text
-              style={[
-                styles.blahs,
-                state.blahScore > 0 && styles.blahsActive,
-              ]}
+              style={[styles.blahs, state.blahScore > 0 && styles.blahsActive]}
             >
               {formatCount(state.blahScore)}
             </Text>
@@ -573,6 +661,18 @@ const ProfileScreen = () => {
           onClose={() => setShowPremiumModal(false)}
           onPlanSelection={handlePlanSelection}
           onContinue={handleContinue}
+        />
+
+        {/* Blah Recovery popup (MyProfile 8.8) — €1.99 jednokratno */}
+        <PremiumModal
+          isVisible={showRecoveryModal}
+          onClose={() => setShowRecoveryModal(false)}
+          onPlanSelection={handlePlanSelection}
+          onContinue={handleRecoveryPurchase}
+          isBlahs
+          isPremium={false}
+          offerSubtitle={recoveryOfferLabel}
+          processing={recoveryProcessing}
         />
       </View>
     </SafeAreaView>

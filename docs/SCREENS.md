@@ -364,10 +364,10 @@ Bottom sheet:
 ### MyProfile 8.6 / 8.7 — Paywall "Upgrade to Blah +" — 🟡
 - Isto kao **Camera 4.6** (See Who Viewed / Lock 3+ / Score Boost +10% / No Ads / Exclusive Customization; €4.99/mo, €29.94/yr). 8.7 = otvoren preko profila (iz eye ikone kad nije plaćeno).
 
-### MyProfile 8.8 — Blah Recovery popup — ❌
+### MyProfile 8.8 — Blah Recovery popup — 🟡
 - **"Oops...Blahs!"** → **Blahs Recovery**: *"Your Blah Score doesn't go to 0. In **13h** offer expire"*.
 - **Blahs Recovery — €1.99 / one time use** + **Continue** + Subscription Terms.
-- Status: ❌ (vidi `FEATURES.md` A4; cena = **€1.99 jednokratno**, prozor ponude **~13h**).
+- Status: 🟡 **T3.8** — popup (`PremiumModal isBlahs`) se auto-otvara na profilu kad je streak `recoverable`, sa **live 13h countdown-om** (`formatRecoveryCountdown`); Continue → `purchaseRecovery()` → `applyRecovery` (vraća streak + nov 26h ciklus) → upis. Plaćanje je **stubbed RevenueCat boundary** (`services/recoveryPurchase.ts`, €1.99) — pravi `Purchases.purchasePackage` čeka konfigurisane store proizvode (flip `RECOVERY_PURCHASE_STUBBED`). Vidi `FEATURES.md` A4.
 
 ### MyProfile 8.9 — Profil sa aktivnim Blah Score — 🟡
 - **Blahs stat u CRVENOM** (10.9k crveno) = aktivan/istaknut Blah Score. + Edit profile + eye badge 8.

@@ -48,7 +48,9 @@ export function streakLostAt(lastBlahAt: number | null): number | null {
  * Epoch ms kada recovery ponuda ISTIČE (26h + 13h od poslednjeg Blah-a).
  * `null` ako nema poslatog Blah-a (ili nevažeći ulaz).
  */
-export function recoveryOfferExpiresAt(lastBlahAt: number | null): number | null {
+export function recoveryOfferExpiresAt(
+  lastBlahAt: number | null
+): number | null {
   const lost = streakLostAt(lastBlahAt);
   return lost == null ? null : lost + RECOVERY_OFFER_MS;
 }
@@ -58,7 +60,10 @@ export function recoveryOfferExpiresAt(lastBlahAt: number | null): number | null
  * Granice: tačno na 26h → već `recoverable` (ponuda otvorena); tačno na 39h → `expired`.
  * Pretpostavlja da je streak postojao — postojanje streak-a (day > 0) proverava pozivalac.
  */
-export function getRecoveryStatus(lastBlahAt: number | null, now: number): RecoveryStatus {
+export function getRecoveryStatus(
+  lastBlahAt: number | null,
+  now: number
+): RecoveryStatus {
   const lost = streakLostAt(lastBlahAt);
   if (lost == null || !Number.isFinite(now)) return 'expired';
   if (now < lost) return 'safe';
@@ -67,7 +72,10 @@ export function getRecoveryStatus(lastBlahAt: number | null, now: number): Recov
 }
 
 /** Da li je recovery ponuda trenutno ŽIVA (streak pao, ali u 13h prozoru spasa). */
-export function isRecoveryAvailable(lastBlahAt: number | null, now: number): boolean {
+export function isRecoveryAvailable(
+  lastBlahAt: number | null,
+  now: number
+): boolean {
   return getRecoveryStatus(lastBlahAt, now) === 'recoverable';
 }
 
@@ -75,7 +83,10 @@ export function isRecoveryAvailable(lastBlahAt: number | null, now: number): boo
  * Preostalo ms do GUBITKA streak-a (26h countdown pre pada). 0 ako je već prošlo
  * ili nema poslatog Blah-a. Za countdown dok je status još `safe`.
  */
-export function msUntilStreakLost(lastBlahAt: number | null, now: number): number {
+export function msUntilStreakLost(
+  lastBlahAt: number | null,
+  now: number
+): number {
   const lost = streakLostAt(lastBlahAt);
   if (lost == null || !Number.isFinite(now)) return 0;
   return Math.max(0, lost - now);
@@ -86,7 +97,10 @@ export function msUntilStreakLost(lastBlahAt: number | null, now: number): numbe
  * ponuda istekla ili nema Blah-a. Smisleno tek dok je status `recoverable`
  * (dok je `safe`, vrednost uključuje i preostali 26h grace, pa je veća od 13h).
  */
-export function msUntilOfferExpires(lastBlahAt: number | null, now: number): number {
+export function msUntilOfferExpires(
+  lastBlahAt: number | null,
+  now: number
+): number {
   const expires = recoveryOfferExpiresAt(lastBlahAt);
   if (expires == null || !Number.isFinite(now)) return 0;
   return Math.max(0, expires - now);
@@ -99,7 +113,56 @@ export function msUntilOfferExpires(lastBlahAt: number | null, now: number): num
  * ⚠️ Razlikuje se od `isBunnyActive` (lib/streak.ts): ono je vezano za 24h rolling
  * deadline (Home 2.0 / Blahs dugme), ovo za 26h recovery grace (A4 urgency animacija).
  */
-export function isRecoveryUrgent(lastBlahAt: number | null, now: number): boolean {
+export function isRecoveryUrgent(
+  lastBlahAt: number | null,
+  now: number
+): boolean {
   const remaining = msUntilStreakLost(lastBlahAt, now);
   return remaining > 0 && remaining <= RECOVERY_URGENCY_MS;
+}
+
+/** Stanje streak-a posle uspešnog recovery plaćanja (ulaz za upis u `profiles`). */
+export interface RecoveryResult {
+  /** Streak dan koji se VRAĆA — recovery spasava od pada na 0. */
+  streakDay: number;
+  /** Nov anchor (epoch ms) — od ovog trenutka kreće nov 26h grace ciklus. */
+  lastBlahAt: number;
+}
+
+/**
+ * Stanje streak-a POSLE uspešnog recovery plaćanja (MyProfile 8.8, T3.8).
+ * Spec: "Your Blah Score doesn't go to 0" — streak se NE resetuje; vraća se na
+ * `restoredDay` (dužina koju je imao pre pada) i kreće NOV 26h ciklus od `now`
+ * ("nakon plaćanja kreće nov 26h ciklus", A4).
+ *
+ * `restoredDay` = `streak_day` pre pada; pozivalac ga čuva u memoriji pre nego što
+ * on-read/cron reset upiše 0 (zato recovery ne čita iz već-nuliranog DB-a). Rezultat
+ * je uvek ≥1 (recovery podrazumeva da je streak postojao). Čista funkcija — ne baca:
+ * nevažeći ulaz → bezbedan default (dan 1 / anchor 0).
+ */
+export function applyRecovery(
+  restoredDay: number,
+  now: number
+): RecoveryResult {
+  const streakDay = Number.isFinite(restoredDay)
+    ? Math.max(1, Math.floor(restoredDay))
+    : 1;
+  const lastBlahAt = Number.isFinite(now) ? now : 0;
+  return { streakDay, lastBlahAt };
+}
+
+/**
+ * Tekst odbrojavanja za recovery popup ("In 13h offer expire", MyProfile 8.8).
+ * `ms` = preostalo do isteka ponude (`msUntilOfferExpires`). ≤0 ili nevažeće → "Offer expired".
+ * Format: sati+minuti dok ima sati ("In 12h 30m offer expire"), inače samo minuti.
+ */
+export function formatRecoveryCountdown(ms: number): string {
+  if (!Number.isFinite(ms) || ms <= 0) return 'Offer expired';
+  const totalMin = Math.floor(ms / 60_000);
+  const hours = Math.floor(totalMin / 60);
+  const minutes = totalMin % 60;
+  if (hours > 0) {
+    return `In ${hours}h${minutes > 0 ? ` ${minutes}m` : ''} offer expire`;
+  }
+  return `In ${minutes}m offer expire`;
 }

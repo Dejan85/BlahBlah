@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  ActivityIndicator,
+} from 'react-native';
 import {
   Eye,
   DefaultBunny,
@@ -24,6 +30,10 @@ interface PremiumModalProps {
   onPlanSelectionForBlah?: (plan: 'onetimeuse') => void;
   isBlahs?: boolean;
   isPremium?: boolean;
+  /** Recovery: dinamičan tekst odbrojavanja ponude (npr. "In 13h offer expire"). */
+  offerSubtitle?: string;
+  /** Recovery: dok kupovina traje → spinner umesto "Continue". */
+  processing?: boolean;
 }
 
 const PremiumModal: React.FC<PremiumModalProps> = ({
@@ -32,6 +42,8 @@ const PremiumModal: React.FC<PremiumModalProps> = ({
   onContinue,
   isBlahs = false,
   isPremium = true,
+  offerSubtitle,
+  processing = false,
 }) => {
   const handlePlanSelection = (plan: 'monthly' | 'yearly' | 'onetime') => {
     // Handle the plan selection here
@@ -103,7 +115,7 @@ const PremiumModal: React.FC<PremiumModalProps> = ({
               icon={<BlahRecoveryBlack />}
               title="Blahs Recovery"
               isSwitch={false}
-              subtitle="In 13h offer expire"
+              subtitle={offerSubtitle ?? 'In 13h offer expire'}
               subtitleStyle={styles.subtitleStyle}
             />
           )}
@@ -115,8 +127,16 @@ const PremiumModal: React.FC<PremiumModalProps> = ({
           isPremium={isPremium}
         />
 
-        <CustomButton style={styles.continueButton} onPress={onContinue}>
-          <Text style={styles.continueButtonText}>Continue</Text>
+        <CustomButton
+          style={styles.continueButton}
+          onPress={onContinue}
+          disabled={processing}
+        >
+          {processing ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.continueButtonText}>Continue</Text>
+          )}
         </CustomButton>
 
         <Text style={styles.subscribe}>

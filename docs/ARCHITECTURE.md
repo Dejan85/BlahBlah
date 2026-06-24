@@ -58,7 +58,7 @@ assets/                # images (.svg + .png), fonts (Inter)
 
 **Zašto:** najteže/najrizičnije mehanike (Blah Score, streak, recovery, chat hours, ephemeral pravila, "10k" formatiranje) su čista pravila. Ako su odvojene, mogu se verifikovati automatski (`npm test`) bez klikanja kroz app.
 
-**Naziv foldera:** `lib/` (najidiomatičnije u Expo/React svetu). Kasnije opciono `services/` za Supabase-specifične upite. `utils/` ostaje za setup klijenata.
+**Naziv foldera:** `lib/` (najidiomatičnije u Expo/React svetu). **`services/`** = side-effecting IO granice koje nisu čiste i zato NE idu u `lib/` (npr. `services/recoveryPurchase.ts` — RevenueCat plaćanje, T3.8); `utils/` ostaje za setup klijenata. Granica drži potpis stabilan (npr. stub vs pravi RevenueCat) pa UI/pozivaoci ostaju isti.
 
 ### Obrazac
 ❌ Ne ovako (logika zalepljena za context/Supabase, netestabilno bez React-a):
