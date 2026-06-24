@@ -34,7 +34,7 @@ constants/             # Colors, Dimensions
 assets/                # images (.svg + .png), fonts (Inter)
 ```
 
-> ℹ️ `lib/` postoji (od T1.6); čiste funkcije do sada: `formatCount.ts` (T3.1, "10k"/"10.1k"), `blahScore.ts` (T3.2, Blah Score formula); ostale mehanike Faze 3 dolaze redom. Pravilo u §2.5.
+> ℹ️ `lib/` postoji (od T1.6); čiste funkcije do sada: `formatCount.ts` (T3.1, "10k"/"10.1k"), `blahScore.ts` (T3.2, Blah Score formula), `streak.ts` (T3.5, kalendarski streak + reset + bonus dani 8/20/28/48 + bunny rolling deadline); ostale mehanike Faze 3 dolaze redom. Pravilo u §2.5.
 
 ---
 
