@@ -29,7 +29,7 @@ Spec formula: **Blah Score = (Blahs Sent × 4) + (Followers × 0.8) + Streak Bon
 - ✅ Formatiranje velikih brojeva (10.000 → "10k", "10.1k"...) — `lib/formatCount.ts` + test (T3.1); uvezano u UI (T3.4: profil + `PostActions.tsx`, inline `formatNumber` zamenjen).
 - ✅ "Prvi Blah u 24h se računa" logika — `registerBlah` (lib/streak.ts): isti kalendarski dan = bez promene (samo prvi Blah dana broji), uzastopni dan = +1.
 
-### A3. Daily Activity & Streaks — 🟡 Delimično (logika + DB + reset gotovi; UI badge + recovery ostaje)
+### A3. Daily Activity & Streaks — 🟡 Delimično (logika + DB + reset gotovi; UI badge + recovery popup/plaćanje ostaje)
 - ✅ Streak obračun (`lib/streak.ts`, T3.5): `registerBlah` (kalendarski dan, timezone-aware) — uzastopni dan +1, isti dan bez promene, preskočen dan reset; `getStreakStatus` (`none/active/at-risk/lost`), `currentStreakDay` (0 kad pao), `isStreakLost` (T3.6) + test.
 - ✅ Bunny rolling deadline (Home 2.0): `isBunnyActive`/`msUntilDeadline` — ≤3h pre 24h od poslednjeg Blah-a.
 - ✅ Reset pravilo (protekne ceo dan bez Blah-a → streak pada / skor bez bonusa) — u `lib/streak.ts`.
