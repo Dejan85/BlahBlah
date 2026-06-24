@@ -382,15 +382,6 @@ const GridPosts: React.FC<GridPostsProps> = ({
     }
   };
 
-  // const handleProfilePress = (userId?: string) => {
-  //     if (!userId) return;
-  //     // Push to the dynamic profile page
-  //     router.push({
-  //       pathname: `app/profile/test/[id]`,
-  //       params: { id: userId },
-  //     });
-  //   };
-
   const closeModal = () => {
     setIsModalVisible(false);
     setSelectedPostIndex(null);

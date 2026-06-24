@@ -287,7 +287,7 @@ Status: logika postoji (`FriendRequestContext`, `app/friend-requests`); ✅ acce
 
 ## 7. PROFILE — tuđi profil (`Profile 7.x`)
 
-> ⚠️ **Kod stanje (T1.8 ✅ / T1.9 ⏳):** T1.8 odlučio **2 ekrana** (po ovom spec-u): **tuđi = `profile/profile-details/[id].tsx`** (7.x), **svoj = `profile/index.tsx`** (§8 / 8.x). Treći fajl `profile/test/[id].tsx` (nedovršen unify prototip) **briše se u T1.9**. Konsolidacija (rewire 2 call-site-a + brisanje) ide pre profil feature-a (T3.4/T3.20/T3.21).
+> ✅ **Kod stanje (T1.8 ✅ / T1.9 ✅):** **2 ekrana**: **tuđi = `profile/profile-details/[id].tsx`** (7.x), **svoj = `profile/index.tsx`** (§8 / 8.x). Treći fajl `profile/test/[id].tsx` (nedovršen unify prototip) **obrisan (T1.9)**; navigacija prevezana (svoj nalog/post → `/profile`, tuđi → `profile-details/[id]`). Profil feature-i (T3.4/T3.20/T3.21) sad odblokirani.
 
 > Profil drugog korisnika. Zajednički elementi: back (gore-levo), 3-tačke meni (gore-desno), profilna + username + bio, stats **Blahs / Followers / Following**, "Sii" = separator iznad grid-a.
 

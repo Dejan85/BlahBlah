@@ -336,10 +336,8 @@ const Chats: React.FC = () => {
       // Optionally handle the case where there's no current user.
       return;
     }
-    router.push({
-      pathname: '/profile/test/[id]',
-      params: { id: currentUserId },
-    });
+    // Header avatar = logged-in user → own profile screen (loads from auth).
+    router.push('/profile');
   };
 
   const handleUserPress = (user: User) => {

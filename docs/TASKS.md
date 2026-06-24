@@ -19,7 +19,7 @@
 - [x] **T0.4** ✅ ~~Popraviti firebase `appId`~~ — **otpalo** (uklonjeno u T0.2)
 - [x] **T0.5** ✅ App pokrenut na realnom uređaju (Galaxy S24) — diže se bez crash-a do login ekrana. Usput: `expo install --fix` poravnao 7 paketa na SDK-51 verzije (rešilo native gesture-handler crash); Supabase bila pauzirana → reaktivirana.
 
-## FAZA 1 — Čist kod / temelj (🔧)
+## FAZA 1 — Čist kod / temelj (🔧) — ✅ ZAVRŠENA
 - [x] **T1.1** ✅ Popravljeno svih 17 TS grešaka → `tsc --noEmit` prolazi čisto. Join greške (notifications/followers/following): supabase to-one relacija tipovana kao niz → normalizacija na objekat / `as unknown` cast. `currentLocation` tipovan `Location.LocationObject | null`. `components/Acounts.tsx` (mrtav Supabase starter, nigde se ne importuje) obrisan.
 - [x] **T1.2** ✅ Uklonjeni `console.log` koji su ispisivali Supabase URL + anon key (prvih 50 char + dužina) u `utils/supabase.ts`. Zamenjeno tihim `console.warn` guard-om koji javlja samo da env nedostaje (bez vrednosti). Provereno: nigde drugde se ključevi ne loguju.
 - [x] **T1.3** ✅ Uklonjen mrtav `handleMessageReaction` iz `MessageContext` (nikad eksportovan; pravi je `handleReaction`). `tsc` čist. ⚠️ `profile/test/[id].tsx` **NIJE** mrtav kod — koristi se (chats/index.tsx, PostUserInfo.tsx) i nije duplikat: to je nedovršen prototip ujedinjenog profila → izdvojeno u **T1.8 + T1.9**.
@@ -28,7 +28,7 @@
 - [x] **T1.6** ✅ Jest infra potvrđena: `@/*` alias mapiran u jest config (`moduleNameMapper`), `test` skripta → jednokratni `jest` (+ `test:watch`), smoke test `lib/smoke.test.ts` (TS+Jest+alias) prolazi 2/2. `tsc` čist.
 - [x] **T1.7** ✅ ESLint (`eslint-config-expo`) + Prettier postavljeni, prolaze čisto (0 errors). Popravljena 2 prava errora (rules-of-hooks `useImage`/FilterMenu, `__dirname`/metro.config). Očišćeno ~145 mrtvih importa/varijabli (`eslint-plugin-unused-imports` + ručno) + 5 display-name. `.prettierignore` preskače `docs/`/native/`*.md`. **Ostaje 41 `exhaustive-deps` warning — namerno** (popravka menja ponašanje). `tsc` čist, test 2/2.
 - [x] **T1.8** ✅ **ODLUKA: 2 ekrana po spec-u** (Figma 7.x tuđi vs 8.x svoj). Base fajlovi: **svoj = `profile/index.tsx`** (grid radi, edit, realtime), **tuđi = `profile/profile-details/[id].tsx`** (grid radi, follow/block/message, private-lock, navigacija na dedicated followers/following liste). **Briše se `profile/test/[id].tsx`** (nedovršen unify prototip: grid zakomentarisan l.638/648, duplirani render blokovi). Ključ: app već de facto radi kao 2 ekrana — skoro sve rute idu na `profile-details/[id]`, samo 2 call-site-a gađaju `test/[id]`. Feature-matrica i obrazloženje: vidi §"Odluke" niže. *Odblokira T1.9.*
-- [ ] **T1.9** ⚡ **Konsolidacija profila — 2 ekrana** (odluka T1.8). Obriši `profile/test/[id].tsx`; prebaci njegova 2 call-site-a na `profile-details/[id]`: `chats/index.tsx:340`, `PostUserInfo.tsx:97`. Očisti zakomentarisane `test/[id]` reference (`PostUserInfo.tsx:66`, `GridPost.tsx:389`). Verifikuj da `index.tsx` (svoj) i `profile-details/[id]` (tuđi) pokrivaju spec 7.x/8.x; po potrebi izvuci deljeni avatar/stats/website blok u komponentu. *Cross-cutting — odblokira T3.4 (Blah score prikaz 8.9), T3.20 (premium gating 8.6/8.7), T3.21 (Who viewed 8.3).*
+- [x] **T1.9** ✅ **Konsolidacija profila — 2 ekrana** (odluka T1.8). Obrisan `profile/test/[id].tsx` (`git rm`, čuva istoriju). Rewire 2 call-site-a + očišćene 2 zakomentarisane reference. **Korekcija na doslovni task:** `chats/index.tsx:340` `navigateToProfile` je **svoj** nalog (header avatar = ulogovani `currentUserId`) → ide na **`/profile`** (svoj, index.tsx), NE `profile-details` (inače Follow/Block na sebi). `PostUserInfo.tsx:97` grana: svoj post (`userId === currentUser.id`) → `/profile`, tuđi → `profile-details/[id]` (profile-details renderuje Follow/Message bezuslovno, pa svoj mora da preskoči). Mrtvi blokovi obrisani: `PostUserInfo` l.64–94 (stari `isOwnProfile` switch), `GridPost` l.385–392 (`handleProfilePress`). **Deljeni avatar/stats blok NIJE izvučen** (bilo "po potrebi") — ekrani namerno različiti (T1.8 matrica), oba rade i pokrivaju spec 7.x/8.x; ekstrakcija = rizik bez koristi. `tsc` čist, ESLint 0 errors, test 2/2. *Odblokira T3.4, T3.20, T3.21.*
 
 ## FAZA 2 — Backup baze (🔧 ☁️)
 - [ ] **T2.1** `supabase db pull` → migracije u repo (verzionisanje šeme)
@@ -92,7 +92,7 @@
 ---
 
 ## 🧠 Odluke koje blokiraju određene taskove
-- **T1.8 (profil struktura)** — ✅ **REŠENO: 2 ekrana** po Figma spec-u (7.x tuđi / 8.x svoj), ne jedan unify ekran. Base: `profile/index.tsx` (svoj) + `profile/profile-details/[id].tsx` (tuđi); briše se `profile/test/[id].tsx`. Feature-matrica (✅=ima, ❌=nema/pokvareno):
+- **T1.8 (profil struktura)** — ✅ **REŠENO: 2 ekrana** po Figma spec-u (7.x tuđi / 8.x svoj), ne jedan unify ekran. Base: `profile/index.tsx` (svoj) + `profile/profile-details/[id].tsx` (tuđi); `profile/test/[id].tsx` obrisan u T1.9. Feature-matrica (✅=ima, ❌=nema/pokvareno):
 
   | Feature | `index.tsx` svoj | `test/[id]` unify | `profile-details/[id]` tuđi |
   |---|---|---|---|

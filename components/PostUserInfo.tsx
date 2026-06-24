@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { PostUserInfoProps } from '@/types';
 import { supabase } from '@/utils';
+import { useAuth } from '@/context/AuthContext';
 
 const formatTimestamp = (timestamp: string) => {
   const now = new Date();
@@ -29,13 +30,17 @@ export const PostUserInfo: React.FC<PostUserInfoProps> = ({
   userId,
 }) => {
   const router = useRouter();
+  const { user: currentUser } = useAuth();
 
   const navigateToProfile = async () => {
-    // If onPress is provided, use that instead of default navigation
-
-    // Default navigation logic when onPress is not provided
     if (!userId) {
       console.error('User ID is undefined');
+      return;
+    }
+
+    // Own post → own profile screen (index.tsx, loads from auth); skip fetch.
+    if (userId === currentUser?.id) {
+      router.push('/profile');
       return;
     }
 
@@ -61,40 +66,8 @@ export const PostUserInfo: React.FC<PostUserInfoProps> = ({
         following_count: followingCount.count || 0,
       };
 
-      // if (isOwnProfile === false) {
-      //   router.push({
-      //     pathname: "/profile/test/[id]",
-      //     params: {
-      //       id: userId,
-      //       username: profileData.username || username,
-      //       image: profileData.avatar_url || profilePhoto,
-      //       bio: profileData.bio || "",
-      //       lockProfile: "false",
-      //       fullName: profileData.full_name || "",
-      //       website_url: profileData.website_url || "",
-      //       followers_count: String(profileData.followers_count),
-      //       following_count: String(profileData.following_count),
-      //     },
-      //   });
-      // } else {
-      //   router.push({
-      //     pathname: "/profile",
-      //     params: {
-      //       id: userId,
-      //       username: profileData.username || username,
-      //       image: profileData.avatar_url || profilePhoto,
-      //       bio: profileData.bio || "",
-      //       lockProfile: "false",
-      //       fullName: profileData.full_name || "",
-      //       website_url: profileData.website_url || "",
-      //       followers_count: String(profileData.followers_count),
-      //       following_count: String(profileData.following_count),
-      //     },
-      //   });
-      // }
-
       router.push({
-        pathname: '/profile/test/[id]',
+        pathname: '/profile/profile-details/[id]',
         params: {
           id: userId,
           username: profileData.username || username,
