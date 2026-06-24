@@ -56,7 +56,7 @@ Aplikacija je obimna — ~298 fajlova, ~70 komponenti.
 | Social graf (follow/requests/search) | 10% | ~60% |
 | Profile / MyProfile | 8% | ~55% |
 | Blahs broadcast | 5% | ~70% |
-| **Blah Score / Streak / Recovery** | 8% | ~25% |
+| **Blah Score / Streak / Recovery** | 8% | ~30% |
 | **Premium / Blah+ pogodnosti** | 6% | ~20% |
 | Settings & Privacy | 4% | ~25% |
 | Notifikacije (push + tipovi + deeplink) | 4% | ~30% |
