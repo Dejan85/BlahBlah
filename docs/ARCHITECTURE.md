@@ -147,9 +147,9 @@ AuthProvider → FriendRequestProvider → MessageProvider → CameraProvider �
 - **Realtime**: `supabase.channel(...).on("postgres_changes", {...}).subscribe()`. Uvek `unsubscribe()`/`removeChannel` u cleanup-u.
 
 ### Poznate tabele
-`profiles` · `posts` · `conversations` · `messages` · `message_reactions` · `notifications` · `follow_requests` · `follows`
+Pun spisak iz šeme (T2.1, `public`): `blahs` · `blocks` · `comment_likes` · `comment_replies` · `comments` · `conversations` · `follow_requests` · `follows` · `message_reactions` · `messages` · `notifications` · `post_likes` · `posts` · `profiles` · `reply_likes` · `typing_status` · `user_presence`.
 
-> ⚠️ Šema baze i RLS politike **nisu u repou** (vidi `PROJECT_STATUS.md` §5). `supabase/` je u `.gitignore`.
+> ✅ Šema baze + RLS politike **jesu u repou** od T2.1: `supabase/migrations/20260624145146_remote_schema.sql` (schema-only snapshot, 17 tabela / 53 RLS politike). Generisan lokalnim `pg_dump`-om (Docker nije instaliran). Tajne stoje u gitignorovanom `supabase/.env.local`. Snapshot je za verzionisanje, ne za replay (vidi `TASKS.md` T2.1 caveat). TS tipovi iz šeme = T2.2.
 
 ### Konvencija imenovanja
 - Kolone u bazi: `snake_case` (`avatar_url`, `created_at`, `participant1_id`).
