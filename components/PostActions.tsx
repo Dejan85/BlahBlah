@@ -8,6 +8,7 @@ import {
   Easing,
 } from 'react-native';
 import { Comment, Like, Share } from '@/assets/images';
+import { formatCount } from '@/lib/formatCount';
 import ShareModal from './ShareModal';
 import CommentModal from './CommentModal';
 
@@ -65,16 +66,6 @@ const PostActions: React.FC<PostActionsProps> = ({
     onLike();
   };
 
-  const formatNumber = (num: number): string => {
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
-    }
-    if (num >= 1000) {
-      return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
-    }
-    return num.toString();
-  };
-
   const iconStyle = {
     shadowColor: '#000',
     shadowOffset: {
@@ -104,7 +95,7 @@ const PostActions: React.FC<PostActionsProps> = ({
           <Like fill={isLiked ? 'red' : 'white'} style={iconStyle} />
         </Animated.View>
         {!hideLikes && likes !== null && likes !== undefined && (
-          <Text style={styles.actionText}>{formatNumber(likes)}</Text>
+          <Text style={styles.actionText}>{formatCount(likes)}</Text>
         )}
       </TouchableOpacity>
 
@@ -117,7 +108,7 @@ const PostActions: React.FC<PostActionsProps> = ({
           <Share style={iconStyle} />
         </View>
         {!hideShares && (
-          <Text style={styles.actionText}>{formatNumber(1200)}</Text>
+          <Text style={styles.actionText}>{formatCount(1200)}</Text>
         )}
       </TouchableOpacity>
 
@@ -130,7 +121,7 @@ const PostActions: React.FC<PostActionsProps> = ({
           <Comment style={iconStyle} />
         </View>
         {!hideComments && (
-          <Text style={styles.actionText}>{formatNumber(commentCount)}</Text>
+          <Text style={styles.actionText}>{formatCount(commentCount)}</Text>
         )}
       </TouchableOpacity>
 

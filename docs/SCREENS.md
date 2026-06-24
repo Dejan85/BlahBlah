@@ -369,9 +369,9 @@ Bottom sheet:
 - **Blahs Recovery — €1.99 / one time use** + **Continue** + Subscription Terms.
 - Status: ❌ (vidi `FEATURES.md` A4; cena = **€1.99 jednokratno**, prozor ponude **~13h**).
 
-### MyProfile 8.9 — Profil sa aktivnim Blah Score — ❌
+### MyProfile 8.9 — Profil sa aktivnim Blah Score — 🟡
 - **Blahs stat u CRVENOM** (10.9k crveno) = aktivan/istaknut Blah Score. + Edit profile + eye badge 8.
-- Status: ❌ (zavisi od Blah Score, `FEATURES.md` A2).
+- Status: 🟡 (T3.4) — Blahs stat se prikazuje `formatCount`-om i postaje **crven (`#FF325E`) kad je skor > 0** (`app/profile/index.tsx`). Skor se obračunava preko `lib/blahScore` i kešira u `profiles.blah_score`. Streak bonus dani neaktivni dok streak ne proradi (T3.6).
 
 ---
 

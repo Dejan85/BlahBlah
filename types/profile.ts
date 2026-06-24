@@ -8,6 +8,8 @@ export interface Profile {
   location_enabled?: boolean;
   latitude?: number;
   longitude?: number;
+  blah_score?: number;
+  blahs_sent?: number;
 }
 
 export interface ProfileState {
@@ -15,6 +17,7 @@ export interface ProfileState {
   profile: Profile | null;
   followersCount: number;
   followingCount: number;
+  blahScore: number;
   loggingOut: boolean;
   savingProfile: boolean;
 }

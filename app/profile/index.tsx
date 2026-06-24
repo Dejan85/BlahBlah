@@ -32,6 +32,8 @@ import { GridPost } from '@/components/ProfilePosts';
 import PremiumModal from '@/components/PremiumModal';
 import { usePost } from '@/context/PostContext';
 import GridPosts from '@/components/GridPost';
+import { calculateBlahScore } from '@/lib/blahScore';
+import { formatCount } from '@/lib/formatCount';
 
 const { height: windowHeight } = Dimensions.get('window');
 
@@ -48,6 +50,7 @@ const initialState: ProfileState = {
   profile: null,
   followersCount: 0,
   followingCount: 0,
+  blahScore: 0,
   loggingOut: false,
   savingProfile: false,
 };
@@ -160,7 +163,7 @@ const ProfileScreen = () => {
           supabase
             .from('profiles')
             .select(
-              'username, full_name, avatar_url, bio, website_url, location_enabled, latitude, longitude'
+              'username, full_name, avatar_url, bio, website_url, location_enabled, latitude, longitude, blah_score, blahs_sent'
             )
             .eq('id', user.id)
             .single(),
@@ -203,6 +206,24 @@ const ProfileScreen = () => {
         }
       }
 
+      // Blah Score: logika u lib/ (T3.2). streakDay = 0 dok streak nije
+      // implementiran (T3.6) → trenutno samo base (Blahs×4 + Followers×0.8).
+      const followersCount = followersResponse.count || 0;
+      const blahScore = calculateBlahScore(
+        profileResponse.data.blahs_sent ?? 0,
+        followersCount,
+        0
+      );
+
+      // DB samo skladišti keširani skor (T3.3) — app ga računa i upisuje.
+      // Upiši samo kad se promenio, da ne pravimo suvišne write-ove.
+      if (blahScore !== profileResponse.data.blah_score) {
+        await supabase
+          .from('profiles')
+          .update({ blah_score: blahScore })
+          .eq('id', user.id);
+      }
+
       setState((prev) => ({
         ...prev,
         loading: false,
@@ -213,8 +234,9 @@ const ProfileScreen = () => {
           longitude:
             currentLocation?.coords.longitude ?? profileResponse.data.longitude,
         } as Profile,
-        followersCount: followersResponse.count || 0,
+        followersCount,
         followingCount: followingResponse.count || 0,
+        blahScore,
       }));
     } catch (error) {
       console.error('Error fetching profile data:', error);
@@ -373,7 +395,15 @@ const ProfileScreen = () => {
         {/* Updated stats row to show dynamic followers and following counts */}
         <View style={styles.blahRow}>
           <View style={styles.textContainer}>
-            <Text style={styles.blahs}>10.7k</Text>
+            {/* MyProfile 8.9: aktivan Blah Score → Blahs stat u crvenom */}
+            <Text
+              style={[
+                styles.blahs,
+                state.blahScore > 0 && styles.blahsActive,
+              ]}
+            >
+              {formatCount(state.blahScore)}
+            </Text>
             <Text style={styles.subtitle}>Blahs</Text>
           </View>
           <TouchableOpacity
@@ -631,6 +661,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#000',
     textAlign: 'center',
+  },
+  blahsActive: {
+    color: '#FF325E',
   },
   textContainer: {
     marginHorizontal: 12,

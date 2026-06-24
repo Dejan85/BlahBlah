@@ -18,14 +18,15 @@ Spec: korisnik šalje **jednu poruku svim pratiocima**; svaki primalac misli da 
 - ✅ Pravi individualne `conversations` + `messages` po primaocu (izgleda kao lična poruka)
 - ✅ `recipient_count` se beleži
 
-### A2. Blah Score — 🟡 Delimično (čista logika + formatiranje gotovo)
+### A2. Blah Score — 🟡 Delimično (logika + DB + prikaz gotovi; streak/real-time ostaje)
 Spec formula: **Blah Score = (Blahs Sent × 4) + (Followers × 0.8) + Streak Bonus**
 - ✅ Formula u `lib/blahScore.ts` — `calculateBlahScore(blahsSent, followers, streakDay)` + test (T3.2). Primer: 8. dan, 10 blahs, 10 followers = 68 (40+8+20).
 - ✅ DB storage (T3.3): `profiles.blah_score` + `profiles.blahs_sent` (`integer NOT NULL DEFAULT 0`, migracija `20260624162117_blah_score_columns.sql`). Skor se samo SKLADIŠTI; app ga računa+upisuje (T3.4).
-- ✅ Streak Bonus (Blahs × 2 na danima 8 / 20 / 28 / 48) — u `lib/blahScore.ts`
-- ❌ Real-time update skora posle slanja Blah-a (T3.4)
+- ✅ UI prikaz (T3.4): svoj profil (`app/profile/index.tsx`) obračunava skor preko `lib/blahScore`, upisuje u `blah_score` (samo kad se promeni) i prikazuje `formatCount(skor)`; **crveni Blahs stat = aktivan Blah Score (MyProfile 8.9)** kad je skor > 0.
+- ✅ Streak Bonus (Blahs × 2 na danima 8 / 20 / 28 / 48) — u `lib/blahScore.ts`. ⏳ Neaktivan u UI dok streak ne proradi (T3.6): profil za sad šalje `streakDay=0`.
+- ❌ Real-time update skora posle slanja Blah-a (sad se računa na fetch profila; live increment kad se poveže slanje Blah-a)
 - ✅ Zaokruživanje na ceo broj (256.8 → 257) — `Math.round` u `lib/blahScore.ts`
-- 🟡 Formatiranje velikih brojeva (10.000 → "10k", "10.1k"...) — ✅ logika u `lib/formatCount.ts` + test (T3.1); ❌ još nije uvezana u UI (T3.4, zamenjuje inline `formatNumber` u `PostActions.tsx`)
+- ✅ Formatiranje velikih brojeva (10.000 → "10k", "10.1k"...) — `lib/formatCount.ts` + test (T3.1); uvezano u UI (T3.4: profil + `PostActions.tsx`, inline `formatNumber` zamenjen).
 - ❌ "Prvi Blah u 24h se računa" logika
 
 ### A3. Daily Activity & Streaks — ❌ Nije implementirano
