@@ -94,6 +94,11 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
     if (type === 'FOLLOW_REQUEST') {
       router.push('/friend-requests');
     }
+    if (type === 'BLAHS') {
+      // D6 → Recovery (MyProfile 8.7): svoj profil, gde se recovery popup auto-otvara
+      // dok je ponuda živa ('recoverable').
+      router.push('/profile');
+    }
     onNotificationPress(notification);
   };
 

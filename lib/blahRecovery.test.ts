@@ -7,6 +7,7 @@ import {
   msUntilOfferExpires,
   isRecoveryUrgent,
   applyRecovery,
+  shouldNotifyStreakLost,
   formatRecoveryCountdown,
   RECOVERY_GRACE_MS,
   RECOVERY_OFFER_MS,
@@ -165,6 +166,101 @@ describe('applyRecovery', () => {
       lastBlahAt: LAST,
     });
     expect(applyRecovery(5, NaN)).toEqual({ streakDay: 5, lastBlahAt: 0 });
+  });
+});
+
+describe('shouldNotifyStreakLost (D6 / T3.9)', () => {
+  it('javlja kad je recoverable, postojao streak i još nije javljeno', () => {
+    expect(
+      shouldNotifyStreakLost({
+        recoveryStatus: 'recoverable',
+        streakDay: 8,
+        lostAt: LOST,
+        lastNotifiedAt: null,
+      })
+    ).toBe(true);
+  });
+
+  it('ne javlja dok je safe (streak nije pao)', () => {
+    expect(
+      shouldNotifyStreakLost({
+        recoveryStatus: 'safe',
+        streakDay: 8,
+        lostAt: LOST,
+        lastNotifiedAt: null,
+      })
+    ).toBe(false);
+  });
+
+  it('ne javlja kad je ponuda istekla (expired)', () => {
+    expect(
+      shouldNotifyStreakLost({
+        recoveryStatus: 'expired',
+        streakDay: 8,
+        lostAt: LOST,
+        lastNotifiedAt: null,
+      })
+    ).toBe(false);
+  });
+
+  it('ne javlja ako nije bilo streak-a (day ≤ 0)', () => {
+    expect(
+      shouldNotifyStreakLost({
+        recoveryStatus: 'recoverable',
+        streakDay: 0,
+        lostAt: LOST,
+        lastNotifiedAt: null,
+      })
+    ).toBe(false);
+  });
+
+  it('dedup: ne ponavlja kad je već javljeno za OVAJ pad (lastNotifiedAt ≥ lostAt)', () => {
+    expect(
+      shouldNotifyStreakLost({
+        recoveryStatus: 'recoverable',
+        streakDay: 8,
+        lostAt: LOST,
+        lastNotifiedAt: LOST, // tačno na granici → već javljeno
+      })
+    ).toBe(false);
+    expect(
+      shouldNotifyStreakLost({
+        recoveryStatus: 'recoverable',
+        streakDay: 8,
+        lostAt: LOST,
+        lastNotifiedAt: LOST + HOUR,
+      })
+    ).toBe(false);
+  });
+
+  it('javlja za NOV pad iako postoji starija notifikacija (lastNotifiedAt < lostAt)', () => {
+    expect(
+      shouldNotifyStreakLost({
+        recoveryStatus: 'recoverable',
+        streakDay: 8,
+        lostAt: LOST,
+        lastNotifiedAt: LOST - 1, // notif iz ranijeg gubitka
+      })
+    ).toBe(true);
+  });
+
+  it('bezbedno na nevažeći ulaz (ne baca)', () => {
+    expect(
+      shouldNotifyStreakLost({
+        recoveryStatus: 'recoverable',
+        streakDay: NaN,
+        lostAt: LOST,
+        lastNotifiedAt: null,
+      })
+    ).toBe(false);
+    expect(
+      shouldNotifyStreakLost({
+        recoveryStatus: 'recoverable',
+        streakDay: 8,
+        lostAt: null,
+        lastNotifiedAt: null,
+      })
+    ).toBe(false);
   });
 });
 

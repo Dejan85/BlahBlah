@@ -46,10 +46,64 @@ import {
   msUntilOfferExpires,
   formatRecoveryCountdown,
   applyRecovery,
+  streakLostAt,
+  shouldNotifyStreakLost,
 } from '@/lib/blahRecovery';
 import { purchaseRecovery } from '@/services/recoveryPurchase';
 
 const { height: windowHeight } = Dimensions.get('window');
+
+/**
+ * Kreira "Blah Streak Lost" notifikaciju (D6, T3.9) ako treba — odluku donosi čista
+ * `shouldNotifyStreakLost` (lib/blahRecovery), ovde je samo I/O. Sistemska notifikacija
+ * nema pravog pošiljaoca → `sender_id = recipient_id = userId` (kolona je NOT NULL FK na
+ * profiles; Push.tsx render za tip 'BLAHS' ionako prikazuje "blahblah", ne pošiljaoca).
+ * Dedup: gleda created_at zadnje 'BLAHS' notif. korisnika (>= lostAt → već javljeno).
+ */
+async function maybeCreateStreakLostNotification(
+  userId: string,
+  streakDay: number,
+  lostAt: number | null
+) {
+  try {
+    const { data: last } = await supabase
+      .from('notifications')
+      .select('created_at')
+      .eq('recipient_id', userId)
+      .eq('type', 'BLAHS')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const lastNotifiedAt = last?.created_at
+      ? new Date(last.created_at).getTime()
+      : null;
+
+    if (
+      !shouldNotifyStreakLost({
+        recoveryStatus: 'recoverable',
+        streakDay,
+        lostAt,
+        lastNotifiedAt,
+      })
+    ) {
+      return;
+    }
+
+    const { error } = await supabase.from('notifications').insert({
+      recipient_id: userId,
+      sender_id: userId, // sistemska notif. — bez pravog pošiljaoca (vidi gore)
+      type: 'BLAHS',
+      payload: { kind: 'streak_lost', lostDay: streakDay },
+      is_read: false,
+    });
+    if (error) {
+      console.error('Error creating streak-lost notification:', error);
+    }
+  } catch (err) {
+    console.error('Error creating streak-lost notification:', err);
+  }
+}
 
 const ProfileSkeleton = () => (
   <View style={styles.skeletonContainer}>
@@ -270,6 +324,14 @@ const ProfileScreen = () => {
           setNowTick(now);
           setShowRecoveryModal(true);
         }
+        // "Blah Streak Lost" notifikacija (D6, T3.9). Odluka u lib/ (shouldNotifyStreakLost);
+        // dedup preko created_at zadnje takve notif. (>= lostAt → već javljeno za OVAJ pad).
+        // On-read kreiranje, kao i ostatak streak/recovery wiringa (pravi push je T4.3).
+        await maybeCreateStreakLostNotification(
+          user.id,
+          streakState.day,
+          streakLostAt(streakState.lastBlahAt)
+        );
       } else {
         setRecovery({ lastBlahAt: streakState.lastBlahAt, restoredDay: 0 });
       }

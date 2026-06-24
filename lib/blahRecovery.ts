@@ -152,6 +152,45 @@ export function applyRecovery(
 }
 
 /**
+ * Da li treba KREIRATI „Blah Streak Lost" notifikaciju (D6, FEATURES.md tabela D / T3.9).
+ * Čista odluka — pozivalac radi I/O (upit postojećih notifikacija + insert).
+ *
+ * Notifikacija se šalje JEDNOM po događaju gubitka: okida se kad streak padne i ponuda
+ * je još živa (`recoverable`), a dedup ide preko `lastNotifiedAt` = vreme (epoch ms)
+ * poslednje već-poslate streak-lost notifikacije (npr. `created_at` zadnjeg takvog reda).
+ * Pošto svaki NOV gubitak ima kasniji `streakLostAt` (novi anchor → +26h), poređenje
+ * `lastNotifiedAt >= streakLostAt` pouzdano hvata „već javljeno za OVAJ pad" i sprečava
+ * ponovno slanje na svako otvaranje profila.
+ *
+ * @param recoveryStatus  trenutni status (vidi `getRecoveryStatus`)
+ * @param streakDay       streak dan PRE pada (>0 = postojao je streak vredan gubitka)
+ * @param lostAt          epoch ms ovog gubitka (`streakLostAt(lastBlahAt)`)
+ * @param lastNotifiedAt  epoch ms poslednje poslate streak-lost notif., ili `null` ako je nema
+ */
+export function shouldNotifyStreakLost(params: {
+  recoveryStatus: RecoveryStatus;
+  streakDay: number;
+  lostAt: number | null;
+  lastNotifiedAt: number | null;
+}): boolean {
+  const { recoveryStatus, streakDay, lostAt, lastNotifiedAt } = params;
+  // Javljamo samo kad je streak upravo pao a ponuda za spas je još živa.
+  if (recoveryStatus !== 'recoverable') return false;
+  // Mora postojati streak koji se izgubio.
+  if (!Number.isFinite(streakDay) || streakDay <= 0) return false;
+  if (lostAt == null || !Number.isFinite(lostAt)) return false;
+  // Dedup: već javljeno za ovaj (ili noviji) pad → ne ponavljaj.
+  if (
+    lastNotifiedAt != null &&
+    Number.isFinite(lastNotifiedAt) &&
+    lastNotifiedAt >= lostAt
+  ) {
+    return false;
+  }
+  return true;
+}
+
+/**
  * Tekst odbrojavanja za recovery popup ("In 13h offer expire", MyProfile 8.8).
  * `ms` = preostalo do isteka ponude (`msUntilOfferExpires`). ≤0 ili nevažeće → "Offer expired".
  * Format: sati+minuti dok ima sati ("In 12h 30m offer expire"), inače samo minuti.

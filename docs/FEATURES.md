@@ -38,11 +38,11 @@ Spec formula: **Blah Score = (Blahs Sent × 4) + (Followers × 0.8) + Streak Bon
 - ❌ Streak UI badge/brojač na profilu (vizuelni prikaz tekućeg dana) — DB sad ima podatak; sam prikaz dolazi sa profil polish-om.
 - ✅ Blah+ recovery (reset izuzetak) — vremenski prozori (`lib/blahRecovery.ts`, T3.7) + popup/plaćanje (T3.8). Vidi A4.
 
-### A4. Blah Recovery — 🟡 Delimično (logika + popup + plaćanje gotovi; pravi RevenueCat + notif + urgency animacija ostaju)
+### A4. Blah Recovery — 🟡 Delimično (logika + popup + plaćanje + notif gotovi; pravi RevenueCat + urgency animacija ostaju)
 Spec: 26h prozor; kad istekne → notifikacija "Blah Streak Lost"; ekran za recovery sa plaćanjem; live countdown; nakon plaćanja kreće nov 26h ciklus.
 - ✅ **26h/13h vremenski prozori (`lib/blahRecovery.ts`, T3.7):** rolling model (anchor = poslednji Blah, odvojen od kalendarskog `streak.ts`): `safe` (0–26h) → `recoverable` (26h–39h, ponuda 13h) → `expired`. `getRecoveryStatus`, `msUntilStreakLost` (26h countdown), `msUntilOfferExpires` ("In 13h offer expire" countdown), `isRecoveryUrgent` (3h pre pada), konstante (€1.99) + test.
 - ✅ **Recovery popup + plaćanje (`MyProfile 8.8`, T3.8):** profil auto-otvara popup kad je `recoverable` (live 13h countdown preko `formatRecoveryCountdown`); na Continue → `purchaseRecovery()` → `applyRecovery` (streak vraćen + nov 26h ciklus) → upis `streak_day`/`last_blah_at`. **Plaćanje = stubbed RevenueCat boundary** (`services/recoveryPurchase.ts`, €1.99 jednokratno; `RECOVERY_PURCHASE_STUBBED` prekidač) — pravi `Purchases.purchasePackage` tok dokumentovan, čeka konfigurisane store proizvode. On-read streak reset gejtovan da NE nulira streak dok je ponuda živa.
-- ❌ "Blah Streak Lost" notifikacija (vidi D6) — T3.9
+- ✅ **"Blah Streak Lost" notifikacija (D6, T3.9):** `shouldNotifyStreakLost` (`lib/blahRecovery.ts`) odlučuje (javlja kad `recoverable` + bio streak + nije već javljeno, dedup preko `lastNotifiedAt >= lostAt`); profil on-read kreira `'BLAHS'` notif. (sistemska, `sender_id=recipient_id`) + deep-link `'BLAHS'` → `/profile` (recovery popup). On-read (pravi background push = T4.3).
 - ⏳ Pravi RevenueCat (flip stub-a kad budu API ključevi + store proizvod) — T3.8 ostavio čist swap
 - ❌ Urgency bunny animacija u poslednja 3h — UI (logika `isRecoveryUrgent` ✅ spremna; animacija dolazi sa streak UI badge-om)
 - ℹ️ Dostupno i iz Settings → "Blah Recovery / Buy recovery"
@@ -96,7 +96,7 @@ Spec: svaka notifikacija vodi na konkretan ekran.
 | D3. New Message | "X sent you a message" | Chat 5.1 | ✅ (notif tip `MESSAGE` se kreira u `MessageContext`) |
 | D4. Tagged in a Post | "X tagged you" | taj post | ❓ |
 | D5. Post Like | "X likes your post" | lajkovani post | ❓ |
-| D6. Blah Streak Lost | "Oops! You lost your blahs" | Recovery (MyProfile 8.7) | ❌ (zavisi od A2–A4) |
+| D6. Blah Streak Lost | "Oops! You lost your blahs" | Recovery (MyProfile 8.7) | ✅ (T3.9 — on-read kreiranje na profilu + deep-link na `/profile`; render `Push.tsx` `'BLAHS'`) |
 
 > Infrastruktura: tabela `notifications` + Expo notifications postoje. Nedostaju ostali tipovi + dosledan deep-linking. Push (Firebase) nedovršen (vidi `PROJECT_STATUS.md`).
 

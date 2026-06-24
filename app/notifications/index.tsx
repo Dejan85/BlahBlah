@@ -58,7 +58,7 @@ const Index = () => {
           .filter(({ sender }) => sender) // Filter out notifications with missing sender data
           .map(({ notification, sender }) => ({
             id: notification.id,
-            type: notification.type as 'FOLLOW_REQUEST' | 'MESSAGE',
+            type: notification.type as Notification['type'],
             sender: {
               username: sender.username,
               avatar_url: sender.avatar_url,
