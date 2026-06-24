@@ -222,7 +222,7 @@ Status: reakcije postoje (`MessageContext`, `MessageMenu`); reply/swipe-to-reply
 - **"Deleted message..."** placeholder za obrisanu poruku.
 - **Reply preview** dole: citat ("Why delete???") sa **X** za otkaz + input.
 
-Status: ephemeral "Opened" stanje ❌; "Deleted message" placeholder ❓.
+Status: ephemeral "Opened" stanje ❌; **"Deleted message..." placeholder ✅ (T3.14)** — renderuje se kad `is_deleted` (klijentski delete + cron soft-delete).
 
 ### Chat 5.5 — Kamera iz chata — 🟡
 - Kamera za direktno slanje foto/video u chat (flash, galerija, shutter, flip) — isto kao Camera 4.0, u kontekstu chata.
@@ -246,7 +246,7 @@ Status: ephemeral "Opened" stanje ❌; "Deleted message" placeholder ❓.
 
 **Media (dno):** thumbnails deljenih medija; tap = full-screen.
 
-Status: postoje `BlockBadge`, pin (`SwipeableChatItem`); ❌ No Blahs per-contact toggle, ❌ Save chat 30d / ephemeral 24h, ❓ mute, ❓ media galerija konverzacije.
+Status: postoje `BlockBadge`, pin (`SwipeableChatItem`); **✅ Save chat 30d toggle (T3.14 — `conversations.saved` persistira)**; ephemeral 24h ✅ (T3.13 job); ❌ No Blahs per-contact toggle, ❓ mute (toggle-i u meniju ali lokalni-only), ❓ media galerija konverzacije.
 
 ---
 

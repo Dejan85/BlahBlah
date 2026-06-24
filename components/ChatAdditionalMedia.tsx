@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -22,6 +22,7 @@ import {
 import { StatusBar } from 'react-native';
 import SettingItem from './SettingItem';
 import ImageViewer from './Chat/ImageViewer';
+import { supabase } from '@/utils/supabase';
 
 const WINDOW_WIDTH = Dimensions.get('window').width;
 const IMAGE_MARGIN = 0;
@@ -35,6 +36,7 @@ interface ProfileOptionsModalProps {
   username: string;
   avatar: string;
   chatImages: string[];
+  conversationId?: string;
 }
 
 const ImageGridItem: React.FC<{ uri: string }> = ({ uri }) => {
@@ -65,12 +67,47 @@ const ProfileOptionsModal: React.FC<ProfileOptionsModalProps> = ({
   username,
   avatar,
   chatImages = [],
+  conversationId,
 }) => {
   const [isPinned, setIsPinned] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isNoBlahs, setIsNoBlahs] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+
+  // Load the persisted "Save chat" retention flag (conversations.saved:
+  // false → 24h ephemeral, true → 30d — T3.12/T3.13) when the sheet opens.
+  useEffect(() => {
+    if (!visible || !conversationId) return;
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase
+        .from('conversations')
+        .select('saved')
+        .eq('id', conversationId)
+        .single();
+      if (!cancelled && !error && data) {
+        setIsSaved(data.saved ?? false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [visible, conversationId]);
+
+  const handleToggleSaved = async (next: boolean) => {
+    if (!conversationId) return;
+    const prev = isSaved;
+    setIsSaved(next); // optimistic
+    const { error } = await supabase
+      .from('conversations')
+      .update({ saved: next })
+      .eq('id', conversationId);
+    if (error) {
+      console.error('Error updating Save chat:', error);
+      setIsSaved(prev); // revert on failure
+    }
+  };
 
   const renderImageItem = ({ item }: { item: string }) => (
     <ImageGridItem uri={item} />
@@ -127,9 +164,9 @@ const ProfileOptionsModal: React.FC<ProfileOptionsModalProps> = ({
             <SettingItem
               icon={<Hours24 />}
               title="Save Chat"
-              subtitle="Chat will be deleted after 30days not 24hours"
+              subtitle="Chat will be deleted after 30 days, not 24 hours"
               value={isSaved}
-              onValueChange={setIsSaved}
+              onValueChange={handleToggleSaved}
             />
           </View>
 

@@ -535,6 +535,30 @@ const ChatRoom = () => {
     const senderAvatar = image ?? 'https://via.placeholder.com/100';
 
     const renderMessageContent = () => {
+      // Soft-deleted message (client delete or ephemeral auto-delete job T3.13):
+      // show placeholder regardless of original type/text (which may be NULL).
+      if (item.is_deleted) {
+        return (
+          <View
+            style={[
+              styles.messageBubble,
+              isSender ? styles.senderBubble : styles.recipientBubble,
+              !isSender && !isFirstInSequence && { marginLeft: 40 },
+            ]}
+          >
+            <Text
+              style={[
+                styles.messageText,
+                styles.deletedText,
+                !isSender && { color: '#6C757D' },
+              ]}
+            >
+              Deleted message...
+            </Text>
+          </View>
+        );
+      }
+
       switch (item.messageType) {
         case 'image':
           return (
@@ -847,6 +871,7 @@ const ChatRoom = () => {
         onClose={() => setIsProfileModalVisible(false)}
         username={username}
         avatar={image}
+        conversationId={conversationId}
         chatImages={messages
           .filter((msg) => msg.messageType === 'image')
           .map((msg) => msg.text)}
@@ -1109,6 +1134,10 @@ const styles = StyleSheet.create({
   },
   senderText: {
     color: '#FFFFFF',
+  },
+  deletedText: {
+    fontStyle: 'italic',
+    color: 'rgba(255, 255, 255, 0.85)',
   },
   recipientText: {
     color: '#202020',

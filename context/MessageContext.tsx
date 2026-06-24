@@ -77,6 +77,7 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
                 senderId: payload.new.sender_id,
                 created_at: payload.new.created_at,
                 messageType: payload.new.message_type,
+                is_deleted: payload.new.is_deleted ?? false,
               },
             ]);
           }
@@ -243,6 +244,7 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
         senderId: msg.sender_id,
         created_at: msg.created_at,
         messageType: msg.message_type,
+        is_deleted: msg.is_deleted ?? false,
         reactions:
           msg.message_reactions?.reduce((acc: any[], reaction: any) => {
             const existingReaction = acc.find(

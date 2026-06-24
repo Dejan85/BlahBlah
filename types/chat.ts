@@ -13,6 +13,7 @@ export interface Message {
   senderId: string;
   created_at: string;
   messageType: string;
+  is_deleted?: boolean;
   reactions?: {
     emoji: string;
     name: string;
