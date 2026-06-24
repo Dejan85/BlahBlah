@@ -612,6 +612,8 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           birthday: string | null
+          blah_score: number
+          blahs_sent: number
           expo_push_token: string | null
           full_name: string | null
           id: string
@@ -627,6 +629,8 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           birthday?: string | null
+          blah_score?: number
+          blahs_sent?: number
           expo_push_token?: string | null
           full_name?: string | null
           id: string
@@ -642,6 +646,8 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           birthday?: string | null
+          blah_score?: number
+          blahs_sent?: number
           expo_push_token?: string | null
           full_name?: string | null
           id?: string

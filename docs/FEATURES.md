@@ -21,7 +21,7 @@ Spec: korisnik šalje **jednu poruku svim pratiocima**; svaki primalac misli da 
 ### A2. Blah Score — 🟡 Delimično (čista logika + formatiranje gotovo)
 Spec formula: **Blah Score = (Blahs Sent × 4) + (Followers × 0.8) + Streak Bonus**
 - ✅ Formula u `lib/blahScore.ts` — `calculateBlahScore(blahsSent, followers, streakDay)` + test (T3.2). Primer: 8. dan, 10 blahs, 10 followers = 68 (40+8+20).
-- ❌ Nema `blah_score` kolone/tabele ni DB integracije (T3.3)
+- 🟡 DB storage gotov (T3.3): `profiles.blah_score` + `profiles.blahs_sent` (`integer NOT NULL DEFAULT 0`, migracija `20260624162117_blah_score_columns.sql`). Skor se samo SKLADIŠTI; app ga računa+upisuje (T3.4). ❌ Real-time obračun/upis još nema (T3.4)
 - ✅ Streak Bonus (Blahs × 2 na danima 8 / 20 / 28 / 48) — u `lib/blahScore.ts`
 - ❌ Real-time update skora posle slanja Blah-a (T3.4)
 - ✅ Zaokruživanje na ceo broj (256.8 → 257) — `Math.round` u `lib/blahScore.ts`
