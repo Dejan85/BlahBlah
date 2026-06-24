@@ -28,13 +28,14 @@ components/            # Reusable UI + feature komponente (flat + poneki podfold
 context/               # React Context provideri (global state)
 hooks/                 # Custom hooks (useLocation, usePresence, useTypingStatus)
 lib/                   # ⭐ ČISTA logika — pure funkcije, BEZ React/UI (vidi §2.5)
+services/              # Side-effecting IO granice (npr. recoveryPurchase — RevenueCat) — §2.5
 utils/                 # supabase, firebase, notifications klijenti
 types/                 # TypeScript tipovi (barrel preko index.ts)
 constants/             # Colors, Dimensions
 assets/                # images (.svg + .png), fonts (Inter)
 ```
 
-> ℹ️ `lib/` postoji (od T1.6); čiste funkcije do sada: `formatCount.ts` (T3.1, "10k"/"10.1k"), `blahScore.ts` (T3.2, Blah Score formula), `streak.ts` (T3.5/T3.6, kalendarski streak + reset + bonus dani 8/20/28/48 + bunny rolling deadline + `isStreakLost` granica koju serverski pg_cron sweep mirror-uje); ostale mehanike Faze 3 dolaze redom. Pravilo u §2.5.
+> ℹ️ `lib/` postoji (od T1.6); čiste funkcije do sada: `formatCount.ts` (T3.1, "10k"/"10.1k"), `blahScore.ts` (T3.2, Blah Score formula), `streak.ts` (T3.5/T3.6, kalendarski streak + reset + bonus dani 8/20/28/48 + bunny rolling deadline + `isStreakLost` granica koju serverski pg_cron sweep mirror-uje), `blahRecovery.ts` (T3.7/T3.8, rolling 26h/13h recovery prozori + `applyRecovery` + `formatRecoveryCountdown`); ostale mehanike Faze 3 dolaze redom. Pravilo u §2.5.
 
 ---
 
