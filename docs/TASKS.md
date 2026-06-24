@@ -39,7 +39,7 @@
 > Redosled: Blah Score je temelj (od njega zavise streak, recovery, score boost).
 
 **Blah Score**
-- [ ] **T3.1** 🧪 `lib/formatCount.ts` ("10k"/"10.1k" + zaokruživanje) + test
+- [x] **T3.1** ✅ `lib/formatCount.ts` — kompaktan prikaz brojeva (1000→"1k", 10000→"10k", 10100→"10.1k", 1.2M, 2.5B). Čista funkcija (§2.5): `Number.isFinite` guard (→"0"), `<1000` ceo broj (256.8→"257"), tier-i k/M/B po veličini, mantisa `toFixed(1)` sa skidanjem ".0", rollover preliva u sledeću jedinicu (999_999→"1M", ali 999_500→"999.5k"), negativni znak. Test `lib/formatCount.test.ts` (10 grupa, sve prolaze). `tsc` čist, ESLint 0. ⚠️ Postoji duplikat inline `formatNumber` u `PostActions.tsx:68` (veliko "K") — zamena lib funkcijom u T3.4 (integracija u UI).
 - [ ] **T3.2** 🧪 `lib/blahScore.ts` (formula `(Blahs×4)+(Followers×0.8)+Streak Bonus`) + test (primer: 8. dan = 68)
 - [ ] **T3.3** ☁️ DB: `blah_score` kolone/tabela + migracija
 - [ ] **T3.4** Integracija u UI (prikaz skora, crveni Blahs stat — MyProfile 8.9) — *zavisi od T1.9 (skor ide na svoj profil `index.tsx`); pre konsolidacije bi se dupliralo na 3 mesta*
