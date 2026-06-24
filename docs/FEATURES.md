@@ -47,9 +47,10 @@ Spec: 26h prozor; kad istekne → notifikacija "Blah Streak Lost"; ekran za reco
 - ❌ Urgency bunny animacija u poslednja 3h — UI (logika `isRecoveryUrgent` ✅ spremna; animacija dolazi sa streak UI badge-om)
 - ℹ️ Dostupno i iz Settings → "Blah Recovery / Buy recovery"
 
-### A5. Chat Hours (Conversations Timer) — ❌ Nije implementirano
+### A5. Chat Hours (Conversations Timer) — 🟡 Logika gotova (T3.10), UI/DB ostaje
 Spec: svaki chat ima 24h tajmer koji se resetuje sa svakom poslatom porukom; ako nema odgovora 24h → Chat Hours padaju na 0; oboje moraju slati bar jednom dnevno.
-- ❌ Nema `chat_hours` / timer logike (proveren `chat-room/[id].tsx`)
+- ✅ **`lib/chatHours.ts` (T3.10)** — čista logika: brojač u SATIMA (`chatHours`), dvostrani 24h tajmer `chatExpiresAt = min(lastFromMe, lastFromThem) + 24h` (oboje moraju slati u 24h — spam jedne strane ne drži streak), `registerMessage` (reset po poruci), `getChatHoursStatus` (none|active|at-risk|expired), `formatChatHours` → „83h". Test 10 grupa.
+- ❌ **UI prikaz** u listi chatova (T3.11) i **DB izvor** (`lastFromMe`/`lastFromThem`/`startedAt` — kolone na `conversations` ili izvedeno iz `messages`) — još nije; `chat-room/[id].tsx` ne wire-uje timer.
 - ℹ️ **Chat Hours su VIDLJIV brojač** u listi chatova, **jedinica = sati** (npr. `83h`, `4783h`, `215h`) — vidi `SCREENS.md` Chat 5.0.
 
 ### A6. Close-By Connections — 🟡 Delimično
