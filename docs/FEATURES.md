@@ -36,14 +36,14 @@ Spec formula: **Blah Score = (Blahs Sent × 4) + (Followers × 0.8) + Streak Bon
 - ✅ **Streak DB kolone + background reset job (T3.6):** `profiles.streak_day`/`last_blah_at`/`streak_tz_offset` (migracija live); **pg_cron sweep `reset_lapsed_streaks()` (hourly, atomski, tz-aware)** nulira pale streak-ove serverski + on-read lazy reset backup. SQL sweep = veran port granice iz `lib/streak.ts`, zakovan pinning testom (anti-drift).
 - ✅ **Uvezivanje pravog `streakDay` u Blah Score na profilu (T3.6)** — `app/profile/index.tsx` koristi `currentStreakDay(state, now, tz)`; slanje Blah-a (`app/blahs/new.tsx`) upisuje streak preko `registerBlah` + inkrementira `blahs_sent`.
 - ❌ Streak UI badge/brojač na profilu (vizuelni prikaz tekućeg dana) — DB sad ima podatak; sam prikaz dolazi sa profil polish-om.
-- ❌ Blah+ recovery (reset izuzetak) — A4 / T3.7.
+- 🟡 Blah+ recovery (reset izuzetak) — vremenski prozori ✅ (`lib/blahRecovery.ts`, T3.7); popup + plaćanje T3.8. Vidi A4.
 
-### A4. Blah Recovery — ❌ Nije implementirano
+### A4. Blah Recovery — 🟡 Delimično (logika prozora gotova; popup + plaćanje + notif ostaju)
 Spec: 26h prozor; kad istekne → notifikacija "Blah Streak Lost"; ekran za recovery sa plaćanjem; live countdown; nakon plaćanja kreće nov 26h ciklus.
-- ❌ 26-časovni timer / countdown
-- ❌ "Blah Streak Lost" notifikacija (vidi D6)
-- ❌ Recovery popup + plaćanje (`MyProfile 8.8`) — **cena €1.99 jednokratno**, prozor ponude **~13h** ("In 13h offer expire")
-- ❌ Urgency bunny animacija u poslednja 3h
+- ✅ **26h/13h vremenski prozori (`lib/blahRecovery.ts`, T3.7):** rolling model (anchor = poslednji Blah, odvojen od kalendarskog `streak.ts`): `safe` (0–26h) → `recoverable` (26h–39h, ponuda 13h) → `expired`. `getRecoveryStatus`, `msUntilStreakLost` (26h countdown), `msUntilOfferExpires` ("In 13h offer expire" countdown), `isRecoveryUrgent` (3h pre pada), konstante (€1.99) + test (72/72).
+- ❌ "Blah Streak Lost" notifikacija (vidi D6) — T3.9
+- ❌ Recovery popup + plaćanje (`MyProfile 8.8`) — **cena €1.99 jednokratno**, prozor ponude **~13h** ("In 13h offer expire") — T3.8 (RevenueCat); logika prozora ✅ spremna
+- ❌ Urgency bunny animacija u poslednja 3h — UI (logika `isRecoveryUrgent` ✅ spremna) — T3.8
 - ℹ️ Dostupno i iz Settings → "Blah Recovery / Buy recovery"
 
 ### A5. Chat Hours (Conversations Timer) — ❌ Nije implementirano
