@@ -134,7 +134,7 @@ Faze ukratko (detalji u TASKS.md):
 
 ### 🔑 Signature mehanike — najveći gap (kontekst, ne redosled)
 > Ovo su **prepoznatljive mehanike proizvoda koje još NE postoje** i čine najveći deo preostalog posla. Produktni spec sa Figme: **[`FEATURES.md`](FEATURES.md)**. Sve idu kroz **`lib/` sloj** (čiste funkcije + `*.test.ts`, `ARCHITECTURE.md` §2.5) → testabilne `npm test`-om bez pokretanja app-a.
-1. **Blah Score** (formula, real-time, formatiranje) — temelj, od njega zavise streak/recovery/boost
+1. **Blah Score** — temelj, od njega zavise streak/recovery/boost. ✅ formula (`lib/blahScore.ts`, T3.2) + formatiranje (`lib/formatCount.ts`, T3.1); ❌ ostaje DB (T3.3), real-time + UI prikaz (T3.4)
 2. **Streak + Blah Recovery** (24/26h prozori, reset, recovery + plaćanje €1.99)
 3. **Chat Hours** tajmer (24h po konverzaciji)
 4. **Ephemeral chat** (24h default / 30d "Save chat") + auto-brisanje job

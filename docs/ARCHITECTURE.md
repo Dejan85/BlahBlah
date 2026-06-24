@@ -34,7 +34,7 @@ constants/             # Colors, Dimensions
 assets/                # images (.svg + .png), fonts (Inter)
 ```
 
-> ℹ️ `lib/` postoji (od T1.6); prva prava čista funkcija je `formatCount.ts` (T3.1, "10k"/"10.1k"); ostale mehanike Faze 3 (T3.2+) dolaze redom. Pravilo u §2.5.
+> ℹ️ `lib/` postoji (od T1.6); čiste funkcije do sada: `formatCount.ts` (T3.1, "10k"/"10.1k"), `blahScore.ts` (T3.2, Blah Score formula); ostale mehanike Faze 3 dolaze redom. Pravilo u §2.5.
 
 ---
 
