@@ -40,7 +40,7 @@
 
 **Blah Score**
 - [x] **T3.1** ✅ `lib/formatCount.ts` — kompaktan prikaz brojeva (1000→"1k", 10000→"10k", 10100→"10.1k", 1.2M, 2.5B). Čista funkcija (§2.5): `Number.isFinite` guard (→"0"), `<1000` ceo broj (256.8→"257"), tier-i k/M/B po veličini, mantisa `toFixed(1)` sa skidanjem ".0", rollover preliva u sledeću jedinicu (999_999→"1M", ali 999_500→"999.5k"), negativni znak. Test `lib/formatCount.test.ts` (10 grupa, sve prolaze). `tsc` čist, ESLint 0. ⚠️ Postoji duplikat inline `formatNumber` u `PostActions.tsx:68` (veliko "K") — zamena lib funkcijom u T3.4 (integracija u UI).
-- [ ] **T3.2** 🧪 `lib/blahScore.ts` (formula `(Blahs×4)+(Followers×0.8)+Streak Bonus`) + test (primer: 8. dan = 68)
+- [x] **T3.2** ✅ `lib/blahScore.ts` — `calculateBlahScore(blahsSent, followers, streakDay)`: `(Blahs×4)+(Followers×0.8)+Streak Bonus`, bonus `=Blahs×2` SAMO na danima 8/20/28/48, `Math.round` na kraju, `Number.isFinite` guard (NaN/∞→0, skor nikad NaN). Test `lib/blahScore.test.ts` (9 grupa, prolaze). ⚠️ **Doc-fix:** ARCHITECTURE §2.5 primer je imao tipfeler `(10, 50, 8)` koji daje **100**, ne 68 → ispravljeno na `(10, 10, 8)` = 40+8+20 = 68 (poklapa se sa "8. dan = 68"). `tsc` čist, ESLint 0.
 - [ ] **T3.3** ☁️ DB: `blah_score` kolone/tabela + migracija
 - [ ] **T3.4** Integracija u UI (prikaz skora, crveni Blahs stat — MyProfile 8.9) — *zavisi od T1.9 (skor ide na svoj profil `index.tsx`); pre konsolidacije bi se dupliralo na 3 mesta*
 

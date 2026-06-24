@@ -84,8 +84,8 @@ export function calculateBlahScore(
 ```ts
 // lib/blahScore.test.ts
 import { calculateBlahScore } from "./blahScore";
-test("8. dan: 10 blahs, 50 followers = 68", () => {
-  expect(calculateBlahScore(10, 50, 8)).toBe(68); // primer iz FEATURES.md A2
+test("8. dan: 10 blahs, 10 followers = 68", () => {
+  expect(calculateBlahScore(10, 10, 8)).toBe(68); // primer iz FEATURES.md A2: 40 + 8 + 20
 });
 ```
 ```ts

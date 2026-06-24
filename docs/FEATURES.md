@@ -18,12 +18,13 @@ Spec: korisnik šalje **jednu poruku svim pratiocima**; svaki primalac misli da 
 - ✅ Pravi individualne `conversations` + `messages` po primaocu (izgleda kao lična poruka)
 - ✅ `recipient_count` se beleži
 
-### A2. Blah Score — 🟡 Delimično (formatiranje gotovo)
+### A2. Blah Score — 🟡 Delimično (čista logika + formatiranje gotovo)
 Spec formula: **Blah Score = (Blahs Sent × 4) + (Followers × 0.8) + Streak Bonus**
-- ❌ Nema nikakvog `score`/`blah_score` koda ni kolone
-- ❌ Streak Bonus (× 2 na danima 8 / 20 / 28 / 48)
-- ❌ Real-time update skora posle slanja Blah-a
-- ❌ Zaokruživanje na ceo broj (256.8 → 257)
+- ✅ Formula u `lib/blahScore.ts` — `calculateBlahScore(blahsSent, followers, streakDay)` + test (T3.2). Primer: 8. dan, 10 blahs, 10 followers = 68 (40+8+20).
+- ❌ Nema `blah_score` kolone/tabele ni DB integracije (T3.3)
+- ✅ Streak Bonus (Blahs × 2 na danima 8 / 20 / 28 / 48) — u `lib/blahScore.ts`
+- ❌ Real-time update skora posle slanja Blah-a (T3.4)
+- ✅ Zaokruživanje na ceo broj (256.8 → 257) — `Math.round` u `lib/blahScore.ts`
 - 🟡 Formatiranje velikih brojeva (10.000 → "10k", "10.1k"...) — ✅ logika u `lib/formatCount.ts` + test (T3.1); ❌ još nije uvezana u UI (T3.4, zamenjuje inline `formatNumber` u `PostActions.tsx`)
 - ❌ "Prvi Blah u 24h se računa" logika
 
