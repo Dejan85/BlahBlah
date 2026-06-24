@@ -138,6 +138,26 @@ describe('expiryCutoff', () => {
   });
 });
 
+describe('pinning: SQL job intervali == lib konstante (T3.13)', () => {
+  // delete_expired_messages() (migracija ..._ephemeral_messages_retention_job.sql)
+  // koristi literal interval '24 hours' / '30 days' kao cutoff. Ovaj test zakiva
+  // da ti literali NE mogu tiho da se raziđu od lib retencije (anti-drift, kao T3.6).
+  test("interval '24 hours' == EPHEMERAL_DEFAULT_MS", () => {
+    expect(EPHEMERAL_DEFAULT_MS).toBe(24 * HOUR);
+  });
+
+  test("interval '30 days' == EPHEMERAL_SAVED_MS", () => {
+    expect(EPHEMERAL_SAVED_MS).toBe(30 * DAY);
+  });
+
+  test('SQL predikat created_at <= now() - retencija == expiryCutoff', () => {
+    // SQL: created_at <= now() - interval ; lib: createdAt <= expiryCutoff(saved, now)
+    const now = T0 + 50 * DAY;
+    expect(expiryCutoff(false, now)).toBe(now - 24 * HOUR);
+    expect(expiryCutoff(true, now)).toBe(now - 30 * DAY);
+  });
+});
+
 describe('pinning: batch cutoff == per-poruka isMessageExpired', () => {
   // T3.13 SQL sweep koristi `createdAt <= cutoff`; mora dati isti rezultat kao
   // `isMessageExpired` koji koristi UI. Proveravamo oko obe granice (24h, 30d).

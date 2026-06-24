@@ -214,6 +214,7 @@ export type Database = {
           participant1_last_read_at: string | null
           participant2_id: string
           participant2_last_read_at: string | null
+          saved: boolean
         }
         Insert: {
           created_at?: string | null
@@ -224,6 +225,7 @@ export type Database = {
           participant1_last_read_at?: string | null
           participant2_id: string
           participant2_last_read_at?: string | null
+          saved?: boolean
         }
         Update: {
           created_at?: string | null
@@ -234,6 +236,7 @@ export type Database = {
           participant1_last_read_at?: string | null
           participant2_id?: string
           participant2_last_read_at?: string | null
+          saved?: boolean
         }
         Relationships: [
           {
@@ -758,6 +761,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      delete_expired_messages: { Args: never; Returns: number }
       delete_user_data: { Args: { user_id: string }; Returns: undefined }
       get_nearby_users: {
         Args: { radius_km: number; user_id: string }

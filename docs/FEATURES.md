@@ -133,10 +133,10 @@ Spec: svaka notifikacija vodi na konkretan ekran.
 
 ## G. Ephemeral chat (otkriveno iz `SCREENS.md` Chat 5.x)
 
-### G1. Ephemeral poruke (24h) + Save chat (30 dana) — 🟡 Logika gotova (T3.12)
+### G1. Ephemeral poruke (24h) + Save chat (30 dana) — 🟡 Logika + DB/job gotovi (T3.12/T3.13)
 Spec: konverzacija/poruke se brišu posle **24h** po defaultu; per-contact toggle **"Save chat"** produžava retenciju na **30 dana** (Chat 5.8).
 - ✅ **`lib/ephemeral.ts` (T3.12)** — čista logika retencije: prozor je svojstvo konverzacije (`saved`: 24h default `EPHEMERAL_DEFAULT_MS` / 30d „Save chat" `EPHEMERAL_SAVED_MS`); `messageExpiresAt`/`isMessageExpired` (per-poruka, UI/placeholder) + `expiryCutoff` (batch prag za job: `createdAt <= cutoff`, ekvivalentan predikatu — pinning test). Toggle se rekalkuliše iz aktuelnog `saved`; fail-safe na nevažeći unos. Test 10 grupa.
-- ❌ Auto-brisanje poruka posle 24h (DB + job → T3.13)
+- ✅ **DB + auto-brisanje job (T3.13)** — kolona `conversations.saved` (24h/30d toggle storage) + `public.delete_expired_messages()` zakazan pg_cron-om (`'5 * * * *'`). **SOFT-DELETE** (`is_deleted=true` + `text=NULL` + brisanje reakcija, NE hard DELETE) — čuva Chat Hours rekonstrukciju (T3.11) i daje red za placeholder (T3.14), izbegava `reply_to` FK problem. Per-konverzacija cutoff u jednom MVCC snapshot-u = concurrency-safe („sačuvani se ne diraju"). SQL intervali zakovani pinning testom uz lib konstante. ⚠️ Media fajlovi u storage bucket-ima se NE brišu (samo `text`) — bucket cleanup je zaseban posao.
 - ❌ "Save chat" (30 dana) toggle UI (→ T3.14)
 - ❌ "Deleted message..." placeholder za obrisanu poruku (→ T3.14)
 
