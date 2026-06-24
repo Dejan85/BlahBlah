@@ -129,7 +129,7 @@ Faze ukratko (detalji u TASKS.md):
 - **Faza 0** — da app proradi (✅ ZAVRŠENA)
 - **Faza 1** — čist kod / temelj (TS, mrtav kod, lint, README, ime paketa) (✅ ZAVRŠENA)
 - **Faza 2** — backup baze (migracije + RLS + TS tipovi + storage) (✅ ZAVRŠENA)
-- **Faza 3** — signature mehanike (Blah Score → streak → recovery → ephemeral → premium) — **najveći blok, U TOKU (T3.1–T3.4 ✅ Blah Score kompletan; T3.5 ✅ `lib/streak.ts`; T3.6 ✅ streak DB + pg_cron reset + wiring; T3.7 ✅ `lib/blahRecovery.ts` 26h/13h + €1.99; T3.8 ✅ recovery popup + stubbed RevenueCat plaćanje; T3.9 ✅ "Blah Streak Lost" notif D6; T3.10 ✅ `lib/chatHours.ts` — Chat Hours brojač u satima; T3.11 ✅ prikaz u listi chatova; T3.12 ✅ `lib/ephemeral.ts` — retencija 24h/30d; sledeći T3.13 — Ephemeral DB + auto-brisanje job)**, sve kroz `lib/` + testovi (`ARCHITECTURE.md` §2.5)
+- **Faza 3** — signature mehanike (Blah Score → streak → recovery → ephemeral → premium) — **najveći blok, U TOKU (T3.1–T3.4 ✅ Blah Score kompletan; T3.5 ✅ `lib/streak.ts`; T3.6 ✅ streak DB + pg_cron reset + wiring; T3.7 ✅ `lib/blahRecovery.ts` 26h/13h + €1.99; T3.8 ✅ recovery popup + stubbed RevenueCat plaćanje; T3.9 ✅ "Blah Streak Lost" notif D6; T3.10 ✅ `lib/chatHours.ts` — Chat Hours brojač u satima; T3.11 ✅ prikaz u listi chatova; T3.12 ✅ `lib/ephemeral.ts` — retencija 24h/30d; T3.13 ✅ ephemeral DB + pg_cron auto-brisanje (soft-delete); sledeći T3.14 — „Save chat" toggle UI + „Deleted message…" placeholder)**, sve kroz `lib/` + testovi (`ARCHITECTURE.md` §2.5)
 - **Faza 4** — polish (auth, push, settings, legal, multi-account)
 
 ### 🔑 Signature mehanike — najveći gap (kontekst, ne redosled)
