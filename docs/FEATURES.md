@@ -133,11 +133,12 @@ Spec: svaka notifikacija vodi na konkretan ekran.
 
 ## G. Ephemeral chat (otkriveno iz `SCREENS.md` Chat 5.x)
 
-### G1. Ephemeral poruke (24h) + Save chat (30 dana) — ❌ Nije implementirano
+### G1. Ephemeral poruke (24h) + Save chat (30 dana) — 🟡 Logika gotova (T3.12)
 Spec: konverzacija/poruke se brišu posle **24h** po defaultu; per-contact toggle **"Save chat"** produžava retenciju na **30 dana** (Chat 5.8).
-- ❌ Auto-brisanje poruka posle 24h
-- ❌ "Save chat" (30 dana) toggle + logika
-- ❌ "Deleted message..." placeholder za obrisanu poruku
+- ✅ **`lib/ephemeral.ts` (T3.12)** — čista logika retencije: prozor je svojstvo konverzacije (`saved`: 24h default `EPHEMERAL_DEFAULT_MS` / 30d „Save chat" `EPHEMERAL_SAVED_MS`); `messageExpiresAt`/`isMessageExpired` (per-poruka, UI/placeholder) + `expiryCutoff` (batch prag za job: `createdAt <= cutoff`, ekvivalentan predikatu — pinning test). Toggle se rekalkuliše iz aktuelnog `saved`; fail-safe na nevažeći unos. Test 10 grupa.
+- ❌ Auto-brisanje poruka posle 24h (DB + job → T3.13)
+- ❌ "Save chat" (30 dana) toggle UI (→ T3.14)
+- ❌ "Deleted message..." placeholder za obrisanu poruku (→ T3.14)
 
 ### G2. "Tap to View" media (pogledaj-jednom) — ❌ Nije implementirano
 Spec: foto/video u chatu se šalju kao **"Tap to View"**; nakon otvaranja prelaze u **"Opened"** stanje (Snapchat-stil).
