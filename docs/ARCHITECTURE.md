@@ -141,7 +141,7 @@ AuthProvider → FriendRequestProvider → MessageProvider → CameraProvider �
 - Klijent: `import { supabase } from "@/utils/supabase"` (jedan singleton, AsyncStorage za sesiju).
 - **Auth**: `supabase.auth.*` (signInWithPassword, signUp, onAuthStateChange...).
 - **Baza**: `supabase.from("tabela").select/insert/update/delete`.
-- **Join**: `select("*, profile:profiles(*)")`. ⚠️ Supabase **tipuje** to-one join kao **niz** iako runtime vraća objekat — normalizuj (`Array.isArray(x) ? x[0] : x`) pre pristupa. Bio uzrok TS grešaka (rešeno u T1.1; trajni fix dolazi sa `supabase gen types` u T2.2).
+- **Join**: `select("*, profile:profiles(*)")`. ⚠️ Supabase **tipuje** to-one join kao **niz** iako runtime vraća objekat — normalizuj (`Array.isArray(x) ? x[0] : x`) pre pristupa. Bio uzrok TS grešaka (rešeno u T1.1). Tipovi šeme postoje od T2.2 (`@/types`), ali `Database` generic **nije** globalno tipiziran u `createClient` (lomi 51 mesta) → join-ovi i dalje vraćaju niz-tipove; normalizacija/cast ostaje dok se ne uradi postepena migracija.
 - **Storage**: `supabase.storage.from("bucket").upload(...)` → buckети: `avatars`, `posts`, `audio-messages`.
   - Na mobilnom: upload preko `FormData` sa `{ uri, name, type }`.
 - **Realtime**: `supabase.channel(...).on("postgres_changes", {...}).subscribe()`. Uvek `unsubscribe()`/`removeChannel` u cleanup-u.
@@ -149,7 +149,7 @@ AuthProvider → FriendRequestProvider → MessageProvider → CameraProvider �
 ### Poznate tabele
 Pun spisak iz šeme (T2.1, `public`): `blahs` · `blocks` · `comment_likes` · `comment_replies` · `comments` · `conversations` · `follow_requests` · `follows` · `message_reactions` · `messages` · `notifications` · `post_likes` · `posts` · `profiles` · `reply_likes` · `typing_status` · `user_presence`.
 
-> ✅ Šema baze + RLS politike **jesu u repou** od T2.1: `supabase/migrations/20260624145146_remote_schema.sql` (schema-only snapshot, 17 tabela / 53 RLS politike). Generisan lokalnim `pg_dump`-om (Docker nije instaliran). Tajne stoje u gitignorovanom `supabase/.env.local`. Snapshot je za verzionisanje, ne za replay (vidi `TASKS.md` T2.1 caveat). TS tipovi iz šeme = T2.2.
+> ✅ Šema baze + RLS politike **jesu u repou** od T2.1: `supabase/migrations/20260624145146_remote_schema.sql` (schema-only snapshot, 17 tabela / 53 RLS politike). Generisan lokalnim `pg_dump`-om (Docker nije instaliran). Tajne stoje u gitignorovanom `supabase/.env.local`. Snapshot je za verzionisanje, ne za replay (vidi `TASKS.md` T2.1 caveat). ✅ TS tipovi iz šeme generisani u T2.2 → `types/database.types.ts`, izloženi kroz `@/types` (`Database`, `Tables<'x'>`); regeneracija: `npm run gen:types`.
 
 ### Konvencija imenovanja
 - Kolone u bazi: `snake_case` (`avatar_url`, `created_at`, `participant1_id`).

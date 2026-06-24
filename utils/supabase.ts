@@ -12,6 +12,10 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
+// NAPOMENA: `Database` generic NIJE prosleđen u createClient namerno.
+// Globalno tipiziranje klijenta surfacuje 51 neusklađenost (cast cleanup + tabele
+// `friends`/`friend_requests` koje kod gađa a ne postoje u šemi) → odvojen follow-up.
+// Tipovi su dostupni za eksplicitnu upotrebu preko `@/types` (Tables<'...'>, itd.).
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     storage: AsyncStorage,
