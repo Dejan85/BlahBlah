@@ -48,7 +48,7 @@ Aplikacija je obimna — ~298 fajlova, ~70 komponenti.
 
 | Oblast | Težina* | Završeno |
 |---|---|---|
-| Setup / build / infra (migracije, testovi, lint) | 5% | ~65% |
+| Setup / build / infra (migracije, testovi, lint) | 5% | ~80% |
 | Auth & onboarding | 10% | ~55% |
 | Postovi / Feed (Home) | 12% | ~65% |
 | Kamera / kreiranje posta | 10% | ~60% |
@@ -127,9 +127,9 @@ Aplikacija je obimna — ~298 fajlova, ~70 komponenti.
 
 Faze ukratko (detalji u TASKS.md):
 - **Faza 0** — da app proradi (✅ ZAVRŠENA)
-- **Faza 1** — čist kod / temelj (TS, mrtav kod, lint, README, ime paketa)
-- **Faza 2** — backup baze (migracije + RLS + TS tipovi)
-- **Faza 3** — signature mehanike (Blah Score → streak → recovery → ephemeral → premium) — najveći blok, sve kroz `lib/` + testovi (`ARCHITECTURE.md` §2.5)
+- **Faza 1** — čist kod / temelj (TS, mrtav kod, lint, README, ime paketa) (✅ ZAVRŠENA)
+- **Faza 2** — backup baze (migracije + RLS + TS tipovi + storage) (✅ ZAVRŠENA)
+- **Faza 3** — signature mehanike (Blah Score → streak → recovery → ephemeral → premium) — **najveći blok, SLEDEĆI (T3.1)**, sve kroz `lib/` + testovi (`ARCHITECTURE.md` §2.5)
 - **Faza 4** — polish (auth, push, settings, legal, multi-account)
 
 ### 🔑 Signature mehanike — najveći gap (kontekst, ne redosled)
