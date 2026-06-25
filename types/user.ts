@@ -17,6 +17,10 @@ export type User = {
   isTyping?: boolean;
   shouldShowMessageOnly?: boolean;
   distance?: number;
+  /** Rastojanje od mene u metrima (Close-By, T3.19) — postavljeno samo za „Close By" korisnike. */
+  distanceM?: number;
+  /** Korisnik je fizički u blizini (≤ Close-By radijus 20–30m, Search 6.0 / A6) → labela „Close By". */
+  isCloseBy?: boolean;
   /** Vidljiv Chat Hours brojač (ceo broj sati) — Chat 5.0. 0/undefined = ne prikazuje se. */
   chatHours?: number;
   /** Chat Hours serija ističe za ≤3h (peščani sat / urgency u listi). */

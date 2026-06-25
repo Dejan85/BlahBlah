@@ -18,9 +18,9 @@ import { useAuth } from '@/context/AuthContext';
 import { useFriendRequests } from '@/context/FriendRequestContext';
 import { User } from '@/types';
 import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
-import { UserWithDistance, NearbyUserData } from '@/types';
 import { useMessage } from '@/context/MessageContext';
 import { useLocation } from '@/hooks/useLocation';
+import { closeByUsers, CLOSE_BY_RADIUS_M } from '@/lib/closeBy';
 
 const SEARCH_HEIGHT = 60;
 const SWIPE_THRESHOLD = 50;
@@ -42,13 +42,11 @@ const Search: React.FC = () => {
   const currentUserId = currentUser?.id;
 
   // -------- Location Hook & Data -----------
-  const { isLocationEnabled, startLocationUpdates, location } =
-    useLocation(currentUserId);
+  const { isLocationEnabled, location } = useLocation(currentUserId);
 
-  // We will store normal search results in `filteredUsers` but if location is on, we'll store “nearby” data in `nearbyUsers`.
+  // Search results; when location is on, „Close By" korisnici (≤30m) se obeleže i diže na vrh.
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-  const [nearbyUsers, setNearbyUsers] = useState<UserWithDistance[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
   // For the search bar animations
@@ -58,32 +56,16 @@ const Search: React.FC = () => {
   const scrollDirection = useRef('');
   const isSearchHidden = useRef(false);
 
-  const calculateDistance = (
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number
-  ) => {
-    const R = 6371; // Radius of the Earth in kilometers
-    const dLat = (lat2 - lat1) * (Math.PI / 180);
-    const dLon = (lon2 - lon1) * (Math.PI / 180);
-    const a =
-      Math.sin(dLat / 2) ** 2 +
-      Math.cos(lat1 * (Math.PI / 180)) *
-        Math.cos(lat2 * (Math.PI / 180)) *
-        Math.sin(dLon / 2) ** 2;
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // Distance in kilometers
-  };
-
   const fetchData = async () => {
     if (!currentUserId) return;
 
     try {
-      // Get all users except the current user
+      // Get all users except the current user (geo polja za Close-By, T3.19)
       const { data: allProfiles, error: allError } = await supabase
         .from('profiles')
-        .select('id, username, avatar_url, bio, full_name, latitude, longitude')
+        .select(
+          'id, username, avatar_url, bio, full_name, latitude, longitude, location_enabled'
+        )
         .neq('id', currentUserId);
 
       if (allError) {
@@ -117,58 +99,60 @@ const Search: React.FC = () => {
         friendRequests.map((req) => req.follower_id)
       );
 
-      // Build the users list with status information
-      let usersWithStatus = [];
+      const requestStatusFor = (id: string) =>
+        friendIds.has(id)
+          ? 'friend'
+          : pendingRequestIds.has(id)
+            ? 'pending'
+            : receivedRequestIds.has(id)
+              ? 'received'
+              : 'none';
 
+      // --- Close-By (T3.19): blizina kroz lib/closeBy (geo math ostaje u lib/).
+      // Supabase upit gore nosi koordinate + location_enabled; uzimamo SAMO korisnike
+      // koji dele lokaciju i imaju validne koordinate, pa closeByUsers filtrira na
+      // radijus 20–30m (default 30m) i sortira po rastojanju. Bez moje lokacije → prazno.
+      const closeByMap = new Map<string, number>();
       if (isLocationEnabled && location?.coords) {
-        const currentLat = location.coords.latitude;
-        const currentLng = location.coords.longitude;
-
-        usersWithStatus =
-          allProfiles?.map((u) => {
-            let distance;
-            if (u.latitude && u.longitude) {
-              distance = calculateDistance(
-                currentLat,
-                currentLng,
-                u.latitude,
-                u.longitude
-              );
-            }
-
-            return {
-              id: u.id,
-              username: u.username,
-              image: u.avatar_url ?? 'https://via.placeholder.com/150',
-              bio: u.bio ?? '',
-              full_name: u.full_name ?? '',
-              distance: distance,
-              requestStatus: friendIds.has(u.id)
-                ? 'friend'
-                : pendingRequestIds.has(u.id)
-                  ? 'pending'
-                  : receivedRequestIds.has(u.id)
-                    ? 'received'
-                    : 'none',
-            };
-          }) || [];
-      } else {
-        usersWithStatus =
-          allProfiles?.map((u) => ({
+        const candidates = (allProfiles ?? [])
+          .filter(
+            (u) =>
+              u.location_enabled && u.latitude != null && u.longitude != null
+          )
+          .map((u) => ({
             id: u.id,
-            username: u.username,
-            image: u.avatar_url ?? 'https://via.placeholder.com/150',
-            bio: u.bio ?? '',
-            full_name: u.full_name ?? '',
-            requestStatus: friendIds.has(u.id)
-              ? 'friend'
-              : pendingRequestIds.has(u.id)
-                ? 'pending'
-                : receivedRequestIds.has(u.id)
-                  ? 'received'
-                  : 'none',
-          })) || [];
+            latitude: u.latitude as number,
+            longitude: u.longitude as number,
+          }));
+
+        for (const near of closeByUsers(
+          {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          },
+          candidates,
+          CLOSE_BY_RADIUS_M
+        )) {
+          closeByMap.set(near.id, near.distanceM);
+        }
       }
+
+      const usersWithStatus: User[] = (allProfiles ?? []).map((u) => ({
+        id: u.id,
+        username: u.username,
+        image: u.avatar_url ?? 'https://via.placeholder.com/150',
+        bio: u.bio ?? '',
+        full_name: u.full_name ?? '',
+        requestStatus: requestStatusFor(u.id),
+        isCloseBy: closeByMap.has(u.id),
+        distanceM: closeByMap.get(u.id),
+      }));
+
+      // „Close By" korisnici prvi (rastuće po rastojanju); ostali zadržavaju redosled
+      // (stabilan sort: Infinity − Infinity = 0).
+      usersWithStatus.sort(
+        (a, b) => (a.distanceM ?? Infinity) - (b.distanceM ?? Infinity)
+      );
 
       setAllUsers(usersWithStatus);
 
@@ -181,81 +165,12 @@ const Search: React.FC = () => {
     }
   };
 
-  // -------------- Fetch Nearby Users (if location is on) ---------------
-  const fetchNearbyUsers = async () => {
-    if (!currentUserId) return;
-
-    try {
-      const { data, error } = (await supabase.rpc('get_nearby_users', {
-        user_id: currentUserId,
-        radius_km: 10,
-      })) as { data: NearbyUserData[] | null; error: any };
-
-      if (error) {
-        console.error('Error fetching nearby users:', error);
-        return;
-      }
-      if (!data) return;
-
-      const nearbyUserIds = data.map((item) => item.id);
-
-      const { data: nearbyProfiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, username, avatar_url, bio, full_name')
-        .in('id', nearbyUserIds);
-
-      if (profilesError) {
-        console.error('Error fetching nearby profiles:', profilesError);
-        return;
-      }
-      if (!nearbyProfiles) return;
-
-      const usersWithDistance: UserWithDistance[] = nearbyProfiles.map(
-        (profile) => {
-          const distanceData = data.find((d) => d.id === profile.id);
-          return {
-            id: profile.id,
-            username: profile.username,
-            image: profile.avatar_url ?? 'https://via.placeholder.com/150',
-            bio: profile.bio ?? '',
-            full_name: profile.full_name ?? '',
-            distance: distanceData?.distance,
-            requestStatus: 'none',
-          };
-        }
-      );
-
-      let filteredBySearch: UserWithDistance[] = usersWithDistance;
-      if (searchQuery.trim().length > 0) {
-        filteredBySearch = usersWithDistance.filter((user) =>
-          user.username.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-      }
-
-      setNearbyUsers(filteredBySearch);
-    } catch (error) {
-      console.error('Error in fetchNearbyUsers:', error);
-    }
-  };
-
-  // ----------------- effect: manage location updates & fetch nearby ------------
+  // ----- effect: Close-By se osvežava kad se promeni moja lokacija/toggle -----
+  // (useLocation hook već interno pokreće praćenje pozicije; ovde samo re-fetch
+  // da bi closeByMap u fetchData dobio sveže koordinate.)
   useEffect(() => {
-    if (isLocationEnabled) {
-      const setupLocation = async () => {
-        const subscription = await startLocationUpdates();
-        await fetchNearbyUsers();
-        return () => {
-          subscription?.remove?.();
-        };
-      };
-      setupLocation();
-    }
-  }, [isLocationEnabled]);
-
-  useEffect(() => {
-    if (location && isLocationEnabled) {
-      // Optionally refresh nearby users on location change
-    }
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location, isLocationEnabled]);
 
   // -------------- Listen for follow request updates (denied, etc.) -------------
@@ -315,13 +230,7 @@ const Search: React.FC = () => {
       user.username?.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredUsers(filtered);
-
-    if (isLocationEnabled) {
-      const filteredNear = nearbyUsers.filter((u) =>
-        u.username.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setNearbyUsers(filteredNear);
-    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
   // -------------- Follow Request: Add follow request -------------
@@ -530,8 +439,6 @@ const Search: React.FC = () => {
           isSearchAction={true}
           isAddAction={true}
           isMessageAction={true}
-          isBio={isLocationEnabled ? false : true}
-          isCloseBy={isLocationEnabled}
           onAddAction={handleAddFriend}
           onMessageAction={handleMessageUser}
         />

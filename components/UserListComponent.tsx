@@ -28,16 +28,7 @@ interface UserListProps {
   isAddAction?: boolean;
   isChatMessage?: boolean;
   isBio?: boolean;
-  isCloseBy?: boolean;
 }
-
-const formatDistance = (distance: number | undefined) => {
-  if (distance === undefined) return '';
-  if (distance < 1) {
-    return `${(distance * 1000).toFixed(0)}m away`;
-  }
-  return `${distance.toFixed(1)}km away`;
-};
 
 const UserListComponent: React.FC<UserListProps> = ({
   data,
@@ -121,15 +112,9 @@ const UserListComponent: React.FC<UserListProps> = ({
   };
 
   const renderSubtitle = (item: User) => {
-    // If distance exists and is within a reasonable range (e.g., < 10km), show distance
-    if (
-      'distance' in item &&
-      item.distance !== undefined &&
-      item.distance < 10
-    ) {
-      return (
-        <Text style={styles.distance}>{formatDistance(item.distance)}</Text>
-      );
+    // Close-By (T3.19 / Search 6.0): fizički u blizini (≤20–30m) → crvena „Close By".
+    if (item.isCloseBy) {
+      return <Text style={styles.closeBy}>Close By</Text>;
     }
 
     // Otherwise show bio if it exists
@@ -235,10 +220,10 @@ const styles = StyleSheet.create({
     color: '#000',
     fontFamily: 'InterMedium',
   },
-  distance: {
-    fontSize: 12,
-    color: '#666',
-    fontFamily: 'InterRegular',
+  closeBy: {
+    fontSize: 13,
+    color: '#FF325E',
+    fontFamily: 'InterSemiBold',
     marginTop: 2,
   },
   acceptButtons: {

@@ -265,7 +265,7 @@ Status: postoje `BlockBadge`, pin (`SwipeableChatItem`); **✅ Save chat 30d tog
   - **From your contacts** — sinhronizovan iz kontakata uređaja.
 - **Follow** dugme (crveno) — zaprati direktno iz liste.
 
-Status: `app/search-detailed`, `SearchComponent` postoje; ❌ Close-By geo-upit (20–30m), 🟡 "Friend with" / kontakti.
+Status: `app/search-detailed`, `SearchComponent` postoje; ✅ **Close-By geo-upit (20–30m) + crvena „Close By" labela (T3.19)** — `closeByUsers` (`lib/closeBy`) nad `profiles` koji dele lokaciju, Close-By korisnici sortirani prvi; 🟡 "Friend with" / kontakti (predlog-algoritam van obima).
 
 ### Search/Friends 6.1 — Rezultati pretrage — 🟡
 - Kucanje (npr. "Sw") → rezultat: username + full name (npr. `swift` / TaylorSwift123).
@@ -418,9 +418,9 @@ Status: postoji `app/settings/[id].tsx`, `DeleteAccount`; većina toggle-ova/sub
 9. **🔑 Chat Hours = vidljiv brojač** u listi chatova (npr. 83h). `FEATURES.md` A5.
 10. **Per-contact kontrole** (Chat 5.8): No Blahs, Block, Mute, Save chat, Pin — proširiti.
 11. **Add from Contacts** — sinhronizacija kontakata + predlozi (expo-contacts postoji).
-12. **Close By radius = 20–30m** (Search 6.0) — konkretizuje A6; geo-upit treba dodati.
+12. **Close By radius = 20–30m** (Search 6.0) — konkretizuje A6. ✅ Implementirano (T3.18 `lib/closeBy` + T3.19 discovery UI + „Close By" labela).
 13. **Search Follow-vs-Message** (6.1) — dugme zavisi od veze sa korisnikom.
-14. **Predlozi u Search-u** sa labelama (Close By / Friend with / From contacts) — algoritam predloga je nov posao.
+14. **Predlozi u Search-u** sa labelama — Close By ✅ (T3.19); „Friend with" / „From contacts" algoritam predloga je još nov posao.
 15. **🔑 Blah Recovery = €1.99 jednokratno**, prozor ponude ~13h (MyProfile 8.8) — konkretizuje `FEATURES.md` A4.
 16. **🔑 Multi-account / Switch account** (Settings) — više naloga + per-nalog badge nepročitanih. Nov feature → `FEATURES.md` I.
 17. **🔑 Grid layout algoritam** (MyProfile 8.0): neparni postovi 143px, parni 123px.

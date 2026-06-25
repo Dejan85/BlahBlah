@@ -53,13 +53,13 @@ Spec: svaki chat ima 24h tajmer koji se resetuje sa svakom poslatom porukom; ako
 - ✅ **UI prikaz (T3.11)** u listi chatova: `ChatListItem` prikazuje „83h" desno (at-risk ≤3h → narandžast). **DB izvor = izvedeno iz `messages`** (ne nove kolone): `app/chats/index.tsx` rekonstruiše `ChatHoursState` fold-om `registerMessage` preko svih poruka konverzacije (sender me/them), realtime osvežava na svaku poruku. ⏳ `chat-room/[id].tsx` header još ne prikazuje timer (lista jeste).
 - ℹ️ **Chat Hours su VIDLJIV brojač** u listi chatova, **jedinica = sati** (npr. `83h`, `4783h`, `215h`) — vidi `SCREENS.md` Chat 5.0.
 
-### A6. Close-By Connections — 🟡 Delimično
+### A6. Close-By Connections — 🟢 Uglavnom gotovo
 Spec: vidi i dodaj ljude u blizini bez username-a (**radius 20–30m**, vidi `SCREENS.md` Search 6.0); toggle vidljivosti lokacije u privacy settings.
 - ✅ Hvatanje lokacije (`hooks/useLocation.tsx`, kolone `profiles.latitude/longitude/location_enabled`)
 - ✅ **Geo obračun blizine (T3.18)** — `lib/closeBy.ts`: haversine rastojanje + `isCloseBy`/`closeByUsers` (radius **20–30m**, default 30m; fail-safe na nevažeće koordinate). Čista logika spremna za upit/UI.
-- ❌/❓ Stvarni "nearby discovery" geo-**upit** (Supabase) + UI sa labelom "Close By" → **T3.19** (preostalo)
-- ❓ Toggle vidljivosti lokacije u settings
-- ℹ️ Search prikazuje i predloge sa labelama "Friend with [Name]" i "From your contacts"
+- ✅ **Discovery UI + geo upit (T3.19)** — `app/search-detailed/index.tsx`: `profiles` select nosi `latitude/longitude/location_enabled`; `closeByUsers(origin, kandidati, 30m)` (kandidati = korisnici koji DELE lokaciju → privacy gate) obeleži „Close By" korisnike + sortira ih prve; `components/UserListComponent.tsx` renderuje crvenu labelu **„Close By"** (Search 6.0 🔴). Odluka: geo math ostaje u `lib/` (ne SQL RPC). ⚠️ Klijent-side proximity nad svim profilima (PostGIS/RPC kandidat kad baza naraste).
+- ❓ Toggle vidljivosti lokacije u settings (T4.4)
+- ❌ Predlog-labele „Friend with [Name]" / „From your contacts" (Search 6.0) — algoritam predloga je nov posao (van T3.19)
 
 ---
 
