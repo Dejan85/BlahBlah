@@ -66,17 +66,16 @@ Spec: vidi i dodaj ljude u blizini bez username-a (**radius 20–30m**, vidi `SC
 
 ### B1. Online / Last Seen — 🟡 Delimično
 - ✅ Realtime presence online/offline (`hooks/usePresence.tsx`, tabela `user_presence`)
-- ✅ Format "gone exploring 5m ago" / "Last seen ..."
+- ✅ Format randomizovane „vanished" poruke + „· 5m ago" (B2) / "Last seen ..." (`UserStatus.tsx`)
 - ❓ Toggle "Show/Hide Last Seen status"
 
-### B2. Randomizovane "vanished" poruke po vremenskim zonama — 🟡 Logika gotova (`lib/`), UI = T3.17
+### B2. Randomizovane "vanished" poruke po vremenskim zonama — ✅ Gotovo (lib + UI)
 Spec (Figma, 2. slika): smešne nasumične poruke po opsegu vremena (0–10 min, 10min–1h, 1–5h, 5–12h, 12–24h, 1–3 dana), npr. *"Poof! They just disappeared"*, *"Gone faster than my paycheck"*.
 - ✅ Nasumičan izbor iz preset liste po zoni (`lib/presenceMessages.ts` `pickPresenceMessage`, T3.16)
 - ✅ Pravilo zaokruživanja FLOOR (10:35 → "10h", tek 11:01 → "11h") (`roundedPresenceLabel`)
-- ✅ Promena poruke svaki put kad korisnik napusti/vrati se (rng se ubrizgava — caller prosledi nov `Math.random()`)
+- ✅ Promena poruke svaki put kad korisnik napusti/vrati se (T3.17: `random` izveden iz `lastSeen` FNV-1a hashom → stabilno po renderu, menja se na novu `lastSeen`)
 - ✅ Automatski prelaz u sledeću zonu (`getPresenceZone` po proteklom vremenu)
-- ❌ Wiring u UI (zamena `formatPresence` „gone exploring Xm ago" → T3.17)
-> Logika u `lib/presenceMessages.ts` + test; UI zamena `hooks/usePresence.tsx`/`components/Chat/UserPresence.tsx` ostaje za T3.17.
+- ✅ Wiring u UI (T3.17: `formatPresence` u `hooks/usePresence.tsx` → `presenceMessage` + `roundedPresenceLabel`, koristi `components/Chat/UserPresence.tsx` u chat-room header-u)
 
 ---
 

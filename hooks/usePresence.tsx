@@ -2,6 +2,11 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/utils/supabase';
 import { RealtimeChannel } from '@supabase/supabase-js';
+import {
+  presenceMessage,
+  pickPresenceMessage,
+  roundedPresenceLabel,
+} from '@/lib/presenceMessages';
 
 interface PresenceState {
   [key: string]: {
@@ -175,25 +180,26 @@ export const usePresence = (currentUserId: string) => {
   };
 };
 
+// Deterministički [0,1) iz stringa (FNV-1a hash). Stabilno po renderu (bez
+// flickera od Math.random()), ali se menja kad se promeni `lastSeen` → poruka
+// se osvežava na svaki povratak korisnika (presenceMessages.ts B2 pravilo).
+const seededRandom = (seed: string): number => {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return ((h >>> 0) % 1_000_000) / 1_000_000;
+};
+
 export const formatPresence = (lastSeen: string | null, isOnline: boolean) => {
   if (isOnline) return 'online';
-  if (!lastSeen) return 'gone exploring';
+  // Bez poznatog vremena → fallback zona (najdavnije odsutni).
+  if (!lastSeen) return pickPresenceMessage('long-gone', seededRandom('long-gone'));
 
-  const now = new Date();
-  const lastSeenDate = new Date(lastSeen);
-  const diffInSeconds = Math.floor(
-    (now.getTime() - lastSeenDate.getTime()) / 1000
-  );
-
-  if (diffInSeconds < 60) return 'gone exploring just now';
-  if (diffInSeconds < 3600) {
-    const minutes = Math.floor(diffInSeconds / 60);
-    return `gone exploring ${minutes}m ago`;
-  }
-  if (diffInSeconds < 86400) {
-    const hours = Math.floor(diffInSeconds / 3600);
-    return `gone exploring ${hours}h ago`;
-  }
-  const days = Math.floor(diffInSeconds / 86400);
-  return `gone exploring ${days}d ago`;
+  const elapsedMs = Date.now() - new Date(lastSeen).getTime();
+  const message = presenceMessage(elapsedMs, seededRandom(lastSeen));
+  const label = roundedPresenceLabel(elapsedMs);
+  // <1min → samo poruka (label = „now"); inače „poruka · 5m ago".
+  return label === 'now' ? message : `${message} · ${label} ago`;
 };
