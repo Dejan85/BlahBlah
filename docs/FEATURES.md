@@ -69,13 +69,14 @@ Spec: vidi i dodaj ljude u blizini bez username-a (**radius 20–30m**, vidi `SC
 - ✅ Format "gone exploring 5m ago" / "Last seen ..."
 - ❓ Toggle "Show/Hide Last Seen status"
 
-### B2. Randomizovane "vanished" poruke po vremenskim zonama — ❌ Nije implementirano
+### B2. Randomizovane "vanished" poruke po vremenskim zonama — 🟡 Logika gotova (`lib/`), UI = T3.17
 Spec (Figma, 2. slika): smešne nasumične poruke po opsegu vremena (0–10 min, 10min–1h, 1–5h, 5–12h, 12–24h, 1–3 dana), npr. *"Poof! They just disappeared"*, *"Gone faster than my paycheck"*.
-- ❌ Nasumičan izbor iz preset liste po zoni
-- ❌ Pravilo zaokruživanja (10:35 → "10h", tek 11:01 → "11h")
-- ❌ Promena poruke svaki put kad korisnik napusti/vrati se u app
-- ❌ Automatski prelaz u sledeću zonu
-> Trenutno: samo jednostavno "gone exploring Xm ago". Treba zameniti spec sistemom.
+- ✅ Nasumičan izbor iz preset liste po zoni (`lib/presenceMessages.ts` `pickPresenceMessage`, T3.16)
+- ✅ Pravilo zaokruživanja FLOOR (10:35 → "10h", tek 11:01 → "11h") (`roundedPresenceLabel`)
+- ✅ Promena poruke svaki put kad korisnik napusti/vrati se (rng se ubrizgava — caller prosledi nov `Math.random()`)
+- ✅ Automatski prelaz u sledeću zonu (`getPresenceZone` po proteklom vremenu)
+- ❌ Wiring u UI (zamena `formatPresence` „gone exploring Xm ago" → T3.17)
+> Logika u `lib/presenceMessages.ts` + test; UI zamena `hooks/usePresence.tsx`/`components/Chat/UserPresence.tsx` ostaje za T3.17.
 
 ---
 
