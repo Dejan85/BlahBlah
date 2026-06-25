@@ -14,6 +14,7 @@ export interface Message {
   created_at: string;
   messageType: string;
   is_deleted?: boolean;
+  opened_at?: string | null;
   reactions?: {
     emoji: string;
     name: string;

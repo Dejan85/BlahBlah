@@ -203,7 +203,7 @@ Status: lista/search/typing/pin/swipe postoje (`app/chats/index.tsx`, `Swipeable
 **Media poruke:** **"Tap to View"** za foto/video. Voice poruke sa playback kontrolama (trajanje).
 **Input bar:** "Type..." polje, **kamera** ikona (levo, slanje foto/video), **mikrofon** (desno, hold = snimaj glas), **send** (desno).
 
-Status: tekst/audio/image/file, bubble-i, input ✅ (`chat-room/[id].tsx`); "Tap to View" ephemeral media ❌.
+Status: tekst/audio/image/file, bubble-i, input ✅ (`chat-room/[id].tsx`); **"Tap to View" ephemeral media ✅ (T3.15)** — slika je view-once placeholder, ne inline.
 
 ### Chat 5.2 — Deljeni post u chatu — 🟡/❓
 - Prikaz username + comment za post; **tap → full-screen**, swipe nastavlja kroz postove.
@@ -222,7 +222,7 @@ Status: reakcije postoje (`MessageContext`, `MessageMenu`); reply/swipe-to-reply
 - **"Deleted message..."** placeholder za obrisanu poruku.
 - **Reply preview** dole: citat ("Why delete???") sa **X** za otkaz + input.
 
-Status: ephemeral "Opened" stanje ❌; **"Deleted message..." placeholder ✅ (T3.14)** — renderuje se kad `is_deleted` (klijentski delete + cron soft-delete).
+Status: ephemeral **"Tap to View → Opened" ✅ (T3.15)** — `lib/tapToView.ts` + `messages.opened_at`; primalac pogleda jednom pa sivo "Opened", pošiljalac vidi "Delivered"→"Opened"; **"Deleted message..." placeholder ✅ (T3.14)** — renderuje se kad `is_deleted` (klijentski delete + cron soft-delete).
 
 ### Chat 5.5 — Kamera iz chata — 🟡
 - Kamera za direktno slanje foto/video u chat (flash, galerija, shutter, flip) — isto kao Camera 4.0, u kontekstu chata.

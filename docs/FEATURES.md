@@ -140,9 +140,9 @@ Spec: konverzacija/poruke se brišu posle **24h** po defaultu; per-contact toggl
 - ✅ **"Save chat" (30 dana) toggle UI (T3.14)** — `components/ChatAdditionalMedia.tsx` (3-tačke meni): toggle učita/upiše `conversations.saved` (optimistički, revert na grešku); ranije je bio samo lokalni state.
 - ✅ **"Deleted message..." placeholder (T3.14)** — `chat-room/[id].tsx` renderuje italic placeholder kad `Message.is_deleted` (mapiran u `MessageContext`), pre svih tipova i nezavisno od `text` → pokriva i klijentski delete i cron soft-delete (`text=NULL`).
 
-### G2. "Tap to View" media (pogledaj-jednom) — ❌ Nije implementirano
+### G2. "Tap to View" media (pogledaj-jednom) — ✅ Implementirano (T3.15)
 Spec: foto/video u chatu se šalju kao **"Tap to View"**; nakon otvaranja prelaze u **"Opened"** stanje (Snapchat-stil).
-- ❌ View-once stanje + "Opened" indikator
+- ✅ **View-once stanje + "Opened" indikator (T3.15)** — `lib/tapToView.ts` izvodi stanje iz `messages.opened_at` (null→"Tap to View", set→"Opened"); slika se NE prikazuje inline, primalac tapne placeholder → pogleda JEDNOM (full-screen viewer) → pređe u sivo "Opened" (ne može ponovo); pošiljalac vidi "Delivered"→"Opened" status (uživo preko realtime UPDATE). `components/ImageMessage.tsx` (placeholder bubble), `MessageContext.markMessageOpened`. ⚠️ Trenutno samo `image` (nema `video` message_type); „shared media" galerija u Chat 5.8 meniju i dalje lista slike trajno (zaobilazi view-once — kandidat za cleanup).
 
 ### G3. Per-contact kontrole (Chat 5.8) — 🟡 Delimično
 - 🟡 **Block** (`BlockBadge` postoji) · **Pin** (`SwipeableChatItem`)

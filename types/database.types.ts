@@ -404,6 +404,7 @@ export type Database = {
           id: string
           is_deleted: boolean | null
           message_type: string | null
+          opened_at: string | null
           reply_to: string | null
           sender_id: string
           text: string | null
@@ -415,6 +416,7 @@ export type Database = {
           id?: string
           is_deleted?: boolean | null
           message_type?: string | null
+          opened_at?: string | null
           reply_to?: string | null
           sender_id: string
           text?: string | null
@@ -426,6 +428,7 @@ export type Database = {
           id?: string
           is_deleted?: boolean | null
           message_type?: string | null
+          opened_at?: string | null
           reply_to?: string | null
           sender_id?: string
           text?: string | null

@@ -33,6 +33,7 @@ interface MessageContextType {
     reaction: { emoji: string; name: string },
     userId: string
   ) => Promise<void>;
+  markMessageOpened: (messageId: string, userId: string) => Promise<void>;
 }
 
 // Create context
@@ -78,8 +79,26 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
                 created_at: payload.new.created_at,
                 messageType: payload.new.message_type,
                 is_deleted: payload.new.is_deleted ?? false,
+                opened_at: payload.new.opened_at ?? null,
               },
             ]);
+          } else if (payload.eventType === 'UPDATE') {
+            // Reflect server-side updates locally: tap-to-view "Opened" (opened_at set
+            // by recipient → sender sees "Opened" live) + soft-delete (is_deleted/text,
+            // client delete or ephemeral cron job T3.13).
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === payload.new.id
+                  ? {
+                      ...msg,
+                      text: payload.new.text,
+                      messageType: payload.new.message_type ?? msg.messageType,
+                      is_deleted: payload.new.is_deleted ?? msg.is_deleted,
+                      opened_at: payload.new.opened_at ?? null,
+                    }
+                  : msg
+              )
+            );
           }
         }
       )
@@ -187,6 +206,35 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  // Mark a "Tap to View" media message as opened (T3.15). Only the recipient opens
+  // (not the sender), and only once — `opened_at` is null guard makes it idempotent.
+  // State derivation lives in lib/tapToView.ts; this is just the side-effect.
+  const markMessageOpened = async (messageId: string, userId: string) => {
+    const openedAt = new Date().toISOString();
+
+    // Optimistic local update (only if not already opened).
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === messageId && !msg.opened_at
+          ? { ...msg, opened_at: openedAt }
+          : msg
+      )
+    );
+
+    try {
+      const { error } = await supabase
+        .from('messages')
+        .update({ opened_at: openedAt })
+        .eq('id', messageId)
+        .is('opened_at', null)
+        .neq('sender_id', userId); // sender never marks own message opened
+
+      if (error) throw error;
+    } catch (err) {
+      console.error('Error marking message opened:', err);
+    }
+  };
+
   // Set current conversation by ID and fetch its messages
   const setCurrentConversationId = async (
     conversationId: string | null
@@ -245,6 +293,7 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
         created_at: msg.created_at,
         messageType: msg.message_type,
         is_deleted: msg.is_deleted ?? false,
+        opened_at: msg.opened_at ?? null,
         reactions:
           msg.message_reactions?.reduce((acc: any[], reaction: any) => {
             const existingReaction = acc.find(
@@ -584,6 +633,7 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({
     setMessages,
     uploadAudioFile,
     handleReaction,
+    markMessageOpened,
   };
 
   return (

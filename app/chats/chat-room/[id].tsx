@@ -83,6 +83,7 @@ const ChatRoom = () => {
     setCurrentConversationId,
     setMessages,
     handleReaction,
+    markMessageOpened,
   } = useMessage();
 
   // Local state
@@ -565,6 +566,10 @@ const ChatRoom = () => {
             <ImageMessage
               uri={item.text}
               isSender={isSender}
+              openedAt={item.opened_at}
+              onOpen={() =>
+                currentUserId && markMessageOpened(item.id, currentUserId)
+              }
               style={!isSender && !isFirstInSequence && { marginLeft: 40 }}
             />
           );
