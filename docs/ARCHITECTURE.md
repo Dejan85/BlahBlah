@@ -28,14 +28,14 @@ components/            # Reusable UI + feature komponente (flat + poneki podfold
 context/               # React Context provideri (global state)
 hooks/                 # Custom hooks (useLocation, usePresence, useTypingStatus)
 lib/                   # ⭐ ČISTA logika — pure funkcije, BEZ React/UI (vidi §2.5)
-services/              # Side-effecting IO granice (npr. recoveryPurchase — RevenueCat) — §2.5
+services/              # Side-effecting IO granice (recoveryPurchase, premiumStatus — RevenueCat) — §2.5
 utils/                 # supabase, firebase, notifications klijenti
 types/                 # TypeScript tipovi (barrel preko index.ts)
 constants/             # Colors, Dimensions
 assets/                # images (.svg + .png), fonts (Inter)
 ```
 
-> ℹ️ `lib/` postoji (od T1.6); čiste funkcije do sada: `formatCount.ts` (T3.1, "10k"/"10.1k"), `blahScore.ts` (T3.2, Blah Score formula), `streak.ts` (T3.5/T3.6, kalendarski streak + reset + bonus dani 8/20/28/48 + bunny rolling deadline + `isStreakLost` granica koju serverski pg_cron sweep mirror-uje), `blahRecovery.ts` (T3.7/T3.8, rolling 26h/13h recovery prozori + `applyRecovery` + `formatRecoveryCountdown`); ostale mehanike Faze 3 dolaze redom. Pravilo u §2.5.
+> ℹ️ `lib/` postoji (od T1.6); čiste funkcije do sada: `formatCount.ts` (T3.1, "10k"/"10.1k"), `blahScore.ts` (T3.2, Blah Score formula), `streak.ts` (T3.5/T3.6, kalendarski streak + reset + bonus dani 8/20/28/48 + bunny rolling deadline + `isStreakLost` granica koju serverski pg_cron sweep mirror-uje), `blahRecovery.ts` (T3.7/T3.8, rolling 26h/13h recovery prozori + `applyRecovery` + `formatRecoveryCountdown`), `premium.ts` (T3.20, Blah+ gating — `isPremiumActive`/`canAccessPremiumFeature` + `PREMIUM_FEATURES` enum); ostale mehanike Faze 3 dolaze redom. Pravilo u §2.5.
 
 ---
 
@@ -59,7 +59,7 @@ assets/                # images (.svg + .png), fonts (Inter)
 
 **Zašto:** najteže/najrizičnije mehanike (Blah Score, streak, recovery, chat hours, ephemeral pravila, "10k" formatiranje) su čista pravila. Ako su odvojene, mogu se verifikovati automatski (`npm test`) bez klikanja kroz app.
 
-**Naziv foldera:** `lib/` (najidiomatičnije u Expo/React svetu). **`services/`** = side-effecting IO granice koje nisu čiste i zato NE idu u `lib/` (npr. `services/recoveryPurchase.ts` — RevenueCat plaćanje, T3.8); `utils/` ostaje za setup klijenata. Granica drži potpis stabilan (npr. stub vs pravi RevenueCat) pa UI/pozivaoci ostaju isti.
+**Naziv foldera:** `lib/` (najidiomatičnije u Expo/React svetu). **`services/`** = side-effecting IO granice koje nisu čiste i zato NE idu u `lib/` (npr. `services/recoveryPurchase.ts` — RevenueCat plaćanje, T3.8; `services/premiumStatus.ts` — Blah+ status/kupovina, T3.20); `utils/` ostaje za setup klijenata. Granica drži potpis stabilan (npr. stub vs pravi RevenueCat) pa UI/pozivaoci ostaju isti.
 
 ### Obrazac
 ❌ Ne ovako (logika zalepljena za context/Supabase, netestabilno bez React-a):
@@ -96,7 +96,7 @@ const score = calculateBlahScore(blahs, followers, streakDay);
 ```
 
 ### Šta ide u `lib/` (Faza 3 mehanike)
-`blahScore` · `streak` · `blahRecovery` · `chatHours` · `ephemeral` (24h/30d pravila) · `presenceMessages` (randomizovane poruke + zaokruživanje vremena) · `formatCount` ("10k"/"10.1k") · `closeBy` (radius 20–30m geo obračun)
+`blahScore` · `streak` · `blahRecovery` · `chatHours` · `ephemeral` (24h/30d pravila) · `presenceMessages` (randomizovane poruke + zaokruživanje vremena) · `formatCount` ("10k"/"10.1k") · `closeBy` (radius 20–30m geo obračun) · `premium` (Blah+ gating — `isPremiumActive`/`canAccessPremiumFeature` + `PREMIUM_FEATURES`)
 
 ### Pravila
 - Funkcije u `lib/` su **deterministicke** (isti input → isti output); vreme/random se **prosleđuju kao argument** (npr. `now: Date`), ne čitaju iznutra — da test bude stabilan.
@@ -110,12 +110,13 @@ const score = calculateBlahScore(blahs, followers, streakDay);
 Svi global provideri su ulančani u `app/_layout.tsx` ovim redosledom:
 
 ```
-AuthProvider → FriendRequestProvider → MessageProvider → CameraProvider → PostProvider
+AuthProvider → PremiumProvider → FriendRequestProvider → MessageProvider → CameraProvider → PostProvider
 ```
 
 | Context | Šta drži | Hook |
 |---|---|---|
 | `AuthContext` | sesija, user, sign in/up/out, update profila | `useAuth()` |
+| `PremiumContext` | Blah+ status (`premium_until`), gating, kupovina | `usePremium()` |
 | `FriendRequestContext` | follow zahtevi (primljeni/poslati), realtime | `useFriendRequests()` |
 | `MessageContext` | konverzacije, poruke, reakcije, slanje | `useMessage()` |
 | `CameraContext` | stanje kamere/snimka | `useCamera()` |

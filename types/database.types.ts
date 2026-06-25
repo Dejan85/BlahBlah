@@ -628,6 +628,7 @@ export type Database = {
           location_enabled: boolean | null
           longitude: number | null
           onboarding_completed: boolean | null
+          premium_until: string | null
           streak_day: number
           streak_tz_offset: number
           updated_at: string | null
@@ -648,6 +649,7 @@ export type Database = {
           location_enabled?: boolean | null
           longitude?: number | null
           onboarding_completed?: boolean | null
+          premium_until?: string | null
           streak_day?: number
           streak_tz_offset?: number
           updated_at?: string | null
@@ -668,6 +670,7 @@ export type Database = {
           location_enabled?: boolean | null
           longitude?: number | null
           onboarding_completed?: boolean | null
+          premium_until?: string | null
           streak_day?: number
           streak_tz_offset?: number
           updated_at?: string | null

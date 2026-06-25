@@ -3,6 +3,7 @@ import { Slot } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
 import { AuthProvider } from '@/context/AuthContext';
+import { PremiumProvider } from '@/context/PremiumContext';
 import { View, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -80,16 +81,18 @@ export default function RootLayout() {
     <View style={styles.container} onLayout={onLayoutRootView}>
       <GestureHandlerRootView style={styles.container}>
         <AuthProvider>
-          <FriendRequestProvider>
-            <MessageProvider>
-              <CameraProvider>
-                <PostProvider>
-                  <NotificationSetup />
-                  <Slot />
-                </PostProvider>
-              </CameraProvider>
-            </MessageProvider>
-          </FriendRequestProvider>
+          <PremiumProvider>
+            <FriendRequestProvider>
+              <MessageProvider>
+                <CameraProvider>
+                  <PostProvider>
+                    <NotificationSetup />
+                    <Slot />
+                  </PostProvider>
+                </CameraProvider>
+              </MessageProvider>
+            </FriendRequestProvider>
+          </PremiumProvider>
         </AuthProvider>
       </GestureHandlerRootView>
     </View>

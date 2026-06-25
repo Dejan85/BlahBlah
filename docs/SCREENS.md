@@ -148,7 +148,7 @@ Status: Skia + `components/Camera/FilterMenu` postoje; tačan set custom filtera
   - **Hide shares** — isto.
   - **Hide comments** — isto.
 - **Post** (crveno).
-- Status: `PostContext` ima polja `hide_likes/hide_shares/hide_comments/is_locked`, mentions/hashtags, additional_media ✅. Music picker, premium gating na lock, 24h expiry — 🟡/❌ (vidi `FEATURES.md` C).
+- Status: `PostContext` ima polja `hide_likes/hide_shares/hide_comments/is_locked`, mentions/hashtags, additional_media ✅. **Premium gating na Lock Post ✅ (T3.20** — `SendStep` `canAccess('lock_posts')` → paywall 4.6). Music picker, 24h expiry + limit 3 zaključana — 🟡/❌ (T3.23; vidi `FEATURES.md` C).
 
 ### Camera 4.5 — Post composer (popunjeno) — 🟡
 - Caption sa hashtagovima, prikaz pesme (A$AP Rocky – Praise The Lord), **"3 photos"** carousel.
@@ -168,7 +168,7 @@ Cene:
 - **Yearly €29.94/yr** (50% off) — *default selektovano*
 - **Continue** + "By tapping Continue, you agree to the Subscription Terms".
 
-Status: `PremiumModal` / `SubsciptionPlans` + RevenueCat postoje (🟡); pogodnosti uglavnom još nisu funkcionalne (vidi `FEATURES.md` E).
+Status: 🟡 **T3.20** — paywall (`PremiumModal`/`SubsciptionPlans`) povezan na gating sistem (`lib/premium.ts` + `usePremium`): „Lock Post" (Camera 4.6 / SendStep) gejtovan `canAccess('lock_posts')` → otvara ovaj paywall; Continue → `purchase(plan)` (stub naplata → upis `profiles.premium_until`, yearly default = 50% off). Pravi RevenueCat naplata stubbed (`PREMIUM_PURCHASE_STUBBED`, čeka store proizvode). Same-pogodnosti (who-viewed/score boost/lock limit/ad-free) = T3.21–24. Vidi `FEATURES.md` E.
 
 ---
 
@@ -363,6 +363,7 @@ Bottom sheet:
 
 ### MyProfile 8.6 / 8.7 — Paywall "Upgrade to Blah +" — 🟡
 - Isto kao **Camera 4.6** (See Who Viewed / Lock 3+ / Score Boost +10% / No Ads / Exclusive Customization; €4.99/mo, €29.94/yr). 8.7 = otvoren preko profila (iz eye ikone kad nije plaćeno).
+- Status: 🟡 **T3.20** — eye ikona (8.3 Who viewed) gejtovana `canAccess('who_viewed')`: premium → Who-viewed lista (T3.21 placeholder), non-premium → ovaj paywall (8.7). Continue → `purchase(plan)` (stub naplata → `profiles.premium_until`). Isti `PremiumModal` kao Camera 4.6.
 
 ### MyProfile 8.8 — Blah Recovery popup — 🟡
 - **"Oops...Blahs!"** → **Blahs Recovery**: *"Your Blah Score doesn't go to 0. In **13h** offer expire"*.

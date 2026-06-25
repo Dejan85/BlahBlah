@@ -36,6 +36,7 @@ import * as Location from 'expo-location';
 import { GridPost } from '@/components/ProfilePosts';
 
 import PremiumModal from '@/components/PremiumModal';
+import { usePremium } from '@/context/PremiumContext';
 import { usePost } from '@/context/PostContext';
 import GridPosts from '@/components/GridPost';
 import { calculateBlahScore } from '@/lib/blahScore';
@@ -135,6 +136,8 @@ const initialEditForm: EditFormState = {
 const ProfileScreen = () => {
   const router = useRouter();
   const { user, signOut } = useAuth();
+  // Blah+ gating (T3.20): "Who viewed" iza eye ikone + paywall (MyProfile 8.6/8.7).
+  const { canAccess, purchase } = usePremium();
 
   const [state, setState] = useState<ProfileState>(initialState);
   const [modalStates, setModalStates] = useState({
@@ -217,9 +220,16 @@ const ProfileScreen = () => {
       subscription.unsubscribe();
     };
   }, [user, fetchUserPosts]);
-  const handleContinue = () => {
-    // Handle continue button click
+  // Paywall Continue (MyProfile 8.6/8.7) → kupovina pretplate (stub naplata, T3.20).
+  const handleSubscribe = async (plan: 'monthly' | 'yearly' | 'onetime') => {
+    if (plan === 'onetime') return; // recovery ima svoj tok (handleRecoveryPurchase)
+    const result = await purchase(plan);
     setShowPremiumModal(false);
+    if (result.success) {
+      Alert.alert('Blah +', 'Welcome to Blah +!');
+    } else if (!result.cancelled && result.error) {
+      Alert.alert('Error', result.error);
+    }
   };
   const displayValues = useMemo(
     () => ({
@@ -372,11 +382,6 @@ const ProfileScreen = () => {
       setState((prev) => ({ ...prev, loading: false }));
     }
   }, [user]);
-
-  const handlePlanSelection = (plan: 'monthly' | 'yearly') => {
-    // Handle the plan selection here
-    console.log('Selected plan:', plan);
-  };
 
   useEffect(() => {
     if (!user) return;
@@ -608,7 +613,15 @@ const ProfileScreen = () => {
 
           <TouchableOpacity
             style={styles.eyeButton}
-            onPress={() => setShowPremiumModal(true)}
+            onPress={() => {
+              // Eye = "Who viewed your profile" (MyProfile 8.3). Premium → otvori
+              // listu poseta (T3.21 wiring); non-premium → paywall (MyProfile 8.7).
+              if (canAccess('who_viewed')) {
+                // TODO(T3.21): navigacija na Who-viewed listu (poslednjih 8 dana).
+                return;
+              }
+              setShowPremiumModal(true);
+            }}
           >
             <Eye />
           </TouchableOpacity>
@@ -721,15 +734,13 @@ const ProfileScreen = () => {
         <PremiumModal
           isVisible={showPremiumModal}
           onClose={() => setShowPremiumModal(false)}
-          onPlanSelection={handlePlanSelection}
-          onContinue={handleContinue}
+          onContinue={handleSubscribe}
         />
 
         {/* Blah Recovery popup (MyProfile 8.8) — €1.99 jednokratno */}
         <PremiumModal
           isVisible={showRecoveryModal}
           onClose={() => setShowRecoveryModal(false)}
-          onPlanSelection={handlePlanSelection}
           onContinue={handleRecoveryPurchase}
           isBlahs
           isPremium={false}

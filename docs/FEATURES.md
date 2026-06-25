@@ -104,20 +104,27 @@ Spec: svaka notifikacija vodi na konkretan ekran.
 
 ---
 
-## E. Blah+ (Premium / Subscription)
+## E. Blah+ (Premium / Subscription) — 🟡 Gating temelj + paywall gotovi (T3.20); pojedine pogodnosti T3.21–24
+
+### Gating sistem (T3.20)
+- ✅ **Provera Blah+ statusa** — `lib/premium.ts` (čista, §2.5): `isPremiumActive` (izvor istine `premiumUntil` epoch ms), `canAccessPremiumFeature(feature,…)` (jedinstveni gate), `premiumUntilAfterPurchase`, `PREMIUM_FEATURES` enum (who_viewed/score_boost/lock_posts/no_ads/customization = single source), cene + `SCORE_BOOST_MULTIPLIER=1.1` (za T3.22) + test.
+- ✅ **DB** `profiles.premium_until` (timestamptz; null/prošlost = nije premium) — migracija live.
+- ✅ **Cross-cutting** `context/PremiumContext.tsx` `usePremium()` (`isPremium`/`canAccess`/`purchase`/`refresh`), mountovan u `app/_layout.tsx`.
+- ✅ **Paywall wiring:** Camera 4.6 (`SendStep` Lock Post → `canAccess('lock_posts')`), MyProfile 8.6/8.7 (`profile/index` eye → `canAccess('who_viewed')`; non-premium → paywall).
+- ⏳ **Plaćanje = stubbed RevenueCat boundary** (`services/premiumStatus.ts`, `PREMIUM_PURCHASE_STUBBED`) — pravi `purchasePackage`/entitlement `blah_plus` čeka konfigurisane store proizvode (flip prekidača).
 
 ### Pretplatne pogodnosti
 | Pogodnost | Spec | Status |
 |---|---|---|
-| See Who Viewed Your Profile | poslednjih 8 dana, unique views | ❌ (nema `profile_views`) |
-| Blah Score Boost +10% | množilac na skor za premium | ❌ (zavisi od A2) |
-| Lock 3+ Posts Forever | zaključaj do 3 posta trajno | 🟡 (`is_locked` postoji; premium gating ❓) |
-| Ad-Free Experience | bez reklama; provera na login i kroz app | ❌ (nema reklamnog sistema) |
+| See Who Viewed Your Profile | poslednjih 8 dana, unique views | 🟡 (gating ✅ T3.20; tracking+lista `profile_views` = T3.21) |
+| Blah Score Boost +10% | množilac na skor za premium | 🟡 (gating ✅ + `SCORE_BOOST_MULTIPLIER` spreman; primena u skor = T3.22) |
+| Lock 3+ Posts Forever | zaključaj do 3 posta trajno | 🟡 (`is_locked` + gating ✅ T3.20; limit 3 + 24h expiry = T3.23) |
+| Ad-Free Experience | bez reklama; provera na login i kroz app | ❌ (nema reklamnog sistema — T3.24) |
 
 ### Cene (paywall = `Camera 4.6`, vidi `SCREENS.md`)
 - Monthly: **€4.99/mo** auto-renewal
 - Yearly: **€29.94/yr** (50% off, default selektovano) auto-renewal
-- Status: 🟡 RevenueCat (`react-native-purchases`) + `PremiumModal` / `SubsciptionPlans` postoje; konfiguracija proizvoda/paywall ❓. Recovery one-time (€1.99) je već dobio IO granicu (`services/recoveryPurchase.ts`, stubbed — T3.8); pretplate (mo/yr) još nemaju.
+- Status: 🟡 paywall (`PremiumModal`/`SubsciptionPlans`) povezan na gating (T3.20) — `onContinue(plan)` → `purchase(plan)` (stub naplata → upis `premium_until`). Pravi RevenueCat (`react-native-purchases`) još čeka konfigurisane proizvode (mo/yr `blah_plus_monthly`/`blah_plus_yearly` + entitlement). Recovery one-time (€1.99) ima zasebnu IO granicu (`services/recoveryPurchase.ts`, T3.8).
 - ➕ Paywall lista još uključuje **Exclusive Customization** (*Coming soon: Profile themes*)
 
 ---

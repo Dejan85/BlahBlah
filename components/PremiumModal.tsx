@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -22,12 +22,13 @@ import SubscriptionPlans from './SubsciptionPlans';
 
 const { height: windowHeight } = Dimensions.get('window');
 
+type PlanType = 'monthly' | 'yearly' | 'onetime';
+
 interface PremiumModalProps {
   isVisible: boolean;
   onClose: () => void;
-  onPlanSelection: (plan: 'monthly' | 'yearly') => void;
-  onContinue: () => void;
-  onPlanSelectionForBlah?: (plan: 'onetimeuse') => void;
+  /** Continue → izabrani plan (subscribe ili recovery 'onetime'). */
+  onContinue: (plan: PlanType) => void;
   isBlahs?: boolean;
   isPremium?: boolean;
   /** Recovery: dinamičan tekst odbrojavanja ponude (npr. "In 13h offer expire"). */
@@ -45,10 +46,9 @@ const PremiumModal: React.FC<PremiumModalProps> = ({
   offerSubtitle,
   processing = false,
 }) => {
-  const handlePlanSelection = (plan: 'monthly' | 'yearly' | 'onetime') => {
-    // Handle the plan selection here
-    console.log('Selected plan:', plan);
-  };
+  // Recovery → 'onetime'; pretplata → 'yearly' default (50% off, Camera 4.6).
+  const defaultPlan: PlanType = isBlahs ? 'onetime' : 'yearly';
+  const [selectedPlan, setSelectedPlan] = useState<PlanType>(defaultPlan);
 
   return (
     <BottomModal
@@ -122,14 +122,15 @@ const PremiumModal: React.FC<PremiumModalProps> = ({
         </View>
 
         <SubscriptionPlans
-          onSelectPlan={handlePlanSelection}
+          onSelectPlan={setSelectedPlan}
+          selectedPlan={defaultPlan}
           isBlahs={isBlahs}
           isPremium={isPremium}
         />
 
         <CustomButton
           style={styles.continueButton}
-          onPress={onContinue}
+          onPress={() => onContinue(selectedPlan)}
           disabled={processing}
         >
           {processing ? (

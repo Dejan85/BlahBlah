@@ -33,6 +33,7 @@ import {
 import SettingItem from '../SettingItem';
 import { Ionicons } from '@expo/vector-icons';
 import PremiumModal from '../PremiumModal';
+import { usePremium } from '@/context/PremiumContext';
 import { usePost } from '@/context/PostContext';
 import type { CreatePostData } from '@/context/PostContext'; // Import CreatePostData type
 
@@ -66,14 +67,14 @@ function FilteredImage({
 export const SendStep = ({
   onBack,
   onSubmit,
-  isPremiumUser = false,
 }: {
   onBack: () => void;
   onSubmit: (post: Post) => void;
-  isPremiumUser?: boolean;
 }) => {
   const { capturedPhoto, video, selectedFilter, setStep, setCapturedPhoto } =
     useContext(CameraContext);
+  // Blah+ gating (T3.20): "Lock Post" je premium pogodnost (Camera 4.6).
+  const { canAccess, purchase } = usePremium();
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const filterMatrix = getFilterMatrixByName(selectedFilter);
   const [currentPage, setCurrentPage] = useState(0);
@@ -92,15 +93,17 @@ export const SendStep = ({
 
   const [showPremiumModal, setShowPremiumModal] = useState(false);
 
-  // Add these handlers
-  const handlePlanSelection = (plan: 'monthly' | 'yearly') => {
-    console.log('Selected plan:', plan);
-    // Handle plan selection logic
-  };
-
-  const handleContinue = () => {
+  // Paywall Continue (Camera 4.6) → kupovina pretplate (stub naplata, T3.20).
+  const handleContinue = async (plan: 'monthly' | 'yearly' | 'onetime') => {
+    if (plan === 'onetime') return; // recovery ne ide kroz ovaj paywall
+    const result = await purchase(plan);
     setShowPremiumModal(false);
-    // Additional logic for subscription
+    if (result.success) {
+      setLockPost(true); // korisnik je hteo Lock Post → uključi posle kupovine
+      Alert.alert('Blah +', 'Welcome to Blah +!');
+    } else if (!result.cancelled && result.error) {
+      Alert.alert('Error', result.error);
+    }
   };
 
   const handleSubmit = async () => {
@@ -138,13 +141,13 @@ export const SendStep = ({
   // Modify the lock post toggle handler
   const handleLockPostToggle = useCallback(
     (value: boolean) => {
-      if (!isPremiumUser && value) {
+      if (value && !canAccess('lock_posts')) {
         setShowPremiumModal(true);
         return;
       }
       setLockPost(value);
     },
-    [isPremiumUser]
+    [canAccess]
   );
 
   const allMedia = capturedPhoto?.uri
@@ -409,7 +412,6 @@ export const SendStep = ({
       <PremiumModal
         isVisible={showPremiumModal}
         onClose={() => setShowPremiumModal(false)}
-        onPlanSelection={handlePlanSelection}
         onContinue={handleContinue}
       />
     </View>
