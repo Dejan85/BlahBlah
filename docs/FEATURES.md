@@ -56,7 +56,8 @@ Spec: svaki chat ima 24h tajmer koji se resetuje sa svakom poslatom porukom; ako
 ### A6. Close-By Connections — 🟡 Delimično
 Spec: vidi i dodaj ljude u blizini bez username-a (**radius 20–30m**, vidi `SCREENS.md` Search 6.0); toggle vidljivosti lokacije u privacy settings.
 - ✅ Hvatanje lokacije (`hooks/useLocation.tsx`, kolone `profiles.latitude/longitude/location_enabled`)
-- ❌/❓ Stvarni "nearby discovery" geo-upit (radius **20–30m**) + UI sa labelom "Close By"
+- ✅ **Geo obračun blizine (T3.18)** — `lib/closeBy.ts`: haversine rastojanje + `isCloseBy`/`closeByUsers` (radius **20–30m**, default 30m; fail-safe na nevažeće koordinate). Čista logika spremna za upit/UI.
+- ❌/❓ Stvarni "nearby discovery" geo-**upit** (Supabase) + UI sa labelom "Close By" → **T3.19** (preostalo)
 - ❓ Toggle vidljivosti lokacije u settings
 - ℹ️ Search prikazuje i predloge sa labelama "Friend with [Name]" i "From your contacts"
 
